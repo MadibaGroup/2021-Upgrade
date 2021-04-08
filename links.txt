@@ -1,0 +1,30 @@
+Stackexchange:
+https://ethereum.stackexchange.com/questions/75890/pros-and-cons-of-smart-contract-upgradable-patterns
+
+---------------------------------------------------------------------------------------------------------------------
+Data separation:
+Trail of Bits:
+https://blog.trailofbits.com/2018/09/05/contract-upgrade-anti-patterns/
+
+https://medium.com/cardstack/upgradable-contracts-in-solidity-d5af87f0f913
+https://medium.com/cardstack/upgradable-contracts-in-solidity-d5af87f0f913
+
+
+---------------------------------------------------------------------------------------------------------------------
+General philosophy:
+https://consensys.github.io/smart-contract-best-practices/general_philosophy/
+
+---------------------------------------------------------------------------------------------------------------------
+memory layout problems and hints during upgrade:
+https://github.com/OpenZeppelin/openzeppelin-sdk/issues/37
+
+---------------------------------------------------------------------------------------------------------------------
+ERC20 upgradeability problem:
+https://medium.com/coinmonks/missing-return-value-bug-at-least-130-tokens-affected-d67bf08521ca
+Read the trail of bits as well
+https://blog.trailofbits.com/2018/09/05/contract-upgrade-anti-patterns/
+
+---------------------------------------------------------------------------------------------------------------------
+Proxy pattern implementation
+
+https://blog.gnosis.pm/solidity-delegateproxy-contracts-e09957d0f201

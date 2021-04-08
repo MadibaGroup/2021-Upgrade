@@ -1,0 +1,52 @@
+% !TEX root = ../main.tex
+
+% = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+\section{Introductory Remarks}
+
+
+
+\section{Classification}
+\subsection{Predetermined Upgrade Structures}
+This is not a standardized pattern. The development team must consider the ways to upgrade the contracts before deploying the smart contract. Known patterns are different on the level of intervention to change the logic that they need in the future. We will describe three famous patterns here:
+
+\paragraph{Parameter Configuration}. The easiest way to upgrade the logic of the smart contract is to have some critical parameter that can change the whole logic of the system and then have a setter function to change these parameters if the system needs upgrades. The best example for this type of upgradeability is MakeDao project. In Maker there are some variables like Dai Saving Rate (DSR) or Stability fee that can be changed through governance vote. The logic behind the smart contract and the economics of the Dapp completely depends on these variables.
+
+\paragraph{Strategy pattern}. The strategy pattern is an easy way for changing part of the code in a contract responsible for a specific feature. Instead of implementing a function in your contract to take care of a specific task, you call into a separate contract to take care of that – and by switching implementations of that contract, you can switch between different strategies.
+An example for this pattern is Compound project and how they used strategy pattern for their interest rate model. There is a interest rate model contract in Compound that can be changed during the time. 
+
+\paragraph{Pluggable Modules}. In this pattern we have a core contract that have some immutable features and have the ability to register new modules and features to the main contract. This pattern is mostly used in wallets and DeFi services like DeFi saver and InstaDapp. Users can decide to add new features into their wallet. 
+
+\subsection{Registry pattern}
+Registry contracts are probably the simplest approach to upgradeability. Registry pattern consist of two main contracts: registry and logic contract. Registry contract holds the addresses of logic contracts and whenever it receives a transaction it will pass it to the related logic contract. 
+If the development team decide to upgrade the smart contract, they can deploy another smart contract and then just change the pointer of the registry smart contact to the new smart contract.
+
+The main disadvantage of this approach is that in upgrading event, there should be a manual or automated migration plan to transfer data from the old contract into the new upgrade smart contract.
+Another drawback of this pattern is that it also introduces additional complexity for external clients who would also need to call into the registry before interacting with the system
+
+\subsection{Data separation pattern}
+Data separation patterns keeps logic and data in different contracts. The logic contract is the one that can be upgraded. In this pattern user is supposed to call the logic contract and the logic contract will call the storage contract.
+
+There are two concerns in this approach: how to store data and how to perform an upgrade.
+
+\paragraph{Storage. }The easiest way to store data in storage contract is to have a modifier on the setter functions in the storage contract that allow just the logic contract to change the variables. The owner of the contract can change the address of logic contract for the modifier.
+In this approach for adding a new persistent variable, a new data contract should be deployed which may be costly in case that the application needs lots of upgrades.
+
+The other way to store data is so called Eternal storage (ERC930). Eternal storage uses mapping (key-value pair) to store data, using one mapping per type of variable. The EVM storage layout and how it handles mapping helps the Eternal storage pattern to be more amenable to evolution but also more complex.
+
+\paragraph{Upgrade implementation. } There are three main ways to implement upgrades using data separation pattern. The easiest way is to change the ownership of storage contract into new upgraded logic contract and then \textbf{Pause} the old contract or set its pointer to 0x0 address. The other solution is to forward the calls receive by the old contract into the new logic contract. The last option is to set a proxy contract that just keeps the address of logic contract and call into logic contract.
+
+\paragraph{Risks. } (From trail of bits blog)
+"We have repeatedly seen clients deploy this pattern incorrectly. For example, one client’s implementation achieved the opposite effect, where a feature was impossible to upgrade because some its logic was located in the data contract.
+
+In our experience, developers also find the EternalStorage pattern challenging to apply consistently. We have seen developers storing their values as bytes32, then applying type conversion to retrieve the original values. This increased the complexity of the data model, and the likelihood of subtle flaws. Developers unfamiliar with complex data structures will make mistakes with this pattern."
+
+
+
+\subsection{DelegateCall-based upgrades}
+Similar to data separation pattern here we have two contracts, Storage and Logic contract. The difference here is that the user is calling storage contract first, so called proxy contract, and this contract DelegateCall to the logic contract. 
+%ToDo: Write about OpenZeppling upgrade bug : https://blog.trailofbits.com/2018/09/05/contract-upgrade-anti-patterns/
+
+\section{Concluding Remarks}
+
+%Idea: see how frequent each project uses its upgradeability feature to upgrade the contract and why?
