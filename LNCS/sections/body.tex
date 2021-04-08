@@ -24,7 +24,9 @@ If the development team decide to upgrade the smart contract, they can deploy an
 The main disadvantage of this approach is that in upgrading event, there should be a manual or automated migration plan to transfer data from the old contract into the new upgrade smart contract.
 Another drawback of this pattern is that it also introduces additional complexity for external clients who would also need to call into the registry before interacting with the system
 
-\subsection{Data separation pattern}
+\subsection{Call based patterns}
+
+%Data Separation patterns
 Data separation patterns keeps logic and data in different contracts. The logic contract is the one that can be upgraded. In this pattern user is supposed to call the logic contract and the logic contract will call the storage contract.
 
 There are two concerns in this approach: how to store data and how to perform an upgrade.
@@ -44,7 +46,14 @@ In our experience, developers also find the EternalStorage pattern challenging t
 
 
 \subsection{DelegateCall-based upgrades}
-Similar to data separation pattern here we have two contracts, Storage and Logic contract. The difference here is that the user is calling storage contract first, so called proxy contract, and this contract DelegateCall to the logic contract. 
+Similar to data separation pattern here we have two contracts, Storage and Logic contract. The difference here is that the user is calling storage contract first, so called proxy contract, and this contract DelegateCall to the logic contract.
+
+\paragraph{Inherited Storage}. 
+
+\paragraph{Eternal Storage}. 
+
+\paragraph{Unstructured Storage}. 
+
 %ToDo: Write about OpenZeppling upgrade bug : https://blog.trailofbits.com/2018/09/05/contract-upgrade-anti-patterns/
 
 \section{Concluding Remarks}
