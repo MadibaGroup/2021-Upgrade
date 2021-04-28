@@ -46,16 +46,35 @@ In our experience, developers also find the EternalStorage pattern challenging t
 
 
 \subsection{DelegateCall-based upgrades}
-Similar to data separation pattern here we have two contracts, Storage and Logic contract. The difference here is that the user is calling storage contract first, so called proxy contract, and this contract DelegateCall to the logic contract.
+Similar to data separation pattern here we have two contracts, Storage and Logic contract. we may have more than one logic contract. The difference here is that the user is calling storage contract first, so called proxy contract, and this contract DelegateCall to the logic contract(s).
+The main difference between delegatecall and call-based approach is that in delegatecall proxy pattern the storage layout of proxy and logic contract should be the same. The difference between storage layouts will result in storage clashes. 
+There are three different methods to mitigate the risk of storage crashes:
 
 \paragraph{Inherited Storage}. 
+In this method the proxy contract and all logic contracts are inherited from a storage contract that contains storage variables. Using this method we are confident that the proxy and logic contracts are using the same storage layout and storage clashes will be mitigated.
+After deployment if we need new logic contract with new storage variables, we should deploy a new storage contract that inherits the previous storage contract. Then the new logic contract must inherit the new version of the storage contract.
 
+The downside of this approach is that new logic contracts inherit storage contracts that may contain variables that it do not need. Also, we should take care that newer versions of the logic contract and storage contract coupled together correctly.
+
+This method is not efficient because of variables that declared but not used in some logic contracts. On the other hand, each logic contract is coupled with a storage contract and it is hard to take care of this track. 
 \paragraph{Eternal Storage}. 
-
+In this pattern, we defined mappings for all variable types that we need to use in our logic smart contract. For storing mapping variables EVM selects random slots based on the variable's name so we can mitigate the clashes.
+The main problem of this type is that the logic contract and all other contracts that are using the storage must use the mapping structure to access the storage variables and use complex syntax whenever they want to access a variable.
+Also it is hard to use eternal storage for complex variables like mappings and structure (need mapping of mapping pattern).
+It is hard to find the state variable of the proxy smart contract because we store them in arbitrary slots of the storage.
 \paragraph{Unstructured Storage}. 
+The other way of mitigating the storage clash is to assign some randomly selected slots to critical variables like address of logic contract. For instance, open zeppling uses hash of "org.zeppelinos.proxy.implementation" to store the address of the logic contract in this slot.
+
+The downside of this approach is that we need getter and setter function for each variable. We also can use unstructured storage for simple variables and not for mapping and structures.
 
 %ToDo: Write about OpenZeppling upgrade bug : https://blog.trailofbits.com/2018/09/05/contract-upgrade-anti-patterns/
 
 \section{Concluding Remarks}
 
 %Idea: see how frequent each project uses its upgradeability feature to upgrade the contract and why?
+
+
+%Implementation of Eternal storage in call based upgrades: https://medium.com/cardstack/upgradable-contracts-in-solidity-d5af87f0f913
+% Good classificaton: https://medium.com/1milliondevs/solidity-storage-layout-for-proxy-contracts-and-diamonds-c4f009b6903
+% New storage type *Dimond Storage*: https://medium.com/1milliondevs/new-storage-layout-for-proxy-contracts-and-diamonds-98d01d0eadb
+%https://medium.com/1milliondevs/new-storage-layout-for-proxy-contracts-and-diamonds-98d01d0eadb
