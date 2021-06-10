@@ -7,7 +7,7 @@
 
 
 \section{Classification}
-
+% We have some off-chain upgrades like what people did to force UNISwap using arbitrum as the L2 solution. It is an off-chain upgrade not an automated one.
 \subsection{Retail Changes}
 This is not a standardized pattern. The development team must consider the ways to upgrade the contracts before deploying the smart contract. Known patterns are different on the level of intervention to change the logic that they need to change in the future. The amount of changes are limited and system design can not be changed after deployment and just some system variables can be changed. We will describe three famous patterns here:
 
@@ -103,6 +103,15 @@ The downside of this approach is that we need getter and setter function for eac
 
  \section{Evaluation of different methods}
 %  % compare them using: 
+\begin{enumerate}
+  \item Frequency
+  \item Decentralization
+  \item Foreknowledge of changes
+  \item Gas Usages
+  \item complexity
+  \item Cost of an upgrade process
+  \item Usability for users (In the upgrading events or normal situations)
+\end{enumerate}
 % • Frequency
 % • Decentralization
 % • Foreknowledge of changes
