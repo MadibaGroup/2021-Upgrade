@@ -8,6 +8,7 @@
 
 \section{Classification}
 % We have some off-chain upgrades like what people did to force UNISwap using arbitrum as the L2 solution. It is an off-chain upgrade not an automated one.
+% Does Factory patterns can be defined as upgradeability patterns? Like creating a new pool for Uniswap!
 \subsection{Retail Changes}
 This is not a standardized pattern. The development team must consider the ways to upgrade the contracts before deploying the smart contract. Known patterns are different on the level of intervention to change the logic that they need to change in the future. The amount of changes are limited and system design can not be changed after deployment and just some system variables can be changed. We will describe three famous patterns here:
 
@@ -111,6 +112,7 @@ The downside of this approach is that we need getter and setter function for eac
   \item complexity
   \item Cost of an upgrade process
   \item Usability for users (In the upgrading events or normal situations)
+  \item amount of changes we need
 \end{enumerate}
 % • Frequency
 % • Decentralization
@@ -126,7 +128,7 @@ The downside of this approach is that we need getter and setter function for eac
 
  \subsection{decision maker(s)}
  There is a debate on who is responsible for upgrading a Dapp. Different systems can choose one of these schemes to upgrade their Dapp depending on the complexity of the system, frequency of the changes needed for the system and how fast does the system need to upgrade in the incidents.
-
+%History of changing from not having a single owner to then owner and then Multi-sig and then Decentralized voting
  \subsubsection{Externally owned Address}
 The easiest and the fastest way to upgrade a system is through a single address which is the owner of smart contract. This is the most centralized solution we have for upgrading a system. The main problem with this issue is the security of the system because it only depends on a single private key hold by the owner. In case of malicious party or if an attacker find the owner's private or if the owner lose the key the entire system is on the risk.
 
@@ -172,7 +174,7 @@ A escape hatch is a mechanism that lets the users to move their fund out of the 
 Upgrading a smart contract can be done by sending a transaction into the system. If the upgrade is a response to a unknown bug, then the upgrade process will hint attackers who is listening to the mempool to find the bug and hack the smart contract just before the upgrade. So there should be some mechanisms to mitigate front-running attacks. One solution to this issue is to use commit-reveal schemes. The team first sends a commitment of the upgrade (hash of the upgrade) to the system and after the timelock they can push and apply the original code which cannot be front run. 
 %Commit reveal
 
-
+\input{sections/table}
 
 % upgrading in dark: https://forum.makerdao.com/t/mip15-dark-spell-mechanism/2578
 
@@ -210,3 +212,7 @@ Upgrading a smart contract can be done by sending a transaction into the system.
 
 %ToDo: Write about OpenZeppling upgrade bug : https://blog.trailofbits.com/2018/09/05/contract-upgrade-anti-patterns/
 %ToDo: Gas cost comparison between different implementation (using different number and types of the storage variables)
+
+
+\section{discussion}
+%\subsection{Off chain upgrades (UNiswap Arbitrum)}
