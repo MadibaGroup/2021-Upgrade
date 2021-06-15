@@ -140,13 +140,27 @@ The downside of this approach is that we need getter and setter function for eac
  Adding upgradeability feature to a smart contract may increase the gas needed to pay by users for a specific operation. 
 
 \textit{Retail Changes} and \textit{Migration} methods do not change the logic of a smart contract generally and so will not alter the transaction costs. However, in \textit{Call-based} and \textit{DelegateCall-based} approaches increase the transaction cost for users to do a specific operation. \textit{Call-based} method will increase the transaction cost because whenever a transaction needs to add or change a data, the logic contract must \textbf{CALL} the storage contract which adds an extra gas. Also in \textit{DelegateCall-based} approach all transactions will be \textbf{Delegate Called} to the logic contract using a \textbf{proxy} which adds an extra gas on each transaction. 
+
 \textcolor{red}{We need a comparison between Call based and Delegate call based aproaches (if possible. I think Call based approach is gas efficient for systems that do not need to add or change data frequently. Also there are other extra adds-on that can add useability but adds gas like adding feature for uninformed users in Call based approaches.)}
 
 
  \subsection{Cost of Upgrade}
- 
+
+ One of the main differences between upgradeability approaches is how much does the upgrade process costs. In \textit{Retail Changes} approach upgrading a system is as cheap as just changing a parameter or a more complex variable type like structures.
+
+Upgrading a smart contract through \textit{Migration} is the most expensive approach. In Migration, a new smart contract along with the whole data of the previous smart contract must be deployed to the Ethereum blockchain which consumes a huge gas.  
+
+\textit{Call-based} and \textit{DelegateCall-based} methods are not as cheap as \textit{Retail change} and not as expensive as \textit{Migration} method. In both the developer team needs to deploy a new logic contract and change some parameters (\eg implementation address on storage contract).
+
  \subsection{Useability}
- 
+ In \textit{Retail Change} approach the user does not feel the upgrade process unless she has a exposure to the parameter that is changing on the upgrade.
+
+ On the other hand, users in a \textit{Migration} plan need to work with a new smart contract . In some Migration plans, users themselves must withdraw their fund from the previous version and deposit it on the new version which is not user friendly and costly for them.
+
+In \textit{Call-based} method, the logic contract (the contract that is called by users) is changing. So, users must call a new contract after the upgrade which is not user friendly. There are some approaches to mitigate this by using a proxy contract in between. The other way to mitigate this is to implement a way in which an old logic smart contract can call the newer version and pass the user's request to the newer version. These solutions add an extra gas to each transaction which is not usable as well.
+
+In \textit{DelegateCall-based} approach users are calling the proxy contract which delegate call their request to the whitelisted logic contract. In the upgrade event the developers change the whitelisted address to the new version and users call the proxy like before. So, users do not feel the upgrading process.
+
  \subsection{Fixing a Bug}
  
  \subsection{Decision Maker}
