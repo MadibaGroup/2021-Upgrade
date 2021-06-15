@@ -109,7 +109,7 @@ The downside of this approach is that we need getter and setter function for eac
 
  The extent to which the system needs to be upgraded is the first question that the designer should think of. It mostly depends on the nature of the project whether the designer can limit the upgrades to a small part of the system and use \textit{Retail Changes} method or use other methods (\ie \textit{Wholesale methods}) that give the designer control of changing the whole system. 
 
- \subsection{Upgrade Frequency} 
+ \subsection{Upgrade Frequency} \label{upgradeFRQ}
 
  The other factor which differentiates the proposed upgradeability methods is how frequent upgrades can be done using the method. \textit{Retail changes} method gives the decision makers to upgrade the system more frequent than other methods because the changes can be done through some parameters or a small part of the system which specified and limited before deployment. 
  
@@ -141,7 +141,7 @@ The downside of this approach is that we need getter and setter function for eac
 
 \textit{Retail Changes} and \textit{Migration} methods do not change the logic of a smart contract generally and so will not alter the transaction costs. However, in \textit{Call-based} and \textit{DelegateCall-based} approaches increase the transaction cost for users to do a specific operation. \textit{Call-based} method will increase the transaction cost because whenever a transaction needs to add or change a data, the logic contract must \textbf{CALL} the storage contract which adds an extra gas. Also in \textit{DelegateCall-based} approach all transactions will be \textbf{Delegate Called} to the logic contract using a \textbf{proxy} which adds an extra gas on each transaction. 
 
-\textcolor{red}{We need a comparison between Call based and Delegate call based aproaches (if possible. I think Call based approach is gas efficient for systems that do not need to add or change data frequently. Also there are other extra adds-on that can add useability but adds gas like adding feature for uninformed users in Call based approaches.)}
+\textcolor{red}{We need a comparison between Call based and Delegate call based approaches (if possible. I think Call based approach is gas efficient for systems that do not need to add or change data frequently. Also there are other extra adds-on that can add useability but adds gas like adding feature for uninformed users in Call based approaches.)}
 
 
  \subsection{Cost of Upgrade}
@@ -159,42 +159,47 @@ Upgrading a smart contract through \textit{Migration} is the most expensive appr
 
 In \textit{Call-based} method, the logic contract (the contract that is called by users) is changing. So, users must call a new contract after the upgrade which is not user friendly. There are some approaches to mitigate this by using a proxy contract in between. The other way to mitigate this is to implement a way in which an old logic smart contract can call the newer version and pass the user's request to the newer version. These solutions add an extra gas to each transaction which is not usable as well.
 
-In \textit{DelegateCall-based} approach users are calling the proxy contract which delegate call their request to the whitelisted logic contract. In the upgrade event the developers change the whitelisted address to the new version and users call the proxy like before. So, users do not feel the upgrading process.
+In \textit{DelegateCall-based} approach users are calling the proxy contract which delegate call their request to the whitelisted logic contract. In the upgrade event the developers change the whitelisted address to the new version but users call the proxy like before. So, users do not feel the upgrading process.
 
  \subsection{Fixing a Bug}
  
- \subsection{Decision Maker}
- 
+As mentioned in the previous part, upgradeability could be used in two different situations; adding new features or fixing a bug. 
+
+In an incident, \textit{Retail Changes} approach won't help to response to a bug or hack because the extent of upgradeability is limited and the developers may not change the required parts of the system. \textit{Migration} is not proper as well because it is not quick enough to respond in a limited time window.
+
+On the other hand, \textit{Call-based} and \textit{DelegateCall-based} are very well for fixing a bug. In the event, the developers can find the root cause and patch it by deploying a new contract and change the implementation address in the logic contract. 
+
  \subsection{Speed of an Upgrade}
  
+Another difference between upgradeability methods is the speed in which an upgrade can be processed. This depends on the type of decision makers which will be discussed in~\ref{decisionMakers}. 
+
+\textit{Retail changes} method is the fastest way to upgrade a system comparing to other methods. Using an EOA as the decision maker is the fastest option of an upgrade. Using multi-sig is a bit slower than using EOA. Utilizing a decentralized governance scheme to decide about upgrades will put an inherit time delay to the upgrades.
+
+\textit{Migration} has the slowest upgrade process between other methods. The reasons are discussed in the previous parts (see~\ref{upgradeFRQ}).
+
+\textit{Call-based} and \textit{DelegateCall-based} are very similar in the speed of upgrade. These two are not as quick as \textit{Retail changes} because the developer needs to find the root cause of a bug or find the upgrades needed for system and then implement the smart contract and deploy it to the system which is time consuming.
+On the other hand these two approaches are faster than \textit{Migration} because as mentioned before, in Migration plans we need to collect and push old data into newer version as well.  
+
  \subsection{Level of Decentralization}
 
-%  % compare them using: 
-% \begin{enumerate}
-%   \item Frequency
-%   \item Decentralization
-%   \item Foreknowledge of changes
-%   \item Gas Usages
-%   \item complexity
-%   \item Cost of an upgrade process
-%   \item Usability for users (In the upgrading events or normal situations)
-%   \item amount of changes we need
-% \end{enumerate}
-% • Frequency
-% • Decentralization
-% • Foreknowledge of changes
-% • Wholesale changes
-% • Gas efficiency
+The last and one of the most important characteristics that are different in upgradeability methods is the level of decentralization that can force a system change. 
+
+Using an \textbf{EOA} to decide about a change is the most central option that a system designer can choose regardless of the upgradeability method uses in the system. 
+Using \textbf{Multi-sig} is not decentralized as well. Although it improves the level of decentrality of the system but at the end a specified number can decide to change the system. 
+
+The \textit{Migration} method is the most decentralized approach because it gives the user chance to decide whether move to the newer version or not. For instance, Uniswap uses this method for its upgrade and the users have choice to transfer their funds from Uniswap V2 to V3 or not and as we can see some users decide to stay on the previous version.
+
+Utilizing a decentralized governance model to vote for a change is a good way to make the decision making on the upgrades more decentralized. \textit{Retail Changes} using voting scheme is more decentral than \textit{Call-based} and \textit{DelegateCall-based} because boundary of changes are limited on the Retail methods but in CAll-based and DelegateCall based methods the developers have the power to put some kind of backdoor in the system while upgrading. 
 % • Efficiency: gas for those uninformed about upgrades
 % • Efficiency: gas for those informed about upgrades
 
  % talk about vulnerabilities of each here
- \input{sections/table}
+
 
  \section{Upgrading process}
+  
 
-
- \subsection{decision maker(s)}
+ \subsection{decision maker(s)} \label{decisionMakers}
  There is a debate on who is responsible for upgrading a Dapp. Different systems can choose one of these schemes to upgrade their Dapp depending on the complexity of the system, frequency of the changes needed for the system and how fast does the system need to upgrade in the incidents.
 %History of changing from not having a single owner to then owner and then Multi-sig and then Decentralized voting
  \subsubsection{Externally owned Address}
@@ -284,3 +289,5 @@ Upgrading a smart contract can be done by sending a transaction into the system.
 
 \section{discussion}
 %\subsection{Off chain upgrades (UNiswap Arbitrum)}
+
+\input{sections/table}
