@@ -103,17 +103,69 @@ The downside of this approach is that we need getter and setter function for eac
  \end{figure}
 
  \section{Evaluation of different methods}
+ In this section we compare and evaluate different methods discussed in previous section. There are some characteristics that can help the designer to decide which method should be used on the system to add upgradeability to the Dapp. We will describe each characteristic and how it can affect each upgradeability methods:
+
+ \subsection{Extent of Upgradeability}
+
+ The extent to which the system needs to be upgraded is the first question that the designer should think of. It mostly depends on the nature of the project whether the designer can limit the upgrades to a small part of the system and use \textit{Retail Changes} method or use other methods (\ie \textit{Wholesale methods}) that give the designer control of changing the whole system. 
+
+ \subsection{Upgrade Frequency} 
+
+ The other factor which differentiates the proposed upgradeability methods is how frequent upgrades can be done using the method. \textit{Retail changes} method gives the decision makers to upgrade the system more frequent than other methods because the changes can be done through some parameters or a small part of the system which specified and limited before deployment. 
+ 
+\textit{Migration} method is more time consuming and not good for frequent changes because:
+ \begin{enumerate}
+  \item Developers need time to write a new version of the smart contract  
+  \item Before the upgrade the developers need to collect data of old contract (\eg getting storage snapshot)
+  \item Pushing the data into the newer version is time consuming and sometimes it takes multiple blocks to push the data (because of block gas limit of a block)
+ \end{enumerate}
+
+ On the other hand, \textit{Call-based} and \textit{DelegateCall-based} approaches is something in between. It is not as time consuming as \textit{Migration} because the data and logic contract is separated and the developers do not need to change the data contract. But, it cannot be as frequent as \textit{Retail changes} because the developer needs to:
+ \begin{enumerate}
+   \item Write and deploy a new contract
+   \item Change the address pointer in the storage contract
+ \end{enumerate}
+ 
+ \subsection{System Complexity}
+ Applying each upgradeability method has different complexity effects on the system. 
+
+ In \textit{Retail changes} method, it is hard and complex for system designers to design a system in which a parameter or a small part of system can change the logic of system and be safe to change it. So it adds some complexity to the system to have this type of upgradeability.
+ 
+ \textit{Migration} method does not add any complexity to the system. The system designer do not need to change considerable part of system design to have feature to migrate to the new version before deployment. So, it is the less complex choice that a designer can take.
+ 
+ In the \textit{Call-based} upgradeability approach, the system designer must separate storage and logic pieces of the contract. It adds complexity to the system to be confident that these two are separated correctly. Trail of Bits which is a smart contract auditing firm reported that the main problem happened on \textit{Call-based} approach is because the developers did not split logic and storage correctly. (Cite anti pattern-- ToB). On the other hand, \textit{DelegateCall-based} patterns adds more complexity to the system because of using DelegateCall opcode. the main difference between \textit{Call-based} and \textit{DelegateCall-based} approach is that the developer should take care that using Delegatecall opcode needs to take care that the logic and storage contract must have similar storage layout. 
+
+ \subsection{Transaction Cost}
+ 
+ Adding upgradeability feature to a smart contract may increase the gas needed to pay by users for a specific operation. 
+
+\textit{Retail Changes} and \textit{Migration} methods do not change the logic of a smart contract generally and so will not alter the transaction costs. However, in \textit{Call-based} and \textit{DelegateCall-based} approaches increase the transaction cost for users to do a specific operation. \textit{Call-based} method will increase the transaction cost because whenever a transaction needs to add or change a data, the logic contract must \textbf{CALL} the storage contract which adds an extra gas. Also in \textit{DelegateCall-based} approach all transactions will be \textbf{Delegate Called} to the logic contract using a \textbf{proxy} which adds an extra gas on each transaction. 
+\textcolor{red}{We need a comparison between Call based and Delegate call based aproaches (if possible. I think Call based approach is gas efficient for systems that do not need to add or change data frequently. Also there are other extra adds-on that can add useability but adds gas like adding feature for uninformed users in Call based approaches.)}
+
+
+ \subsection{Cost of Upgrade}
+ 
+ \subsection{Useability}
+ 
+ \subsection{Fixing a Bug}
+ 
+ \subsection{Decision Maker}
+ 
+ \subsection{Speed of an Upgrade}
+ 
+ \subsection{Level of Decentralization}
+
 %  % compare them using: 
-\begin{enumerate}
-  \item Frequency
-  \item Decentralization
-  \item Foreknowledge of changes
-  \item Gas Usages
-  \item complexity
-  \item Cost of an upgrade process
-  \item Usability for users (In the upgrading events or normal situations)
-  \item amount of changes we need
-\end{enumerate}
+% \begin{enumerate}
+%   \item Frequency
+%   \item Decentralization
+%   \item Foreknowledge of changes
+%   \item Gas Usages
+%   \item complexity
+%   \item Cost of an upgrade process
+%   \item Usability for users (In the upgrading events or normal situations)
+%   \item amount of changes we need
+% \end{enumerate}
 % • Frequency
 % • Decentralization
 % • Foreknowledge of changes
@@ -123,6 +175,8 @@ The downside of this approach is that we need getter and setter function for eac
 % • Efficiency: gas for those informed about upgrades
 
  % talk about vulnerabilities of each here
+ \input{sections/table}
+
  \section{Upgrading process}
 
 
@@ -174,7 +228,7 @@ A escape hatch is a mechanism that lets the users to move their fund out of the 
 Upgrading a smart contract can be done by sending a transaction into the system. If the upgrade is a response to a unknown bug, then the upgrade process will hint attackers who is listening to the mempool to find the bug and hack the smart contract just before the upgrade. So there should be some mechanisms to mitigate front-running attacks. One solution to this issue is to use commit-reveal schemes. The team first sends a commitment of the upgrade (hash of the upgrade) to the system and after the timelock they can push and apply the original code which cannot be front run. 
 %Commit reveal
 
-\input{sections/table}
+
 
 % upgrading in dark: https://forum.makerdao.com/t/mip15-dark-spell-mechanism/2578
 
