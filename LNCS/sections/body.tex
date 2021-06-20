@@ -103,63 +103,84 @@ The downside of this approach is that we need getter and setter function for eac
  \end{figure}
 
  \section{Evaluation of different methods}
- In this section we compare and evaluate different methods discussed in previous section. There are some characteristics that can help the designer to decide which method should be used on the system to add upgradeability to the Dapp. We will describe each characteristic and how it can affect each upgradeability methods:
-
- \subsection{Extent of Upgradeability}
-
- The extent to which the system needs to be upgraded is the first question that the designer should think of. It mostly depends on the nature of the project whether the designer can limit the upgrades to a small part of the system and use \textit{Retail Changes} method or use other methods (\ie \textit{Wholesale methods}) that give the designer control of changing the whole system. 
-
- \subsection{Upgrade Frequency} \label{upgradeFRQ}
-
- The other factor which differentiates the proposed upgradeability methods is how frequent upgrades can be done using the method. \textit{Retail changes} method gives the decision makers to upgrade the system more frequent than other methods because the changes can be done through some parameters or a small part of the system which specified and limited before deployment. 
  
-\textit{Migration} method is more time consuming and not good for frequent changes because:
- \begin{enumerate}
-  \item Developers need time to write a new version of the smart contract  
-  \item Before the upgrade the developers need to collect data of old contract (\eg getting storage snapshot)
-  \item Pushing the data into the newer version is time consuming and sometimes it takes multiple blocks to push the data (because of block gas limit of a block)
- \end{enumerate}
+ In this section we compare and evaluate different methods discussed in previous section. There are some characteristics that can help the designer to decide which method should be used on the system and add upgradeability to the Dapp.
 
- On the other hand, \textit{Call-based} and \textit{DelegateCall-based} approaches is something in between. It is not as time consuming as \textit{Migration} because the data and logic contract is separated and the developers do not need to change the data contract. But, it cannot be as frequent as \textit{Retail changes} because the developer needs to:
- \begin{enumerate}
-   \item Write and deploy a new contract
-   \item Change the address pointer in the storage contract
- \end{enumerate}
+ For our evaluation framework, we provide the definition of each evaluation criteria (i.e., column of the table), specifying what it means to receive a full dot (\CIRCLE), partial dot (\LEFTcircle), an empty dot (\Circle) or to receive a square (\XBox).
+
+ 
+ \subsection{Extent of Upgradeability}
+ An upgradeability method in which the upgrader can change the whole logic of the system earns a full circle(\CIRCLE). A method that could be used to change a small part of the system awarded an empty circle(\Circle).
+
+ \textit{Retail Change} methods limit the the upgrades to a small part of the system (\Circle). However, using \textit{Migration}, \textit{Call-based} and \textit{DelegateCall-based} approaches, the upgrader is able to deploy a new smart contract with a new set of functions and logics.
+
+%  \subsection{Extent of Upgradeability}
+
+%  The extent to which the system needs to be upgraded is the first question that the designer should think of. It mostly depends on the nature of the project whether the designer can limit the upgrades to a small part of the system and use \textit{Retail Changes} method or use other methods (\ie \textit{Wholesale methods}) that give the designer control of changing the whole system. 
+
+\subsection{Upgrade Frequency} \label{upgradeFRQ}
+
+An upgradeability method that can move from proposal to finality within a single transaction is awarded a full dot (\CIRCLE). A process that requires more than a single block time in order to write and deploy a new logic contract receives half circle (\LEFTcircle). A method that needs more than just deploying a new logic contract and changing some parameters awarded empty circle (\Circle).
+
+The upgrader can process the whole upgrade using \textit{Retail changes} method in a single transaction time window after proposing the change (\CIRCLE). On the other hand, \textit{Call-based} and \textit{DelegateCall-based} approaches are more time consuming because the upgrader needs a time window to write the new logic contract, deploy it to the mainnet, and change some address pointers (\LEFTcircle). \textit{Migration} method is more time consuming and not good for frequent changes because Before the upgrade the developers need to collect data of old contract (\eg getting storage snapshot), write a new version of the logic smart contract, and push the old data into the newer version which is time consuming and sometimes it takes multiple blocks to push all data from the old version (because of block gas limit of a block) (\Circle).
+%  \subsection{Upgrade Frequency} \label{upgradeFRQ}
+
+%  The other factor which differentiates the proposed upgradeability methods is how frequent upgrades can be done using the method. \textit{Retail changes} method gives the decision makers to upgrade the system more frequent than other methods because the changes can be done through some parameters or a small part of the system which specified and limited before deployment. 
+ 
+% \textit{Migration} method is more time consuming and not good for frequent changes because:
+%  \begin{enumerate}
+%   \item Developers need time to write a new version of the smart contract  
+%   \item Before the upgrade the developers need to collect data of old contract (\eg getting storage snapshot)
+%   \item Pushing the data into the newer version is time consuming and sometimes it takes multiple blocks to push the data (because of block gas limit of a block)
+%  \end{enumerate}
+
+%  On the other hand, \textit{Call-based} and \textit{DelegateCall-based} approaches is something in between. It is not as time consuming as \textit{Migration} because the data and logic contract is separated and the developers do not need to change the data contract. But, it cannot be as frequent as \textit{Retail changes} because the developer needs to:
+%  \begin{enumerate}
+%    \item Write and deploy a new contract
+%    \item Change the address pointer in the storage contract
+%  \end{enumerate}
  
  \subsection{System Complexity}
- Applying each upgradeability method has different complexity effects on the system. 
+ Applying each upgradeability method has different complexity effects on the system. An upgradeability method in which the designer do not need to change any logic of the contract receives empty circle (\Circle). Upgradeability methods that cause changing the whole design or the logic of the smart contract but do not add possible security flaws or attack surfaces receive half circle (\LEFTcircle). Upgradeability methods that force the developer to change the whole logic of the smart contract and adds considerations to smart contract security receives full circle (\CIRCLE).
 
- In \textit{Retail changes} method, it is hard and complex for system designers to design a system in which a parameter or a small part of system can change the logic of system and be safe to change it. So it adds some complexity to the system to have this type of upgradeability.
+ \textit{Migration} method does not add any complexity to the system. The system designer do not need to change considerable part of system design to have feature to migrate to the new version before deployment. So, it is the less complex choice that a designer can take (\Circle).
  
- \textit{Migration} method does not add any complexity to the system. The system designer do not need to change considerable part of system design to have feature to migrate to the new version before deployment. So, it is the less complex choice that a designer can take.
+ In \textit{Retail changes} method, it is hard and complex for system designers to design a system in which a parameter or a small part of system can change the logic of the system and be safe to change it but it does not add security considerations (\LEFTcircle).
  
- In the \textit{Call-based} upgradeability approach, the system designer must separate storage and logic pieces of the contract. It adds complexity to the system to be confident that these two are separated correctly. Trail of Bits which is a smart contract auditing firm reported that the main problem happened on \textit{Call-based} approach is because the developers did not split logic and storage correctly. (Cite anti pattern-- ToB). On the other hand, \textit{DelegateCall-based} patterns adds more complexity to the system because of using DelegateCall opcode. the main difference between \textit{Call-based} and \textit{DelegateCall-based} approach is that the developer should take care that using Delegatecall opcode needs to take care that the logic and storage contract must have similar storage layout. 
+ In the \textit{Call-based} upgradeability approach, the system designer must separate storage and logic pieces of the contract and change the whole design of the smart contract. It adds complexity to the system to be confident that these two are separated correctly. But it does not add considerable new attack surfaces to the system (\LEFTcircle).
+ 
+%  Trail of Bits which is a smart contract auditing firm reported that the main problem happened on \textit{Call-based} approach is because the developers did not split logic and storage correctly. (Cite anti pattern-- ToB). 
+ 
+ On the other hand, \textit{DelegateCall-based} patterns adds more complexity to the system because of using DelegateCall opcode as well as need to separating logic and storage contract. The main difference between \textit{Call-based} and \textit{DelegateCall-based} approach is that the developer should take care that using Delegatecall opcode needs to take care that the logic and storage contract must have similar storage layout. So using DelegateCall pattern changes the design of the contract and adds new attacks surfaces to the system (\CIRCLE).
 
  \subsection{Transaction Cost}
  
- Adding upgradeability feature to a smart contract may increase the gas needed to pay by users for a specific operation. 
+ An upgradeability pattern that adds an extra gas cost needed to be paid by users for a specific operation receives full circle (\CIRCLE), otherwise it awarded empty circle (\Circle).
 
-\textit{Retail Changes} and \textit{Migration} methods do not change the logic of a smart contract generally and so will not alter the transaction costs. However, in \textit{Call-based} and \textit{DelegateCall-based} approaches increase the transaction cost for users to do a specific operation. \textit{Call-based} method will increase the transaction cost because whenever a transaction needs to add or change a data, the logic contract must \textbf{CALL} the storage contract which adds an extra gas. Also in \textit{DelegateCall-based} approach all transactions will be \textbf{Delegate Called} to the logic contract using a \textbf{proxy} which adds an extra gas on each transaction. 
+\textit{Retail Changes} and \textit{Migration} methods do not change the logic of a smart contract generally and so will not alter the transaction costs (\Circle). However, \textit{Call-based} and \textit{DelegateCall-based} approaches increase the transaction cost for users to perform a specific operation (\CIRCLE). \textit{Call-based} method will increase the transaction cost because whenever a transaction needs to add or change a data, the logic contract must \textbf{CALL} the storage contract which adds an extra gas. Also in \textit{DelegateCall-based} approach all transactions will be \textbf{Delegate Called} to the logic contract using a \textbf{proxy} which adds an extra gas on each transaction. 
 
 \textcolor{red}{We need a comparison between Call based and Delegate call based approaches (if possible. I think Call based approach is gas efficient for systems that do not need to add or change data frequently. Also there are other extra adds-on that can add useability but adds gas like adding feature for uninformed users in Call based approaches.)}
 
 
  \subsection{Cost of Upgrade}
 
- One of the main differences between upgradeability approaches is how much does the upgrade process costs. In \textit{Retail Changes} approach upgrading a system is as cheap as just changing a parameter or a more complex variable type like structures.
+ One of the main differences between upgradeability approaches is how much does the upgrade process costs. An upgradeability pattern that costs like a normal transaction (\eg changing a parameter or a more complex variables like structures) receives an empty circle (\Circle). Upgradeability methods that needs to deploy a new logic contract but do not need to push old data into it receive half circle (\LEFTcircle) and patterns in which the upgrader should deploy a new logic contract and push old data into the new version is the most expensive approach in the upgrading process and awarded full circle (\CIRCLE).
+ 
+ 
+%  In \textit{Retail Changes} approach upgrading a system is as cheap as just changing a parameter or a more complex variable type like structures.
 
-Upgrading a smart contract through \textit{Migration} is the most expensive approach. In Migration, a new smart contract along with the whole data of the previous smart contract must be deployed to the Ethereum blockchain which consumes a huge gas.  
+% Upgrading a smart contract through \textit{Migration} is the most expensive approach. In Migration, a new smart contract along with the whole data of the previous smart contract must be deployed to the Ethereum blockchain which consumes a huge gas.  
 
-\textit{Call-based} and \textit{DelegateCall-based} methods are not as cheap as \textit{Retail change} and not as expensive as \textit{Migration} method. In both the developer team needs to deploy a new logic contract and change some parameters (\eg implementation address on storage contract).
+% \textit{Call-based} and \textit{DelegateCall-based} methods are not as cheap as \textit{Retail change} and not as expensive as \textit{Migration} method. In both the developer team needs to deploy a new logic contract and change some parameters (\eg implementation address on storage contract).
 
  \subsection{Useability}
- In \textit{Retail Change} approach the user does not feel the upgrade process unless she has a exposure to the parameter that is changing on the upgrade.
+ An upgradeability approach in which users do not feel any changes and do not need to take any action after the upgrade process receives a full circle (\CIRCLE). In patterns that the users just need to call a new smart contract address rewarded a half circle (\LEFTcircle). In some patterns although the users should take some actions in addition to using a new address (\Circle).     
+ 
+ In \textit{Retail Change} approach the user does not feel the upgrade process unless she has a exposure to the parameter that is changing on the upgrade (\CIRCLE).
+In \textit{Call-based} method, the logic contract (the contract that is called by users) will be changed. So, users must call a new contract after the upgrade which is not user friendly (\LEFTcircle). There are some approaches to mitigate this by using a proxy contract in between. The other way to mitigate this is to implement a way in which an old logic smart contract can call the newer version and pass the user's request to the newer version. These solutions add an extra gas to each transaction which is not usable as well.
+In \textit{DelegateCall-based} approach users are calling the proxy contract which delegate call their request to the whitelisted logic contract. In the upgrade event the developers change the whitelisted address to the new version but users call the proxy like before. So, users do not feel the upgrading process (\CIRCLE).
 
- On the other hand, users in a \textit{Migration} plan need to work with a new smart contract . In some Migration plans, users themselves must withdraw their fund from the previous version and deposit it on the new version which is not user friendly and costly for them.
-
-In \textit{Call-based} method, the logic contract (the contract that is called by users) is changing. So, users must call a new contract after the upgrade which is not user friendly. There are some approaches to mitigate this by using a proxy contract in between. The other way to mitigate this is to implement a way in which an old logic smart contract can call the newer version and pass the user's request to the newer version. These solutions add an extra gas to each transaction which is not usable as well.
-
-In \textit{DelegateCall-based} approach users are calling the proxy contract which delegate call their request to the whitelisted logic contract. In the upgrade event the developers change the whitelisted address to the new version but users call the proxy like before. So, users do not feel the upgrading process.
+On the other hand, users in a \textit{Migration} plan need to work with a new smart contract . In some Migration plans, users themselves must withdraw their fund from the previous version and deposit it on the new version which is not user friendly and costly for them (\Circle).
 
  \subsection{Fixing a Bug}
  
@@ -194,7 +215,7 @@ Utilizing a decentralized governance model to vote for a change is a good way to
 % • Efficiency: gas for those informed about upgrades
 
  % talk about vulnerabilities of each here
-
+% Exploit on Aave caused by initialize function (Alternative to constructor) https://blog.trailofbits.com/2020/12/16/breaking-aave-upgradeability/
 
  \section{Upgrading process}
   
