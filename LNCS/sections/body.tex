@@ -184,10 +184,9 @@ On the other hand, users in a \textit{Migration} plan need to work with a new sm
 
  \subsection{Fixing a Bug}
  
-As mentioned in the previous part, upgradeability could be used in two different situations; adding new features or fixing a bug. 
+As mentioned in the previous part, upgradeability could be used in two different situations; adding new features or fixing a bug. An upgradeability pattern that cannot be used for fixing a bug receives square (\XBox). An upgradeability pattern which can be used for fixing a bug but not suitable for fixing a bug receives an empty circle (\Circle) and the methods which are suitable for fixing a bug receives a full circle (\CIRCLE).
 
-In an incident, \textit{Retail Changes} approach won't help to response to a bug or hack because the extent of upgradeability is limited and the developers may not change the required parts of the system. \textit{Migration} is not proper as well because it is not quick enough to respond in a limited time window.
-
+In an incident, \textit{Retail Changes} approach won't help to response to a bug or hack because the extent of upgradeability is limited and the developers are not able to change the required parts of the system (\XBox). \textit{Migration} is not proper as well because it is not quick enough to respond in a limited time window.
 On the other hand, \textit{Call-based} and \textit{DelegateCall-based} are very well for fixing a bug. In the event, the developers can find the root cause and patch it by deploying a new contract and change the implementation address in the logic contract. 
 
  \subsection{Speed of an Upgrade}
@@ -198,19 +197,19 @@ Another difference between upgradeability methods is the speed in which an upgra
 
 \textit{Migration} has the slowest upgrade process between other methods. The reasons are discussed in the previous parts (see~\ref{upgradeFRQ}).
 
-\textit{Call-based} and \textit{DelegateCall-based} are very similar in the speed of upgrade. These two are not as quick as \textit{Retail changes} because the developer needs to find the root cause of a bug or find the upgrades needed for system and then implement the smart contract and deploy it to the system which is time consuming.
+\textit{Call-based} and \textit{DelegateCall-based} are very similar to each other in the speed of upgrade. These two are not as quick as \textit{Retail changes} because the developer needs to find the root cause of a bug or find the upgrades needed for system and then implement the smart contract and deploy it to the system which is time consuming.
 On the other hand these two approaches are faster than \textit{Migration} because as mentioned before, in Migration plans we need to collect and push old data into newer version as well.  
 
  \subsection{Level of Decentralization}
 
-The last and one of the most important characteristics that are different in upgradeability methods is the level of decentralization that can force a system change. 
-
+The last and one of the most important characteristics that are different in upgradeability methods is the level of decentralization. An upgradeability methods that a single third party decides the upgrading process receives a square (\XBox). 
 Using an \textbf{EOA} to decide about a change is the most central option that a system designer can choose regardless of the upgradeability method uses in the system. 
-Using \textbf{Multi-sig} is not decentralized as well. Although it improves the level of decentrality of the system but at the end a specified number can decide to change the system. 
+In case a group of whitelisted persons can decide on the changes orf the system using \textbf{Multi-sig} is not decentralized as well. Although it improves the level of decentralization of the system but at the end a specified number can decide to change the system. So it awarded an empty circle (\Circle).
 
-The \textit{Migration} method is the most decentralized approach because it gives the user chance to decide whether move to the newer version or not. For instance, Uniswap uses this method for its upgrade and the users have choice to transfer their funds from Uniswap V2 to V3 or not and as we can see some users decide to stay on the previous version.
+Utilizing a decentralized governance model to vote for a change is a good way to make the decision making on the upgrades more decentralized. \textit{Retail Changes} using voting scheme is more decentral than \textit{Call-based} and \textit{DelegateCall-based} because boundary of changes are limited on the Retail methods so it awarded a full circle (\CIRCLE). But, in CAll-based and DelegateCall based methods the developers have the power to put some kind of backdoor in the system while upgrading and they receive a half circle (\LEFTcircle). 
 
-Utilizing a decentralized governance model to vote for a change is a good way to make the decision making on the upgrades more decentralized. \textit{Retail Changes} using voting scheme is more decentral than \textit{Call-based} and \textit{DelegateCall-based} because boundary of changes are limited on the Retail methods but in CAll-based and DelegateCall based methods the developers have the power to put some kind of backdoor in the system while upgrading. 
+The \textit{Migration} method is the most decentralized approach because it gives the users chance to decide whether to move to the newer version or not so it awarded a full circle (\CIRCLE). For instance, Uniswap uses this method for its upgrade and the users have choice to transfer their funds from Uniswap V2 to V3 or not and as we can see some users decide to stay on the previous version.
+
 % • Efficiency: gas for those uninformed about upgrades
 % • Efficiency: gas for those informed about upgrades
 
