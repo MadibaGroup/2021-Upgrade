@@ -1,30 +1,33 @@
 \begin{table*}
     \centering
     
-        \begin{tabular}{lllllllllll}
+        \begin{tabular}{llllllllllll}
     
     &
-    \headrow{Extent of Upgradeability} &
+    \headrow{Can replace entire logic} &
     
-    \headrow{Upgrade Frequency} & 
+    \headrow{can replace pre-specified part of logic} & 
 
 
-    \headrow{System Complexity} &
+    \headrow{Can replace entire state} &
     
-    \headrow{Transaction Cost} &
+    \headrow{can change pre-specified state variables} &
     
-    \headrow{Cost of Upgrade} &
+    \headrow{Need to Deploy a new contract} &
 
-    \headrow{Useability} &
+    \headrow{Need to migrate state from old contract} &
 
-    \headrow{Fixing a Bug} &
+    \headrow{Need to Separate State and Logic} &
 
-    \headrow{Decision Maker} & 
+    \headrow{Using DelegateCall opcode} & 
 
-    \headrow{Speed of an Upgrade} & 
+    \headrow{Transaction Cost} & 
 
 
-    \headrow{Level of Decentralization}  
+    \headrow{User endpoint address not changed}  & 
+
+
+    \headrow{requires users to take some action (withdraw deposit)}
     
     \\
     
@@ -34,22 +37,30 @@
         
         % \hline
     
-        \makecell{Retail changes}	& \multicolumn{1}{|c|}{\Circle}  & \multicolumn{1}{c|}{\CIRCLE} &  \multicolumn{1}{c|}{\LEFTcircle \footnotemark[1]} & \multicolumn{1}{c|}{\Circle} & \multicolumn{1}{c|}{\Circle} & \multicolumn{1}{c|}{\CIRCLE} &  \multicolumn{1}{c|}{\XBox} &  \multicolumn{1}{c|}{\makecell{EOA \\ \hline Multi-Sig \\ \hline Voting}} &  \multicolumn{1}{c|}{\makecell{10  \\ \hline 9 \\ \hline 6}}&  \multicolumn{1}{c}{\makecell{\XBox  \\ \hline \Circle \\ \hline \CIRCLE}}\\
+        \multicolumn{1}{c|}{\makecell{Retail changes \\ (Parameter change)}}	& \multicolumn{1}{|c|}{}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} &  \multicolumn{1}{c}{}\\
     
         \hline
         % \makecell{API3 ~\cite{zhang2019deco}}	& \multicolumn{1}{|c|}{\makecell{Oracles}}  &   \multicolumn{1}{c|}{Decentralized Allowlist} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\none} & \multicolumn{1}{c|}{P} & \multicolumn{1}{c|}{Outsourcing} & \multicolumn{1}{c|}{B} \\
     
-        \makecell{Migration}	& \multicolumn{1}{|c|}{\CIRCLE}  & \multicolumn{1}{c|}{\Circle} &  \multicolumn{1}{c|}{\Circle} & \multicolumn{1}{c|}{\Circle} & \multicolumn{1}{c|}{\CIRCLE} & \multicolumn{1}{c|}{\Circle} &  \multicolumn{1}{c|}{\Circle} &  \multicolumn{1}{c|}{\makecell{Not \\ Important}} &  \multicolumn{1}{c|}{3} &  \multicolumn{1}{c}{\CIRCLE}\\
+
+        \multicolumn{1}{c|}{\makecell{Retail changes \\ (Strategy Pattern)}}	& \multicolumn{1}{|c|}{}  & \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\checkmark}&  \multicolumn{1}{c|}{} &  \multicolumn{1}{c}{}\\
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%
+        %strategy pattern adds gas cost for transaction that need to use that specific part because it needs to call another smart contact to use this pre-specified logic part
+        %%%%%%%%%%%%%%%%%%%%
+        \hline
+
+        \makecell{Migration}	& \multicolumn{1}{|c|}{\checkmark}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{}&  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c}{\checkmark}\\
     
          \hline
 
 
-        \makecell{Call-based}	& \multicolumn{1}{|c|}{\CIRCLE}  & \multicolumn{1}{c|}{\LEFTcircle} &  \multicolumn{1}{c|}{\LEFTcircle} & \multicolumn{1}{c|}{\CIRCLE} & \multicolumn{1}{c|}{\LEFTcircle} & \multicolumn{1}{c|}{\LEFTcircle} &  \multicolumn{1}{c|}{\CIRCLE} &  \multicolumn{1}{c|}{\makecell{EOA \\ \hline Multi-Sig \\ \hline Voting}} &  \multicolumn{1}{c|}{\makecell{8  \\ \hline 7 \\ \hline 4}} &  \multicolumn{1}{c}{\makecell{\XBox  \\ \hline \Circle \\ \hline \LEFTcircle}}\\
+        \makecell{Call-based}	& \multicolumn{1}{|c|}{\checkmark}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{\checkmark}&  \multicolumn{1}{c}{}\\
     
         \hline
 
 
-        \makecell{DelegateCall-based}	& \multicolumn{1}{|c|}{\CIRCLE}  & \multicolumn{1}{c|}{\LEFTcircle} &  \multicolumn{1}{c|}{\CIRCLE} & \multicolumn{1}{c|}{\CIRCLE} & \multicolumn{1}{c|}{\LEFTcircle} & \multicolumn{1}{c|}{\CIRCLE} &  \multicolumn{1}{c|}{\CIRCLE} &  \multicolumn{1}{c|}{\makecell{EOA \\ \hline Multi-Sig \\ \hline Voting}} &  \multicolumn{1}{c|}{\makecell{8  \\ \hline 7 \\ \hline 4}}&  \multicolumn{1}{c}{\makecell{\XBox  \\ \hline \Circle \\ \hline \LEFTcircle}}\\
+        \makecell{DelegateCall-based}	& \multicolumn{1}{|c|}{\checkmark}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{\checkmark}&  \multicolumn{1}{c|}{}&  \multicolumn{1}{c}{}\\
         
         
          \hline

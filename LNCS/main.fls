@@ -59,6 +59,10 @@ INPUT /usr/share/texlive/texmf-dist/tex/latex/stmaryrd/stmaryrd.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/stmaryrd/stmaryrd.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/wasysym/wasysym.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/wasysym/wasysym.sty
+INPUT /usr/share/texlive/texmf-dist/tex/latex/amsfonts/amssymb.sty
+INPUT /usr/share/texlive/texmf-dist/tex/latex/amsfonts/amssymb.sty
+INPUT /usr/share/texlive/texmf-dist/tex/latex/amsfonts/amsfonts.sty
+INPUT /usr/share/texlive/texmf-dist/tex/latex/amsfonts/amsfonts.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/multirow/multirow.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/multirow/multirow.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/graphics/rotating.sty
@@ -156,6 +160,16 @@ INPUT /usr/share/texlive/texmf-dist/tex/latex/wasysym/uwasy.fd
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/wasy/wasy10.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/wasy/wasy7.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/wasy/wasy5.tfm
+INPUT /usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
+INPUT /usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam7.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam5.tfm
+INPUT /usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
+INPUT /usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm7.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm5.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmr9.tfm
 INPUT /home/soshiant/2021-Upgrade/LNCS/sections/abstract.tex
 INPUT /home/soshiant/2021-Upgrade/LNCS/sections/abstract.tex
@@ -183,6 +197,10 @@ INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/stmaryrd/stmary9.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/stmaryrd/stmary6.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/wasy/wasy9.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/wasy/wasy6.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam7.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm7.tfm
 INPUT /home/soshiant/2021-Upgrade/LNCS/main.bbl
 INPUT /home/soshiant/2021-Upgrade/LNCS/main.bbl
 INPUT /home/soshiant/2021-Upgrade/LNCS/main.aux
@@ -195,5 +213,5 @@ INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb
+INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/wasy2-ps/wasy10.pfb
-INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/wasy2-ps/wasy9.pfb
