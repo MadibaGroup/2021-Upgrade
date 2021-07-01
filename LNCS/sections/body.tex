@@ -144,13 +144,13 @@ An upgradeability method in which the upgrader can just change some pre-specifie
 % \subsection{Upgrade Frequency} \label{upgradeFRQ}
 %%%%%%%%%5
 
-\subsection{Need to Deploy a new contract}
+\subsection{No need to deploy a new contract}
 
-Using some upgradeability patterns, the upgrader needs to deploy a new smart contract in the process of upgrade which receives a check mark (\checkmark). upgradeability methods which do not need to deploy a new contract receive nothing.
+Using some upgradeability patterns, the upgrader needs to deploy a new smart contract in the process of upgrade which receives nothing. Upgradeability methods which do not need to deploy a new contract receive a check mark (\checkmark).
 
-\subsection{Need to migrate state from old contract}
+\subsection{No need to migrate state from old contract}
 
-In some patterns, the upgrader needs to collect and transfer old data from previous version to the newer one which awarded a check mark (\checkmark) otherwise it receives nothing. 
+In some patterns, the upgrader needs to collect and transfer old data from previous version to the newer one which receive nothing (\checkmark) otherwise it receives a check mark (\checkmark). 
 % JC: I would start the clock at "decision to upgrade" rather than proposal (otherwise is depends on how decisions are made). Also is single transaction the right metric? I can write an upgrade helper contract to do all the steps in a single function call. I think it could be better as: do you have to push a NEW contract? Do you have to change (more than one?) EXISTING contracts?
 
 % An upgradeability method that can move from proposal to finality within a single transaction is awarded a full dot (\CIRCLE). A process that requires more than a single block time in order to write and deploy a new logic contract receives half circle (\LEFTcircle). A method that needs more than just deploying a new logic contract and changing some parameters awarded empty circle (\Circle).
@@ -159,13 +159,13 @@ In some patterns, the upgrader needs to collect and transfer old data from previ
  %%%%%%%%%%
 %  \subsection{System Complexity}
  %%%%%%%%%%%%%
-\subsection{Need to Separate State and Logic}
+\subsection{No need to separate State and Logic}
 
-An upgradeability pattern that requires separation of logic and storage contracts awarded a check mark (\checkmark) otherwise it receives nothing.
+An upgradeability pattern that does not requires separation of logic and storage contracts awarded a check mark (\checkmark) otherwise it receives nothing.
 
-\subsection{Using DelegateCall opcode}
+\subsection{Not using DelegateCall opcode}
 
-Some of the upgradeability methods utilize \textit{Delegate call} opcode and receive a check mark (\checkmark). Using  this opcode bring complexity to the system and needs more security considerations (\eg checking storage layout compatibility). 
+Some of the upgradeability methods utilize \textit{Delegate call} opcode. Using  this opcode bring complexity to the system and needs more security considerations (\eg checking storage layout compatibility). Upgradeability methods that do not need to use delegate call opcode receive a check mark (\checkmark) otherwise it awarded nothing. 
  % JC: Not crazy about this column. It is not clear if it is a feature or a bug. I also don't really understand it. Forced to change it isn't clear. "Considerations to smart contract security" doesn't make sense to me. Try expanding on these ideas a bit or we can discuss in a call. 
  
 %  Applying each upgradeability method has different complexity effects on the system. An upgradeability method in which the designer do not need to change any logic of the contract receives empty circle (\Circle). Upgradeability methods that cause changing the whole design or the logic of the smart contract but do not add possible security flaws or attack surfaces receive half circle (\LEFTcircle). Upgradeability methods that force the developer to change the whole logic of the smart contract and adds considerations to smart contract security receives full circle (\CIRCLE).
@@ -179,13 +179,13 @@ Some of the upgradeability methods utilize \textit{Delegate call} opcode and rec
  
 %  On the other hand, \textit{DelegateCall-based} patterns adds more complexity to the system because of using DelegateCall opcode as well as need to separating logic and storage contract. The main difference between \textit{Call-based} and \textit{DelegateCall-based} approach is that the developer should take care that using Delegatecall opcode needs to take care that the logic and storage contract must have similar storage layout. So using DelegateCall pattern changes the design of the contract and adds new attacks surfaces to the system (\CIRCLE).
 
- \subsection{Transaction Cost}
+ \subsection{No indirection}
  
  % JC: This is good. You can add more precision though. If I want to call function A, and I call B which calls A, it is called a "layer of indirection." Can this be phrases in terms of the number of layers of indirection for users? No indirection (full), one or more layers of indirection (empty).  
  
- An upgradeability pattern that adds an extra gas because of adding one or more layers of indirection awarded a check mark (\checkmark), otherwise it receives nothing.
+ Upgradeability methods that do not need any redirection receive a check mark (\checkmark).An upgradeability pattern that adds an extra gas because of adding one or more layers of indirection awarded nothing. An upgradeability method in which just a portion of its transactions need indirection receive square (\XBox). 
 
-\textit{Retail Changes} and \textit{Migration} methods do not add any indirections to the system so will not alter the transaction costs (\Circle). However, \textit{Call-based} and \textit{DelegateCall-based} approaches increase the transaction cost for users (\checkmark). \textit{Call-based} method will increase the transaction cost because whenever a transaction needs to add or change a data, the logic contract must \textbf{CALL} the storage contract which adds an extra gas. Also in \textit{DelegateCall-based} approach all transactions will be \textbf{Delegate Called} to the logic contract using a \textbf{proxy} which adds an extra gas on each transaction. 
+\textit{Retail Changes} and \textit{Migration} methods do not add any indirections to the system so will not alter the transaction costs (\checkmark). However, \textit{Call-based} and \textit{DelegateCall-based} approaches increase the transaction cost for users (receive nothing). \textit{Call-based} method will increase the transaction cost because whenever a transaction needs to add or change a data, the logic contract must \textbf{CALL} the storage contract which adds an extra gas. Also in \textit{DelegateCall-based} approach all transactions will be \textbf{Delegate Called} to the logic contract using a \textbf{proxy} which adds an extra gas on each transaction. 
 
 \textcolor{red}{We need a comparison between Call based and Delegate call based approaches (if possible. I think Call based approach is gas efficient for systems that do not need to add or change data frequently. Also there are other extra adds-on that can add useability but adds gas like adding feature for uninformed users in Call based approaches.)}
 % TODO: nice article: https://forum.openzeppelin.com/t/a-more-gas-efficient-upgradeable-proxy-by-not-using-storage/4111
@@ -208,14 +208,14 @@ Some of the upgradeability methods utilize \textit{Delegate call} opcode and rec
 % Both are the same I think
 %For instance in Uniswap we have 2 dapps at the end but can we say user should use a new address or not? maybe these 2 are not the same?
 %which kind of users are we talking about? client users or like other smart contracts?!
-In some upgradeability methods, after the upgrade process, users must call a new contract address to use the Dapp. For instance, Alice uses a DApp at address A before the upgrade. After upgrade, she can be unaware that upgrade happened (\checkmark) or she may need to use address B instead (not check mark).
+In some upgradeability methods, after the upgrade process, users must call a new contract address to use the Dapp. For instance, Alice uses a DApp at address A before the upgrade. After upgrade, she can be unaware that upgrade happened or she may need to use address B instead (\checkmark).
 
 %We may have another row for a call-based pattern that uses a "registry like patterns" to not change user end point
 
-\subsection{requires users to take some action (withdraw deposit)}
+\subsection{Users do not require taking some action (withdraw deposit)}
 \textcolor{red}{The title could be: \textit{Users are involved? (Client)} ?!}
 
-In some upgradeability patterns, users are responsible to transfer their related data from the previous version to the new one (assigned by \checkmark). In some others, users do not need to take any further action like this (not check mark). 
+In some upgradeability patterns, users are responsible to transfer their related data from the previous version to the new one. In some others, users do not need to take any further actions like this (\checkmark)). 
 %Need to check for the Migration plans to find out if there is any other thing that users may do for the migration other than the withdraw deposit
 
 %  An upgradeability approach in which users do not feel any changes and do not need to take any action after the upgrade process receives a full circle (\CIRCLE). In patterns that the users just need to call a new smart contract address rewarded a half circle (\LEFTcircle). In some patterns although the users should take some actions in addition to using a new address (\Circle).    

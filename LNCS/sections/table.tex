@@ -13,21 +13,21 @@
     
     \headrow{can change pre-specified state variables} &
     
-    \headrow{Need to Deploy a new contract} &
+    \headrow{No need to deploy a new contract} &
 
-    \headrow{Need to migrate state from old contract} &
+    \headrow{No need to migrate state from old contract} &
 
-    \headrow{Need to Separate State and Logic} &
+    \headrow{No need to separate State and Logic} &
 
-    \headrow{Using DelegateCall opcode} & 
+    \headrow{Not using DelegateCall opcode} & 
 
-    \headrow{Transaction Cost} & 
+    \headrow{No indirection} & 
 
 
     \headrow{User endpoint address not changed}  & 
 
 
-    \headrow{requires users to take some action (withdraw deposit)}
+    \headrow{Users do not require taking some action (withdraw deposit)}
     
     \\
     
@@ -37,30 +37,30 @@
         
         % \hline
     
-        \multicolumn{1}{c|}{\makecell{Retail changes \\ (Parameter change)}}	& \multicolumn{1}{|c|}{}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} &  \multicolumn{1}{c}{}\\
+        \multicolumn{1}{c|}{\makecell{Retail changes \\ (Parameter change)}}	& \multicolumn{1}{|c|}{}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c}{\checkmark}\\
     
         \hline
         % \makecell{API3 ~\cite{zhang2019deco}}	& \multicolumn{1}{|c|}{\makecell{Oracles}}  &   \multicolumn{1}{c|}{Decentralized Allowlist} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\none} & \multicolumn{1}{c|}{P} & \multicolumn{1}{c|}{Outsourcing} & \multicolumn{1}{c|}{B} \\
     
 
-        \multicolumn{1}{c|}{\makecell{Retail changes \\ (Strategy Pattern)}}	& \multicolumn{1}{|c|}{}  & \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\checkmark}&  \multicolumn{1}{c|}{} &  \multicolumn{1}{c}{}\\
+        \multicolumn{1}{c|}{\makecell{Retail changes \\ (Strategy Pattern)}}	& \multicolumn{1}{|c|}{}  & \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{\XBox}&  \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c}{\checkmark}\\
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%
         %strategy pattern adds gas cost for transaction that need to use that specific part because it needs to call another smart contact to use this pre-specified logic part
         %%%%%%%%%%%%%%%%%%%%
         \hline
 
-        \makecell{Migration}	& \multicolumn{1}{|c|}{\checkmark}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{}&  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c}{\checkmark}\\
+        \makecell{Migration}	& \multicolumn{1}{|c|}{\checkmark}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{\checkmark}&  \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c}{}\\
     
          \hline
 
 
-        \makecell{Call-based}	& \multicolumn{1}{|c|}{\checkmark}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{\checkmark}&  \multicolumn{1}{c}{}\\
+        \makecell{Call-based}	& \multicolumn{1}{|c|}{\checkmark}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{}&  \multicolumn{1}{c}{\checkmark}\\
     
         \hline
 
 
-        \makecell{DelegateCall-based}	& \multicolumn{1}{|c|}{\checkmark}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{\checkmark}&  \multicolumn{1}{c|}{}&  \multicolumn{1}{c}{}\\
+        \makecell{DelegateCall-based}	& \multicolumn{1}{|c|}{\checkmark}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{}&  \multicolumn{1}{c|}{\checkmark}&  \multicolumn{1}{c}{\checkmark}\\
         
         
          \hline
