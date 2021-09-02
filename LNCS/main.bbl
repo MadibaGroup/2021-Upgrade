@@ -1,6 +1,14 @@
-\begin{thebibliography}{}
+\begin{thebibliography}{1}
 \providecommand{\url}[1]{\texttt{#1}}
 \providecommand{\urlprefix}{URL }
 \providecommand{\doi}[1]{https://doi.org/#1}
+
+\bibitem{solidity-doppelganger}
+Ortner, M.: Solidity doppelgaenger
+  \url{https://github.com/tintinweb/solidity-doppelganger}
+
+\bibitem{smart_contract_sanctuary}
+Ortner, M., Eskandari, S.: Smart contract sanctuary
+  \url{https://github.com/tintinweb/smart-contract-sanctuary}
 
 \end{thebibliography}

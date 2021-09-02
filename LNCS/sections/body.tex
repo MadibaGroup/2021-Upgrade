@@ -44,6 +44,8 @@ Contract Migration is less riskier than other types of upgrades, not cost effect
 % Migration 300,000 balances = $7500 in october 2018
 
 
+\subsubsection{diamonds}
+\subsubsection{Create2-based approach}
 
 \subsubsection{Data Separation patterns}
 The other type of wholesale methods is to separate data and logic part of our codes. In the case of the upgrade we can  keep the storage contract and just upgrade the logic contract and link the new version of logic contract to the storage contract.
@@ -351,6 +353,77 @@ Upgrading a smart contract can be done by sending a transaction into the system.
 
 
  \section{Measurement study}
+
+ In this section we aim to shed light on these vital unanswered questions: 
+ \begin{enumerate}
+  \item How many of the existing Dapps on the Ethereum blockchain are upgradeable?
+  \item Who can control these upgradeable Dapps (i.e who is the admin)? 
+  \item In what extent the Dapp can be changed?
+  \item What is the average frequency of updates on the Ethereum Dapps?
+  \item How many times the admin of upgradeable contracts changes on average?
+\end{enumerate}
+ 
+For now, we focused on the \textit{DelegateCall-based upgrade} pattern because it is the most favorite pattern for Dapp developers (\textcolor{red}{We can have 2 approaches here. One is to find a way to prove that this is the most used approach. The second way is to try to find a way to have measurement study for other patterns. I think the first approach is better because some of the other approaches are dead and nobody uses them anymore (like Call-based approach) and the others (like parameter change approach) is impossible to catch.})
+
+There are three main methodology types to have a research on Ethereum blockchain; Transaction-based analysis, Bytecode based analysis and Etherscan Verified Smart Contracts based analysis. The first and second methodologies need to access to an Ethereum full archival node. But the last approach need to collect smart contracts from a third party service named Etherscan.io in which the Dapp developers are able to put their high-level language smart contracts which will be checked and verified from the bytecode of the Dapp on the Ethereum blockchain.
+
+\subsection{Verified Smart Contract Based Analysis}
+In the first attempt we conducted a measurement study based on verified smart contracts on Etherscan to find instances of OpenZeppelin upgradeable proxy contracts. OpenZeppelin is a team that built well-known libraries for ethereum developers. One of the most famous libraries of the OpenZeppelin is their upgradeability plugins. There two different versions of the OpenZeppelin upgrade libraries; version 2.6 and version 3+. 
+We used smart-contract-sanctuary~\cite{smart_contract_sanctuary} which is a data set of all ethereum smart contracts verified on Etherscan. 
+
+To find the smart contracts which used different versions of the OpenZeppelin upgradeability library, two different approaches are used. First, we used an Abstract Syntax Tree (AST) based similarity detector: Solidity Doppelgaenger~\cite{solidity-doppelganger}. We found 143 smart contract that used version 2.6 and 125 version 3+ OpenZeppelin upgrade libraries. 
+
+In another attempt, we used Regular Expression (regex) to find if the smart contracts on our data set used the interface (function and variable used on the code) of the each version of the OpenZeppelin libraries. The unique interface that used in each version of the OpenZeppelin libraries helps us to find them just by checking the interface. We found 922 contracts using V2.6 and 309 contracts using V3+. All results from AST-based detection was found on the interface detection results. So we used the results from interface detection for the rest of this part.
+
+Now that we have the address of upgradeable smart contracts we can check how many times the upgrade happened for each and how many times the admin of the upgradeable contract is changed. For this purpose, OpenZeppelin libraries have used Ethereum Events on the functions in which the upgrade happens (Event "Upgraded) and the admin changes (Event "AdminChanged) and emitted when the events happened. We capture these events for each contract address using Etherscan Ethereum Log API service.
+
+\begin{figure}[t]
+  \centering
+      \subfloat[OpenZeppelin V2.6]{\includegraphics[width=0.45\columnwidth]{figures/UpgradeV26.png}\label{fig:upgradev26}}
+      \qquad
+      \subfloat[OpenZeppelin V3+]{\includegraphics[width=0.45\columnwidth]{figures/upgradev3.png}\label{fig:upgradev3}}
+  \caption{Number of Dapps (y-axis) over number of upgrades (x-axis) \label{fig:upgrade}}
+\end{figure}
+\begin{figure}[t]
+  \centering
+      \subfloat[OpenZeppelin V2.6]{\includegraphics[width=0.45\columnwidth]{figures/Adminv26.png}\label{fig:adminv26}}
+      \qquad
+      \subfloat[OpenZeppelin V3+]{\includegraphics[width=0.45\columnwidth]{figures/Adminv3.png}\label{fig:adminv3}}
+  \caption{Number of Dapps (y-axis) over number of Admin Changes (x-axis) \label{fig:admin}}
+\end{figure}
+The results for each version is:
+\begin{itemize}
+  \item For V2.6 (922 contracts):
+  \begin{itemize}
+    \item Upgrade Happens (see figure~\ref{fig:upgradev26}):
+    \begin{itemize}
+      \item 110 with One Upgrade, 60 with Two Upgrade, 2 with 20 upgrades, 5 with Five upgrade, 4 with 7 Upgrades, 3 with 10,12,15,16 Upgrades, 1 with 16 upgrades
+    \end{itemize}
+    \item Admin Change Happens (see figure~\ref{fig:upgradev3}):
+    \begin{itemize}
+      \item 57 with One Change, 14 with Two change, 4 with Three change, 1 with 4 changes, 1 Dapp with 5, 6,7,9 Changes
+    \end{itemize}
+  \end{itemize}
+  \item For V3+ (309 contracts):
+  \begin{itemize}
+    \item Upgrade Happens (see figure~\ref{fig:adminv26}):
+    \begin{itemize}
+      \item 30 with One Upgrade, 10 with Two Upgrade, 4 with Three upgrade, 2 with 4 Upgrades, 3 with 5 Upgrades, 2 with 7 Upgrades
+    \end{itemize}
+    \item Admin Change Happens (see figure~\ref{fig:adminv3}):
+    \begin{itemize}
+      \item 11 with One Change, 1 with Two change
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
+
+
+\textcolor{red}{There are some other measurement studies there like Pausable tokens which I skiped for now and we can add them as well}
+
+
+
+\subsection{Hybrid Analysis (Transaction and Bytecode based)}
+As mentioned in classification section, the \textit{DelegateCall-based upgrade} approach is consists of a storage contract (a.k.a proxy contract) and a logic contract (a.k.a Implementation contract).
 % Level of intervention of each Dapp (pauseable etc.)
 % History of upgrades --> How many times a Dapp upgraded before (using events etc...)
 
@@ -381,11 +454,11 @@ Upgrading a smart contract can be done by sending a transaction into the system.
 
 
 
-%ToDo: Write about OpenZeppling upgrade bug : https://blog.trailofbits.com/2018/09/05/contract-upgrade-anti-patterns/
+%ToDo: Write about OpenZeppelin upgrade bug : https://blog.trailofbits.com/2018/09/05/contract-upgrade-anti-patterns/
 %ToDo: Gas cost comparison between different implementation (using different number and types of the storage variables)
 
 
 \section{discussion}
-%\subsection{Off chain upgrades (UNiswap Arbitrum)}
+%\subsection{Off chain upgrades (UNiswap Arbitrum)}: On-chain voting for an off-chain process. Other types of upgrade. Like front end changes etc.
 
 \input{sections/table}

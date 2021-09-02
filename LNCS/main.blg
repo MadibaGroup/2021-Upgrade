@@ -2,48 +2,51 @@ This is BibTeX, Version 0.99d (TeX Live 2017/Debian)
 Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
 The top-level auxiliary file: main.aux
 The style file: splncs04.bst
-I found no \citation commands---while reading file main.aux
 Database file #1: bib/pulp.bib.bib
 Database file #2: bib/new.bib.bib
-You've used 0 entries,
+Warning--empty journal in solidity-doppelganger
+Warning--empty year in solidity-doppelganger
+Warning--empty journal in smart_contract_sanctuary
+Warning--empty year in smart_contract_sanctuary
+You've used 2 entries,
             2850 wiz_defined-function locations,
-            595 strings with 4493 characters,
-and the built_in function-call counts, 24 in all, are:
-= -- 0
-> -- 0
+            603 strings with 4737 characters,
+and the built_in function-call counts, 648 in all, are:
+= -- 40
+> -- 19
 < -- 0
-+ -- 0
-- -- 0
-* -- 2
-:= -- 7
++ -- 8
+- -- 6
+* -- 43
+:= -- 95
 add.period$ -- 0
-call.type$ -- 0
-change.case$ -- 0
+call.type$ -- 2
+change.case$ -- 9
 chr.to.int$ -- 0
-cite$ -- 0
-duplicate$ -- 0
-empty$ -- 1
-format.name$ -- 0
-if$ -- 1
+cite$ -- 6
+duplicate$ -- 63
+empty$ -- 60
+format.name$ -- 7
+if$ -- 124
 int.to.chr$ -- 0
-int.to.str$ -- 0
-missing$ -- 0
-newline$ -- 6
-num.names$ -- 0
-pop$ -- 0
+int.to.str$ -- 2
+missing$ -- 15
+newline$ -- 12
+num.names$ -- 4
+pop$ -- 41
 preamble$ -- 1
-purify$ -- 0
+purify$ -- 7
 quote$ -- 0
-skip$ -- 1
+skip$ -- 16
 stack$ -- 0
-substring$ -- 0
-swap$ -- 0
+substring$ -- 10
+swap$ -- 20
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 0
-warning$ -- 0
-while$ -- 0
-width$ -- 0
-write$ -- 5
-(There was 1 error message)
+type$ -- 8
+warning$ -- 4
+while$ -- 4
+width$ -- 3
+write$ -- 19
+(There were 4 warnings)
