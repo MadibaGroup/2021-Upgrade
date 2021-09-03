@@ -423,7 +423,68 @@ The results for each version is:
 
 
 \subsection{Hybrid Analysis (Transaction and Bytecode based)}
-As mentioned in classification section, the \textit{DelegateCall-based upgrade} approach is consists of a storage contract (a.k.a proxy contract) and a logic contract (a.k.a Implementation contract).
+As mentioned in classification section, the \textit{DelegateCall-based upgrade} approach is consists of a storage contract (a.k.a proxy contract) and a logic contract (a.k.a Implementation contract). 
+
+Proxy contract is a simple type of smart contracts in which there is a fall back function. Fall back functions are \textit{Payable} functions that do not have a function name. It means if a user sends a transaction to the contract including a call to a function that does not exists on the contract, it will passed into the fall back function and the logic on the fall back function will be executed. Also because of \textit{Payable} nature of fall back functions if the user sends Ether into a smart contract the fall back function will be executed.
+
+Inside the fall back function of the proxy contracts, there is a delegate call to the address of \textit{Implementation contract} and pass the input data of the transaction to the implementation contract without altering it. 
+
+All proxy contracts have the above structure. But \textit{Upgradeable proxy contracts} should have another extra condition as well. The owner of the contract (a.k.a admin) must have the ability to change the address which the proxy contract delegate calls into. If a proxy does not have this condition, it means that the contract is just forwarding the calls into a fixed implementation contract for the rest of its life and so, this proxy is not upgradeable. There are bunch of patterns that follows this structure (e.g. Minimal Proxies, Delegate call forwarders, etc.) which we call them \textit{Forwarders} in the rest of the paper.
+
+\subsubsection{Methodology}
+In this section we describe the processes of finding upgradeable proxy contracts from scratch. Each block of Ethereum blockchain is consist of transactions that processed in that exact block. To get all transaction details we need to replay the transaction and collect the execution data. Ethereum full archival nodes have a method, \textit{trace\_transaction},  that gives the transaction traces of transactions inside an specific block. Each transaction trace is composed of actions that each of them consists of an opcode that changes the state, memory or stack of the Ethereum blockchain. 
+
+Having the transaction traces for each block, we will search to find actions that consists of \textit{callType} and the call type is \textit{delegate call}. If the input element (a.k.a call data) of these actions are equal to the input element of their previous action it will be interpreted as the transaction goes through a fallback function that delegate calls it to another contract. So, these contracts meet our first condition that described above and we will mark them as \textit{Proxy Contracts}. We will collect \textit{From address},\textit{To address} and the \textit{transaction hash} of these picked actions and pick the unique from addresses of this data.
+
+As discussed before, these picked contracts are proxy contracts and not necessarily upgradeable proxy contracts. So, we need to filter the forwarders from proxy contracts to have upgradeable proxy contracts. As mentioned above, the upgradeable proxy contracts must have a condition; the admin of the contract should be able to change the implementation address which proxy contract delegate calls to. In other words, we should check if the implementation address in the proxy contract is changeable or not.
+
+Four different cases is possible for the situation that the implementation address is fixed and not changeable on the contract:
+\begin{enumerate}
+  \item The address is hardcoded on the contract without assignment to a variable
+  \item The address is saved on a constant variable 
+  \item The deployer adds the address via a constructor function
+  \item The address is defined in a storage variable, but there is no way to change this address after deployment
+\end{enumerate} 
+
+In the first three situations, the address will be appeared on the bytecode of the smart contract. So, we can get the bytecode of the each collected proxy contract using the \textit{eth\_getCode} method of a Ethereum archival node. Then we need to check if the implementation address of the proxy contract is appeared on the bytecode or not. The \textit{To addresses} that we collected on the previous part is supposed to be the implementation addresses because these are the target addresses of the delegate call. So we easily checked if the To addresses is appeared on the bytecode of the From addresses contract. If yes, the addresses are not upgradeable proxies and these are simple forwarder contracts.
+
+For the situation 4, we need other processes to check whether the implementation address is changeable or not. We need to design a filter to tell us is there a way to change the implementation address of the proxy contract or not. We will describe the filter in the later part of the paper, but for now let's assume that we have a software that checks if there is a function on the proxy contract that the admin of the contract can change the implementation address of the proxy by calling the function, and if yes mark the contract as an upgradeable proxy contract. So, now we have output addresses that their contract has fall back functions that delegate calls the whole data into another implementation contract and the address of the implementation is changeable on the proxy contract. So, we have a dataset of proxy contracts.
+
+But this is not the end of story. There is another proposed upgradeable proxy contract pattern, named Universal Upgradeable Proxy Standard (UUPS) also known as EIP-1822. In this type of proxy contracts, the address of implementation address in the proxy contract, is changeable using the implementation smart contract. As mentioned above the code of the implementation contract is implemented in the context of the proxy contract and so it will change the storage state of the proxy contract. If we have a function in the implementation contract that gives us the ability to change the storage slot of the implementation address in the proxy contract, we can upgrade the system by calling that function of implementation contract. So, we couldn't catch these type of upgradeable contracts by the previous processes because we just checked if there is a function on the proxy contract that can change the implementation address.
+
+We can tackle this problem by first finding the storage slot of the proxy contract in which the implementation address is saved, and check if the admin of the implementation contract can alter the variable of the that specific storage slot using a function in the implementation contract. So first we should find the storage slot of the proxy contract in which the implementation address is saved. There are two EIPs out there that makes it easy to find these storage slots; EIP-1967 and EIP-1822. EIP-1967 suggested to use 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc, and the EIP-1822 suggested 0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7 as the storage slot that should be used for implementation addresses (\textcolor{red}{I can find the storage slot from the proxy contract but it needs us to check lots of contracts which needs high resources and with the existing resources it is not doable so I limited it to these EIPs which I think it's enough})
+
+Now we will check the remained proxy contracts, if the variable that holds implementation address, is not saved on one of the mentioned slots, we will mark it as a forwarder. Now we should check whether the implementation address in the proxy contract is changeable via implementation contract. As mentioned before, the To addresses are the implementation contracts. We first find the variable in the implementation contract that is saved in the mentioned slots. Then pass it to our filter to check if the admin of the contract is able to change it or not. If it is changeable, it means that the admin can upgrade the system using a function on the implementation contract, and so the proxy is an upgradeable proxy contract.
+
+The whole process is depicted on figure~\ref{fig:finderModule}.
+
+\begin{figure*}[t]
+  \includegraphics[width=1.2\textwidth]{figures/Finder_module.png}\label{fig:finderModule}
+  \caption{Upgradeability Proxy Contract Finder}
+\end{figure*}
+
+\paragraph{Assignment Checker Module}
+
+As mentioned in the previous part, we need a module to check if the admin can change the implementation address on the proxy contract or implementation contract. For this purpose we need a module that gets \textit{{Bytecode}} of the proxy/implementation address as input and find the variable name and storage slot of the variable that the implementation address is saved into it. Afterwards check is there any function inside the contract that gives the admin the ability yo change the implementation address.
+
+As the first action we used a bytecode decompiler named \textit{Panoramix decompiler} to decompile the bytecodes into well-formated python language codes. The decompiled code gives us all storage variables and their storage slots in a function named \textbf{Storage}. On the other hand, the decompiled code will tell us if a function is \textit{Payable} or not. Among these Payable functions the one that does not have name or it's name is fallback is the fall back function of the contract. So we will try to find the line that \textit{Delegate Call} happened on it and collet these lines. Now that we have storage variable names and sotrage slots of them and also the line of code inside fallback that have the delegatecall, we will check to find the implementation address variable. We are doing that by checking if one of the storage variables are inside the line of code or there is a hash a text is inside the line of the code (if there is 'sha3' inside the line). 
+
+There is two other steps here. First if there is a variable name if the Storage function that has the same slot with implementation variables we captured from previous part we will add those variables to implementation variables. Also if the find another variables that being assigned to captured implementation addresses, we will add them to the implementation addresses as well.
+
+Now that we have a list for implementation variables, we will search through the code to find if any assignment happened to one of them. If yes we will pick the variable that is assigned to implementation variable and then check if this picked variable is the input of the function in which the assignment occurred.
+
+To summarize what we did, we find all possible variables in the code that can change the implementation address of the proxy/implementation contract and check if there is any function inside them that can alter the implementation address.
+
+The whole process is depicted on figure~\ref{fig:assignmentFinder}.
+
+\begin{figure*}[t]
+  \includegraphics[width=1.2\textwidth]{figures/Assignment_finder.png}\label{fig:assignmentFinder}
+  \caption{Assignment CheckerModule}
+\end{figure*}
+
+
+
+
 % Level of intervention of each Dapp (pauseable etc.)
 % History of upgrades --> How many times a Dapp upgraded before (using events etc...)
 
