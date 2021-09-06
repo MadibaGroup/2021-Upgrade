@@ -475,10 +475,10 @@ Now that we have a list for implementation variables, we will search through the
 
 To summarize what we did, we find all possible variables in the code that can change the implementation address of the proxy/implementation contract and check if there is any function inside them that can alter the implementation address.
 
-The whole process is depicted on figure~\ref{fig:assignmentFinder}.
+The whole process is depicted on figure~\ref{assignmentFinder}.
 
 \begin{figure*}[t]
-  \includegraphics[width=1.2\textwidth]{figures/Assignment_finder.png}\label{fig:assignmentFinder}
+  \includegraphics[width=1.2\textwidth]{figures/Assignment_finder.png}\label{assignmentFinder}
   \caption{Assignment CheckerModule}
 \end{figure*}
 
@@ -493,6 +493,16 @@ Filtering \textit{Forwarder Contracts} from our data set by checking if the To a
 On the other hand, we checked \textit{5,040} remained proxy contracts that if their implementation address is based on EIP-1822 or EIP-1967 proposed storage slots. On these selected contracts we picked their implementation address contract and check if the implementation address is able to change the implementation address on the proxy contract, if yes we mark the address as upgradeable proxy contract. The outcome of this last filter is \textit{150} upgradeable proxy contracts that uses Universal Upgradeable Proxy Pattern. 
 
 At the end we have \textit{2,098} upgradeable proxy contracts. We randomly sampled 150 contracts from these 2,098 contracts and manually check them and all of them were upgradeable proxy contract. On the other hand, we sampled 150 contracts from the contracts that marked as non-upgradeable contracts and check them manually. between these 150 contract just two of them was upgradeable and it was a false-negative. The reason that our model did not catch this contract was the wired pattern that the developers used to assign a new value to the implementation address which our assignment detector could not catch it. 
+
+\begin{figure*}[t]
+  \includegraphics[width=1.2\textwidth]{figures/sankeyDiagram.png}\label{sankey}
+  \caption{Sankey Diagram of results}
+\end{figure*}
+
+
+The results are depicted on a sankey diagram \ref{sankey}
+
+
 % Level of intervention of each Dapp (pauseable etc.)
 % History of upgrades --> How many times a Dapp upgraded before (using events etc...)
 
