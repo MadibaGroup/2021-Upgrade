@@ -4,55 +4,88 @@
 
 \section{Introductory Remarks}
 
-\subsection{What is Upgradeability?}
-There is a step in lifecycle of each piece of software named \textit{Software Maintenance}. Software maintenance is the process of changing a software product after delivery. There are two main categories in software maintenance; \textit{Updating} and \textit{Upgrading} the software. In software updates, the team will send an update or patch to modify a small piece of the code, mostly to fix a bug or address a security issue in the software. On the other hands, software upgrade are released to change the main features and logic of the software and add new capabilities to the software product.
+Capitalization, infrastructure, and regulation make new deployments of financial technology challenging. Blockchain systems like Ethereum radically reduce the barrier-to-entry by allowing anyone to deploy any solution, provided it can operate autonomously as software. The key promise of code running on Ethereum is that the code will execute exactly as it is written, and the code that is written can never be changed. Ethereum cannot maintain this promise unconditionally but its assumptions---that certain cryptographic primitives are secure, and that well-intentioned participants outweigh malicious ones---provide a realistic level of assurance. 
 
-In blockchain systems that have the capability of running smart contracts (e.g. Ethereum) one can write a piece of software (a.k.a Decentralized applications or Dapps) and deploy it on the main blockchain. The main difference between a Dapp and softwares outside of blockchains is the immutability of the codes deployed on the blockchain. In other words, nobody can change the code after being deployed on the blockchain. 
+The immutability of a smart contract's code is related to trust. If Alice can validate the code of a contract, she can trust her money to it and not be surprised by its behaviour. Unfortunately, disguising malicious behaviour in innocuous-looking code is possible, and many blockchain users have been victims of such contracts (`rug pulls'). On the other hand, if the smart contract is long-standing with lots of attention, and perhaps assessments from third-party professional auditors, the immutability of the code can add confidence. 
 
-This feature is in contrast with the changing nature of software and development area. If a bug found in a smart contract there should be a way to change the code and fix the bug. In the first days of smart contract development nobody took care of this important issue which leads to loss millions of funds and even a hard fork to Ethereum blockchain known as DAO fork. These incidents show us that we need upgradeability in smart contracts more than a centralized software because if a bug happens in a smart contract we cannot restore the previous state of the software and data base because it is equal to restoring the state of the blockchain which is a very difficult (if possible). \textcolor{red}{NOTE : We can talk more about DAO hack and the race between white hackers and the attacker.there are some other similar incidents like Parity hack in the past and more recent Compound bug which was a race between people that abusing the bug and the white hackers}
+Consider the case where a security vulnerability in the code of a smart contract is discovered. The flip-side of immutability is that it prevents software updates. Less urgently, some software projects may want to roll out new features, which is also blocked by immutability. There is an intense debate about whether this is a positive or negative, with many claiming that `upgradability is a bug.' We do not take a position on this debate. We note that upgradability is happening and we seek to study what is already being done and what is possible. 
 
-This problem brought Ethereum developers to find a way to upgrade smart contracts after deployment on the main chain. This is similar to finding a way to have mutable smart contracts in an immutable blockchain which is a paradox and a group of developers are against adding upgradeability feature to the smart contracts and say the \textbf{Upgradeability is a Bug!}~\cite{Upg-Bug}.
+Is there a way to deploy upgradeable smart contracts if all smart contracts are (practically speaking) immutable? Consider a two simple ideas. The first is to deploy the upgraded smart contract at a new address. One main drawback to this is that all software and websites need to update their addresses. A second simple idea is to use a proxy contract (call it P) that stores the address of the `real' contract (call it A). Users consider the system to deployed at P (and might not even be aware it is proxy). When a function is called on P, it is forwarded to A. When an upgrade is deployed to a new address (call it B), the address in P is changed from A to B. This solution also has drawbacks. For example, if the proxy contract hardcodes the list of functions that might be called on A, new functions cannot be added to B. Another issues is that the data (contract state) is stored in A. For most applications, a snapshot of A's state will need to be copied to B without creating race conditions. Mitigating these issues leads to more elaborate solutions like splitting contract logic and state between different contracts, utilizing Ethereum-specific tricks (fallback functions to capture unexpected function names), and trying to reduce the inefficiencies of using a cluster of contracts.
 
-As discussed before we need upgradeability to fix a bug or adding a new feature. In the event of fixing a bug, the agent who is responsible for the upgrade need to be as quick as possible to address a security issue or bug and so there is no need to have consensus of the users of the Dapp to make change. But, in the latter case the agent must get the consensus of the Dapp users to change and add a new feature, so they do not need to be quick. This fact is another paradox in the upgradeability of smart contracts because these two different events are not distinguishable before occurring and so we cannot implement two different ways of upgrading a system (one for resolving bug, and one for adding feature). So, as a system designer, if decide to add upgradeability feature should select one of these as the main goal of adding upgradeability and design the system based on that.
+\paragraph{Contributions.} 
 
-In the following sections we classify different ways of upgradeability on Ethereum blockchain, and describe pros and cons of each approach. Then we evaluate the upgradeability methods and compare them with each other. We conducted a measurement study in the most favorable upgrade pattern in Ethereum blockchain and give a dataset of them. Also we will talk about possible agents that is responsible for the changes on the Dapps. In the last part we will talk about some problems we are facing in the upgrade process and the ways that we can handle them.
+\textblue{Finalize this text later.} In the following sections we classify different ways of upgradeability on Ethereum blockchain, and describe pros and cons of each approach. Then we evaluate the upgradeability methods and compare them with each other. We conducted a measurement study in the most favorable upgrade pattern in Ethereum blockchain and give a dataset of them. Also we will talk about possible agents that is responsible for the changes on the Dapps. In the last part we will talk about some problems we are facing in the upgrade process and the ways that we can handle them.
 
-\textcolor{red}{NOTE: We can also talk about the definition of upgradeability as well. Like do we consider adding a front end as a upgrade event or not and etc.}
+% = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+\section{Background and Related Work}
+
+\textblue{Finalize this section later (for now, it is just copy and paste of existing text)}
+
+\paragraph{Updating vs. Upgrading.} There is a step in lifecycle of each piece of software named \textit{Software Maintenance}. Software maintenance is the process of changing a software product after delivery. There are two main categories in software maintenance: updating and upgrading the software. In software updates, the team will send an update or patch to modify a small piece of the code, mostly to fix a bug or address a security issue in the software. On the other hands, software upgrade are released to change the main features and logic of the software and add new capabilities to the software product.
+
+We need upgradeability to fix a bug or adding a new feature. In the event of fixing a bug, the agent who is responsible for the upgrade need to be as quick as possible to address a security issue or bug and so there is no need to have consensus of the users of the Dapp to make change. But, in the latter case the agent must get the consensus of the Dapp users to change and add a new feature, so they do not need to be quick. This fact is another paradox in the upgradeability of smart contracts because these two different events are not distinguishable before occurring and so we cannot implement two different ways of upgrading a system (one for resolving bug, and one for adding feature). So, as a system designer, if decide to add upgradeability feature should select one of these as the main goal of adding upgradeability and design the system based on that.
+
+\paragraph{Levels of Upgradeability.} \textcolor{red}{NOTE: We can also talk about the definition of upgradeability as well. Like do we consider adding a front end as a upgrade event or not and etc.}
+
+% = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
 \section{Classification}
-In this section we categorized different upgradeability approaches into two main classes; \textit{Retail Changes} and \textit{Wholesale Changes}. We will talk about different approaches and methods to upgradeability on Ethereum smart contracts and go through each method and describe how to implement, how to upgrade and pros and cons of each method. These approaches are evolved during the time and some of the are not be used these days because of their disadvantages or replaced because of advantages of other new methods. 
+
+\begin{figure}[t]
+  \centering
+      \includegraphics[width=0.8\textwidth]{figures/New_Classification.png}
+  \caption{Classification.\label{fig:class}}
+ \end{figure}
+ 
+A variety of upgradeability patterns have been proposed and deployed for smart contracts on Ethereum (see Figure~\ref{fig:class}). While the higher level distinctions between these categories might be applicable to other blockchain-based systems, the implementation details become quite technical, leveraging Ethereum-specific details like \texttt{call} vs. \texttt{delegateCall}, \texttt{create} vs. \texttt{create2}, fallback functions, and the EVM memory layout. 
+
+%In this section we categorized different upgradeability approaches into two main classes; \textit{Retail Changes} and \textit{Wholesale Changes}. We will talk about different approaches and methods to upgradeability on Ethereum smart contracts and go through each method and describe how to implement, how to upgrade and pros and cons of each method. These approaches are evolved during the time and some of the are not be used these days because of their disadvantages or replaced because of advantages of other new methods. 
 % We have some off-chain upgrades like what people did to force UNISwap using arbitrum as the L2 solution. It is an off-chain upgrade not an automated one.
 % Does Factory patterns can be defined as upgradeability patterns? Like creating a new pool for Uniswap!
 
 \subsection{Retail Changes}
 This is not a standardized pattern. The development team must consider the ways to upgrade the contracts before deploying the smart contract. Known patterns are different on the level of intervention to change the logic that they need to change in the future. The amount of changes are limited to the system design and can not be changed after deployment and so just some system variables can be changed. We will describe two main patterns here:
 
+% = = =
+
 \paragraph{Parameter Configuration}. The easiest way to upgrade the logic of the smart contract is to have some critical parameter that can change the whole logic of the system. For instance, in economy we have different variables which have effect in the interest rates. By changing those variables the governors will response to changes needed for the system. 
 In this model we have a setter function to change the upgradable parameters if the system needs upgrades. The best example for this type of upgradeability is MakeDao project. In Maker there are some variables like Dai Saving Rate (DSR) or Stability fee that can be changed through governance vote. The logic behind the smart contract and the tokenomic of the Dapp completely depends on these variables so changes in these variables will change the behavior and logic of the smart contract.
 The main question is who can change these parameters which we will discuss on the last section of the paper.
 
+% = = =
+
 \paragraph{Tweak strategy.}. This pattern is an easy way for changing part of the code in a contract responsible for a specific feature. Instead of implementing that specific function in the main contract to take care of a specific task, the developer can deploy another contract that contains the logic needed for that part and each time the main contact needs to do the logic, it will call that specific function on the other contract and get the result of the call. By deploying a new contract and changing the pointer in the main contract, we can upgrade that specific logic of our Dapp. After upgrade the main contract will call the newly deployed contract, so we can change the logic of the function each time in a new contract.
 An example for this pattern is Compound project and how they used this pattern for their interest rate model. Compound Finance is a decentralized lending platform and needs a way to calculate the interest rate for each asset on the main contract, It uses \textit{Tweak pattern} to calculate the interest rate for each asset. So if a change needed in one of the interest rate models, they can easily deploy a new contract with a new logic and then change the address which main contract uses to call and get interest rates.
 
-The \textit{Pros and Cons} for retail changes methods are:
-\begin{itemize}
-  \item Pros
-  \begin{itemize}
-    \item Simple to implement
-    \item Easy to audit
-  \end{itemize}
-  \item Cons
-  \begin{itemize}
-    \item Cannot fix a bug
-    \item Cannot add/change Logic in Parameter Configuration
-    \item Cannot add new Logic in Tweak Strategy
-  \end{itemize}
-\end{itemize}
+% = = =
+
+\paragraph{Non-Solutions.} Store bytecode in a variable and execute it?
+
+
+% JC: It seems the evaluation table will capture this. Plus are these pros/cons relative to each other or to other kinds of upgradeability (assuming the latter, it is hard to discuss until we have shown how they work). 
+%The \textit{Pros and Cons} for retail changes methods are:
+%\begin{itemize}
+%  \item Pros
+%  \begin{itemize}
+%    \item Simple to implement
+%    \item Easy to audit
+%  \end{itemize}
+%  \item Cons
+%  \begin{itemize}
+%    \item Cannot fix a bug
+%    \item Cannot add/change Logic in Parameter Configuration
+%    \item Cannot add new Logic in Tweak Strategy
+%  \end{itemize}
+%\end{itemize}
 
 % \paragraph{Pluggable Modules}. In this pattern we have a core contract that have some immutable features and then new contracts generated by the main contract and each have some or all features of the main contract. This pattern is mostly used in wallets and DeFi services like DeFi saver and InstaDapp. Users can decide to add new features into their wallet. 
 
 %TODO: Ask shayan about DeFi save and how do they upgrade their contracts.
 \subsection{Wholesale Changes}
 In contrast to previous category, sometime we need to change the whole or a big part of the logic of our smart contract. This update could be a response to an incident happen to the smart contract or a planed upgrade of the system to add new features and capabilities. Before deployment, the core developer team should have a plan for the upgrade events. We categorized these types into three main classes of the wholesale changes:
+
+% = = =
 
 \subsubsection{Contract Migration}
 %who will push the old data? user to provide its own data to the new version?
@@ -71,6 +104,8 @@ The other type of wholesale methods is to separate data and logic part of our co
 There is a debate on whether this type of upgradeability is cheaper or not in comparison to migration method. But, this method is more efficient for Dapps in which we need frequent updates. The other important issue here is who decides on the changes we need for the system which we will discuss on further sections.
 Here we have 2 different choices using \textit{Call} method and \textit{Delegate Call} method to link storage and logic contracts together. We will dive deeper into these two approaches:
 
+% = = =
+
 \paragraph{Call-based patterns}
 
 This type is also known as data separation pattern. In this type the interaction between logic and storage contact is handled by Call opcode in Ethereum Virtual Machine (EVM). In call based patterns user is supposed to call the logic contract and the logic contract will interact with the storage by calling setter or getter function inside storage contract whenever needs to read or write a data. The logic contract is the one that should be upgraded.
@@ -83,7 +118,7 @@ There are three main ways to implement upgrades using data separation pattern. T
 
 Using Calls-based pattern we eliminate the process of data migration from the old contract to the newer version and it is easy to understand this type of upgradeability pattern. But it is hard for developers to deal with this pattern when their logic contract needs complex data structures such as mapping or structures. Also the developers should change their code a lot if they decide to use this upgradeability pattern in their non-upgradeable code. 
 
-
+% = = =
 
 \paragraph{DelegateCall-based upgrades}
 Similar to call based patterns here we have two contracts, Storage and Logic contract. In this pattern we may have more than one logic contract or storage contract. The difference here is that the user is calling storage contract(s) first (a.k.a proxy contract), and the proxy contract will use \textit{DelegateCall} opcode to link to the logic contract(s) (a.k.a implementation contract). In fact, there is a fallback function inside the proxy contract and inside the proxy, there is a delegate call that forwards the whole message data to the implementation contract.
@@ -144,6 +179,8 @@ The EIP-2535 or Diamonds proxy is proposed on 2020-02-22 and suggested using mul
 
 The drawback of using Diamonds is adding more complexity to the system because using different implementation contracts will increase the chance of storage clashes and error in handling the shared storage between them.
 
+% = = =
+
 \subsubsection{Metamorphic Upgrades (Create2-based approach)}
 This type of upgradeability is relevant to \textit{Create2} opcode which is proposed by Vitalik Buterin in 2018-04-20 as EIP-1014. To create a new contract in Ethereum blockchain we have 2 different opcodes; Create and Create2. The main difference between these two is the address of the contract that is going to be deployed. In Create opcode the address depends on the address and nonce of the creator. Nonce is a number regarding to the account and is like a counter to the number of transactions sent by that account (for contract account nonce is the number of contracts that are deployed by that contract). The problem of using Create opcode for contract deployment is that we cannot have a way to calculate the address of deployed contract because it depends on the nonce of the sender. Create2 opcode solve this problem because the address of the deployed contract just depends on the address of deployer and the \textit{Bytecode} of the contract to be deployed (and also a salt number which the deployer should specify each time). So we can hardcode the address of the deployed contract before deployment if we uses Create2.
 
@@ -156,12 +193,15 @@ There is a critical point here. Before deploying a new contract on that exact ad
 In comparison to the proxy patterns, metamorphic pattern is more gas efficient because we don't need to have any checks like what we had in transparent proxy or also we don't have the delegate call process. Similar to proxy contract, after upgrade the address of new version is not changed but we need to migrate the old data to the newer version. Also in metamorphic pattern there is downtime to the system because we should firs self-destruct the previous contract and the process of self-destructing occurs at the end of the transaction. So, we should first self-destruct the old version in a transaction and then redeploy the contract in another transaction and there is a downtime between these 2 transactions.
 
 %% add this as citation to the fact that selfdestruct will be removed: https://www.reddit.com/r/ethereum/comments/lx32kv/expectations_for_backwardsincompatible_changes/
-\begin{figure}
-  \centering
-    
-      \includegraphics[width=0.9\textwidth]{figures/New_Classification.png}
-  \caption{Classification}
- \end{figure}
+
+
+\subsubsection{Consensus Changes}
+
+This feature is in contrast with the changing nature of software and development area. If a bug found in a smart contract there should be a way to change the code and fix the bug. In the first days of smart contract development nobody took care of this important issue which leads to loss millions of funds and even a hard fork to Ethereum blockchain known as DAO fork. These incidents show us that we need upgradeability in smart contracts more than a centralized software because if a bug happens in a smart contract we cannot restore the previous state of the software and data base because it is equal to restoring the state of the blockchain which is a very difficult (if possible). \textcolor{red}{NOTE : We can talk more about DAO hack and the race between white hackers and the attacker.there are some other similar incidents like Parity hack in the past and more recent Compound bug which was a race between people that abusing the bug and the white hackers}
+
+This problem brought Ethereum developers to find a way to upgrade smart contracts after deployment on the main chain. This is similar to finding a way to have mutable smart contracts in an immutable blockchain which is a paradox and a group of developers are against adding upgradeability feature to the smart contracts and say the \textbf{Upgradeability is a Bug!}~\cite{Upg-Bug}.
+
+
 
 
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -486,10 +526,10 @@ If there is no way to change the target address inside the proxy, then we pass i
 
 The whole process is depicted on figure~\ref{flowchart}.
 
-\begin{figure*}[t]
-  \includegraphics[width=1.2\textwidth]{Methodology.pdf}\label{flowchart}
+\begin{figure}[t]
+  \includegraphics[width=0.8\textwidth]{Methodology.pdf}\label{flowchart}
   \caption{Flowchart of the Process}
-\end{figure*}
+\end{figure}
 
 
 \subsubsection{Implementation}
@@ -523,10 +563,10 @@ So for this part we use the remained proxy contract addresses from the previous 
 
 The whole process is depicted on figure~\ref{fig:finderModule}.
 
-\begin{figure*}[t]
-  \includegraphics[width=1.2\textwidth]{figures/Upgradeability_finder1.png}\label{fig:finderModule}
+\begin{figure}[t]
+  \includegraphics[width=0.8\textwidth]{figures/Upgradeability_finder1.png}\label{fig:finderModule}
   \caption{Upgradeability Proxy Contract Finder}
-\end{figure*}
+\end{figure}
 
 \subsubsection{Assignment Checker Module}
 
@@ -543,10 +583,10 @@ To summarize what we did, we find all possible variables in the code that can ch
 
 The whole process is depicted on figure~\ref{assignmentFinder}.
 
-\begin{figure*}[t]
-  \includegraphics[width=1.2\textwidth]{figures/Assignment_finder.png}\label{assignmentFinder}
+\begin{figure}[t]
+  \includegraphics[width=0.8\textwidth]{figures/Assignment_finder.png}\label{assignmentFinder}
   \caption{Assignment CheckerModule}
-\end{figure*}
+\end{figure}
 
 
 
@@ -562,10 +602,10 @@ On the other hand, we checked \textit{5,040} \textcolor{red}{(This is not update
 
 At the end we have \textit{8,225} upgradeable proxy contracts. We randomly sampled 150 contracts from these contracts and manually check them and all of them were upgradeable proxy contract. On the other hand, we sampled 150 contracts from the contracts that marked as non-upgradeable contracts and check them manually. between these 150 contract just two of them was upgradeable and it was a false-negative. The reason that our model did not catch this contract was failure happened on the decompiler to decompile the implementation contract code and so assignment checker detector could not catch them. 
 
-\begin{figure*}[t]
-  \includegraphics[width=1.2\textwidth]{figures/sankeyDiagram.png}\label{sankey}
+\begin{figure}[t]
+  \includegraphics[width=0.8\textwidth]{figures/sankeyDiagram.png}\label{sankey}
   \caption{Sankey Diagram of results}
-\end{figure*}
+\end{figure}
 
 
 The results are depicted on a sankey diagram \ref{sankey}
