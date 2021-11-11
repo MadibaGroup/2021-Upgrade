@@ -635,7 +635,11 @@ We try to check all UUPS contracts that we have to find if any of them can be ex
   \item Check if the target address is changeable 
 \end{enumerate}
 
-Checking the list above we find 15 contracts in our data set which were exploitable till September 9, 2021 and openzeppelin team patched them by initializing the contract. 
+Checking the list above we find 15 contracts in our data set which were exploitable till September 9, 2021 and openzeppelin team patched them by initializing the contract. It means that an attacker could deploy a new malicious contract which executes self-destruct on any calls to it. Then take control of the implementation contract by calling initialize function of them. Afterwards, the attacker should find the function inside the implementation contract that have a delegate call inside it and find the target address. There should be a function inside implementation contract to change the address to the malicious contract that the attacker deployed recently and just after that the attacker call the function to execute a delegate call into the malicious contract and then self-destruct the implementation contract.
+
+We find 61 UUPS contracts that are not initialized and anybody can take control of these implementation contracts but because these contracts do not use delegate call or self-destruct, they are not exploitable by this type of attack.
+
+
 
 % Level of intervention of each Dapp (pauseable etc.)
 % History of upgrades --> How many times a Dapp upgraded before (using events etc...)
