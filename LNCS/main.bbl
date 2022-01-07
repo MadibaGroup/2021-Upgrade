@@ -1,0 +1,44 @@
+\begin{thebibliography}{1}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{URL }
+\providecommand{\doi}[1]{https://doi.org/#1}
+
+\bibitem{aaveBreak}
+of~Bits~Blog, T.: Breaking aave upgradeability
+  \url{https://blog.trailofbits.com/2020/12/16/breaking-aave-upgradeability/}
+
+\bibitem{ToBantiPattern}
+of~Bits~Blog, T.: Contract upgrade anti-patterns
+  \url{https://blog.trailofbits.com/2018/09/05/contract-upgrade-anti-patterns/}
+
+\bibitem{selfDestruct}
+Buterin, V.: Expectations for backwards-incompatible changes / removal of
+  features that may come soon
+  \url{https://www.reddit.com/r/ethereum/comments/lx32kv/expectations_for_backwardsincompatible_changes/}
+
+\bibitem{socialUpgrade}
+Collins, P.: Not all smart contracts are immutable — create upgradable smart
+  contracts
+  \url{https://betterprogramming.pub/not-all-smart-contracts-are-immutable-create-upgradable-smart-contracts-e4e933b7b8a9}
+
+\bibitem{Upg-Bug}
+Marx, S.: Upgradeability is a bug
+  \url{https://medium.com/consensys-diligence/upgradeability-is-a-bug-dba0203152ce}
+
+\bibitem{solidity-doppelganger}
+Ortner, M.: Solidity doppelgaenger
+  \url{https://github.com/tintinweb/solidity-doppelganger}
+
+\bibitem{smart_contract_sanctuary}
+Ortner, M., Eskandari, S.: Smart contract sanctuary
+  \url{https://github.com/tintinweb/smart-contract-sanctuary}
+
+\bibitem{securityAdvise}
+Palladino, S.: Security advisory: Initialize uups implementation contracts
+  \url{https://forum.openzeppelin.com/t/security-advisory-initialize-uups-implementation-contracts/15301}
+
+\bibitem{uupsAttacks}
+Palladino, S.: Uupsupgradeable vulnerability post-mortem
+  \url{https://forum.openzeppelin.com/t/uupsupgradeable-vulnerability-post-mortem/15680}
+
+\end{thebibliography}

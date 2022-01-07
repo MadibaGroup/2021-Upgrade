@@ -591,24 +591,17 @@ The whole process is depicted on figure~\ref{assignmentFinder}.
 
 
 \subsubsection{Results}
-Having access to an Ethereum full archival node we have collected transaction traces of transactions included in 2.064,595 blocks of Ethereum blockchain, starting from block number \textit{\#10800000} to \textit{\#12864595}. It covers transactions on the Ethereum blockchain from \textit{Sep-05-2020} to \textit{Jul-20-2021}. 
+Having access to an Ethereum full archival node we have collected transaction traces of transactions included in 2,064,595 blocks of Ethereum blockchain, starting from block number \textit{\#10800000} to \textit{\#12864595}. It covers transactions on the Ethereum blockchain from \textit{Sep-05-2020} to \textit{Jul-20-2021}. 
 
-Having transaction traces and the actions of each transaction, we have collected From address, To address and Transaction Hash of actions which has \textit{delegateCall} as their \textit{Call Type} that their input is the same as their previous action. This resulted in \textit{2.7 millions \textcolor{red}{(This is not updated)}} of unique transactions that passed a proxy contract.
-To have the proxy contract, we find the unique From addresses from all collected transactions which gives us \textit{69,000 (This is not Updated)} unique proxy contracts. 
+Having transaction traces and the actions of each transaction, we have collected \textit{From} address (address of sender of the transaction), \textit{To} address (destination address of the transaction) and \textit{Transaction Hash} of actions which has \textit{delegateCall} as their \textit{Call Type} that their input is the same as their previous action.
 
-Filtering \textit{Forwarder Contracts} from our data set by checking if the To address appears on the contract's bytecode gave us \textit{21,200} \textcolor{red}{(This is not updated)} proxy addresses. \textit{16,000} \textcolor{red}{(This is not updated)} of these addresses are upgradeable proxy contracts because their implementation addresses is changeable inside their code. By sample checking these addresses we found out that Opensea project \footnote{\url{opensea.io/}} creates an upgradeable proxy for each new user. So we filtered these proxy contracts to have upgradeable proxies other than opensea and the outcome is \textit{7,470} regular upgradeable proxy contracts. 
+To have the proxy contract, we find the unique From addresses from all collected transactions which gives us \textit{1,427,215} unique proxy contracts. But bunch of these proxies are using a shared implementation contracts. So after filtering proxies with the same implementation contracts we come up with \textit{13,088} contracts.
 
-On the other hand, we checked \textit{5,040} \textcolor{red}{(This is not updated)} remained proxy contracts that if their implementation address is based on EIP-1822 or EIP-1967 proposed storage slots. On these selected contracts we picked their implementation address contract and check if the implementation address is able to change the implementation address on the proxy contract, if yes we mark the address as upgradeable proxy contract. The outcome of this last filter is \textit{403} upgradeable proxy contracts that uses Universal Upgradeable Proxy Pattern. Also our code result shows \textit{352} unique beacon proxy contracts as a result as well.
+Afterwards we filter \textit{Forwarder Contracts} from our data set by checking if the To address appears on the contract's bytecode and then pick the upgradeable proxy contracts by checking if implementation addresses is changeable inside their code. Totally we find \textit{7,470} regular upgradeable proxy contracts. 
+
+On the other hand, we checked the remained proxy contracts to find out if their implementation address is based on EIP-1822 or EIP-1967 proposed storage slots. On these selected contracts we picked their implementation address contract and check if the implementation address is able to change the implementation address on the proxy contract, if yes we mark the address as upgradeable proxy contract. The outcome of this last filter is \textit{403} upgradeable proxy contracts that uses Universal Upgradeable Proxy Pattern. Also our code result shows \textit{352} unique beacon proxy contracts as a result as well.
 
 At the end we have \textit{8,225} upgradeable proxy contracts. We randomly sampled 150 contracts from these contracts and manually check them and all of them were upgradeable proxy contract. On the other hand, we sampled 150 contracts from the contracts that marked as non-upgradeable contracts and check them manually. between these 150 contract just two of them was upgradeable and it was a false-negative. The reason that our model did not catch this contract was failure happened on the decompiler to decompile the implementation contract code and so assignment checker detector could not catch them. 
-
-\begin{figure}[t]
-  \includegraphics[width=0.8\textwidth]{figures/sankeyDiagram.png}\label{sankey}
-  \caption{Sankey Diagram of results}
-\end{figure}
-
-
-The results are depicted on a sankey diagram \ref{sankey}
 
 \subsubsection{Attacking Universal Upgradeable Proxy Standard (UUPS) contracts}
 In the previous sections \ref{sysComplexity} (in Delegate-call section) we discussed that the implementation function should not contain \textit{constructor} function and instead of that there should be regular function namely \textit{Initialize} function that can be called just once and has the same functionality as constructor function. So the contract creator must call initialize function through proxy contract quickly after deploying the proxy contract. The Initialize function does not have any access control because it is considered to be called once and this function is responsible to define the owner so before calling this function we don't have the owner's address to check it for access control of the function. This is the main reason that there should be a check to be sure that this function can just be called once and not more. Regularly, the deployer (the dev team) will define and initialize the owner of the contract (address which have the control of upgrading the system) via initialize function. So if the initialize function can be called more than once, or the deployer do not initialize the contract, then any external address can call initialize function and change the owner of the contract and take control of the contract. But this is not the case and less likely to happens because this is the first row of checklist of this type of upgradeability pattern.
@@ -639,6 +632,7 @@ Checking the list above we find 15 contracts in our data set which were exploita
 
 We find 61 UUPS contracts that are not initialized and anybody can take control of these implementation contracts but because these contracts do not use delegate call or self-destruct, they are not exploitable by this type of attack.
 
+\subsubsection{Rug Pools (Exit Scams)}
 
 
 % Level of intervention of each Dapp (pauseable etc.)
