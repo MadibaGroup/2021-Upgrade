@@ -1,7 +1,10 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
 \providecommand{\url}[1]{\texttt{#1}}
 \providecommand{\urlprefix}{URL }
 \providecommand{\doi}[1]{https://doi.org/#1}
+
+\bibitem{rugPool}
+Academy, B.: Rug pull \url{https://academy.binance.com/en/glossary/rug-pull}
 
 \bibitem{aaveBreak}
 of~Bits~Blog, T.: Breaking aave upgradeability
@@ -21,6 +24,10 @@ Collins, P.: Not all smart contracts are immutable — create upgradable smart
   contracts
   \url{https://betterprogramming.pub/not-all-smart-contracts-are-immutable-create-upgradable-smart-contracts-e4e933b7b8a9}
 
+\bibitem{bentFinanceHack}
+Finance, B.: Bent update
+  \url{https://bentfi.medium.com/bent-update-12ae69a41dc6}
+
 \bibitem{Upg-Bug}
 Marx, S.: Upgradeability is a bug
   \url{https://medium.com/consensys-diligence/upgradeability-is-a-bug-dba0203152ce}
@@ -32,6 +39,10 @@ Ortner, M.: Solidity doppelgaenger
 \bibitem{smart_contract_sanctuary}
 Ortner, M., Eskandari, S.: Smart contract sanctuary
   \url{https://github.com/tintinweb/smart-contract-sanctuary}
+
+\bibitem{eip1967}
+Palladino, S.: Eip-1967: Standard proxy storage slots
+  \url{https://eips.ethereum.org/EIPS/eip-1967}
 
 \bibitem{securityAdvise}
 Palladino, S.: Security advisory: Initialize uups implementation contracts
