@@ -4,6 +4,7 @@ The top-level auxiliary file: main.aux
 The style file: splncs04.bst
 Database file #1: bib/pulp.bib.bib
 Database file #2: bib/new.bib.bib
+Warning--I didn't find a database entry for "eip1967"
 Warning--empty journal in rugPool
 Warning--empty year in rugPool
 Warning--empty journal in aaveBreak
@@ -14,6 +15,8 @@ Warning--empty journal in selfDestruct
 Warning--empty year in selfDestruct
 Warning--empty journal in socialUpgrade
 Warning--empty year in socialUpgrade
+Warning--empty journal in certikReport
+Warning--empty year in certikReport
 Warning--empty journal in bentFinanceHack
 Warning--empty year in bentFinanceHack
 Warning--empty journal in Upg-Bug
@@ -22,20 +25,18 @@ Warning--empty journal in solidity-doppelganger
 Warning--empty year in solidity-doppelganger
 Warning--empty journal in smart_contract_sanctuary
 Warning--empty year in smart_contract_sanctuary
-Warning--empty journal in eip1967
-Warning--empty year in eip1967
 Warning--empty journal in securityAdvise
 Warning--empty year in securityAdvise
 Warning--empty journal in uupsAttacks
 Warning--empty year in uupsAttacks
 You've used 12 entries,
             2850 wiz_defined-function locations,
-            649 strings with 6194 characters,
-and the built_in function-call counts, 3520 in all, are:
+            652 strings with 6296 characters,
+and the built_in function-call counts, 3522 in all, are:
 = -- 220
 > -- 89
 < -- 0
-+ -- 38
++ -- 39
 - -- 26
 * -- 223
 := -- 497
@@ -59,7 +60,7 @@ purify$ -- 37
 quote$ -- 0
 skip$ -- 95
 stack$ -- 0
-substring$ -- 60
+substring$ -- 61
 swap$ -- 110
 text.length$ -- 0
 text.prefix$ -- 0
@@ -69,4 +70,4 @@ warning$ -- 24
 while$ -- 24
 width$ -- 14
 write$ -- 89
-(There were 24 warnings)
+(There were 25 warnings)

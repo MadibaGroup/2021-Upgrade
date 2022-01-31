@@ -637,6 +637,7 @@ We find 61 UUPS contracts that are not initialized and anybody can take control 
 
 %%%%******************* Certik
 
+
 A Rug Pull happens when the developer team or the agent who control a decentralized application leave support of the project and withdraw or sell the liquidity of the project\cite{rugPool}.
 
 The developer team may put a backdoor in the code and in a specific time use that backdoor to drain the liquidity from the project. It is impossible for a normal user to detect such a backdoor in the code because a majority of these projects do not make their solidity code open source and if they do, a normal user cannot read code to find a backdoor. But, in this type of rug pulls a pro user who can read solidity code can detect such a backdoor if the source code is public and if not they can get the bytecode from Ethereum public node and decompile it into solidity to find the backdoor.
@@ -645,7 +646,8 @@ There is another type of rug pulls which cannot be detected by any user. In this
 
 % Why admin is important and what are the types of admins
 
-The question which raised here is who can upgrade the system? There should be an agent who decides on the upgrades of the system. Generally, there are three main types of admins for upgradeable smart contracts; a single Ethereum address (a.k.a EOA), Multi Signature wallets and Governance schemes. We are describing these types bellow:
+The question which raised here is who can upgrade the system? There should be an agent who decides on the upgrades of the system. Generally, there are three main types of admins for upgradeable smart contracts; a single Ethereum address (a.k.a EOA), Multi Signature wallets and Governance schemes. The first and second options are adding centralization to the system. Based on \textit{The Security of DeFi Security 2021}~\cite{certikReport} report by Certik company, \textbf{Centralization} is the most common attack vector of the hacked DeFi projects, so remaining a centralization point by giving a critical roles to one or limited number of persons can be very dangerous.
+We are describing three types of admins bellow:
 
 
  \paragraph{Externally owned Address(EOA)}

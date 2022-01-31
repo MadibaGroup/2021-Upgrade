@@ -24,6 +24,10 @@ Collins, P.: Not all smart contracts are immutable — create upgradable smart
   contracts
   \url{https://betterprogramming.pub/not-all-smart-contracts-are-immutable-create-upgradable-smart-contracts-e4e933b7b8a9}
 
+\bibitem{certikReport}
+Company, C.: The security of defi security 2021
+  \url{https://www.businesswire.com/news/home/20220113005054/en/CertiK-Releases-2021-State-of-DeFi-Security-Report}
+
 \bibitem{bentFinanceHack}
 Finance, B.: Bent update
   \url{https://bentfi.medium.com/bent-update-12ae69a41dc6}
@@ -39,10 +43,6 @@ Ortner, M.: Solidity doppelgaenger
 \bibitem{smart_contract_sanctuary}
 Ortner, M., Eskandari, S.: Smart contract sanctuary
   \url{https://github.com/tintinweb/smart-contract-sanctuary}
-
-\bibitem{eip1967}
-Palladino, S.: Eip-1967: Standard proxy storage slots
-  \url{https://eips.ethereum.org/EIPS/eip-1967}
 
 \bibitem{securityAdvise}
 Palladino, S.: Security advisory: Initialize uups implementation contracts
