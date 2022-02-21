@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2020.4.8)  14 FEB 2022 15:08
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2020.4.8)  21 FEB 2022 16:52
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -671,65 +671,65 @@ LaTeX Warning: Reference `' on page 4 undefined on input line 94.
 LaTeX Warning: Reference `' on page 4 undefined on input line 94.
 
 [4] [5] [6] [7] [8] [9] [10] [11] [12] [13] [14]
-<figures/UpgradeV26.png, id=179, 655.44875pt x 510.90875pt>
+<figures/UpgradeV26.png, id=187, 655.44875pt x 510.90875pt>
 File: figures/UpgradeV26.png Graphic file (type png)
 <use figures/UpgradeV26.png>
-Package pdftex.def Info: figures/UpgradeV26.png  used on input line 465.
+Package pdftex.def Info: figures/UpgradeV26.png  used on input line 477.
 (pdftex.def)             Requested size: 211.38832pt x 164.77264pt.
-<figures/upgradev3.png, id=180, 630.355pt x 524.96124pt>
+<figures/upgradev3.png, id=188, 630.355pt x 524.96124pt>
 File: figures/upgradev3.png Graphic file (type png)
 <use figures/upgradev3.png>
-Package pdftex.def Info: figures/upgradev3.png  used on input line 467.
+Package pdftex.def Info: figures/upgradev3.png  used on input line 479.
 (pdftex.def)             Requested size: 211.38832pt x 176.04134pt.
-<figures/Adminv26.png, id=181, 612.2875pt x 493.845pt>
+<figures/Adminv26.png, id=189, 612.2875pt x 493.845pt>
 File: figures/Adminv26.png Graphic file (type png)
 <use figures/Adminv26.png>
-Package pdftex.def Info: figures/Adminv26.png  used on input line 472.
+Package pdftex.def Info: figures/Adminv26.png  used on input line 484.
 (pdftex.def)             Requested size: 211.38832pt x 170.49727pt.
-<figures/Adminv3.png, id=182, 589.20125pt x 508.90125pt>
+<figures/Adminv3.png, id=190, 589.20125pt x 508.90125pt>
 File: figures/Adminv3.png Graphic file (type png)
 <use figures/Adminv3.png>
-Package pdftex.def Info: figures/Adminv3.png  used on input line 474.
+Package pdftex.def Info: figures/Adminv3.png  used on input line 486.
 (pdftex.def)             Requested size: 211.38832pt x 182.57533pt.
  [15 <./figures/UpgradeV26.png> <./figures/upgradev3.png>] [16 <./figures/Admin
 v26.png> <./figures/Adminv3.png>]
 
 pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./figures/Methodology.pdf): 
 PDF inclusion: found PDF version <1.7>, but at most version <1.5> allowed
-<figures/Methodology.pdf, id=211, 598.15468pt x 846.0408pt>
+<figures/Methodology.pdf, id=219, 598.15468pt x 846.0408pt>
 File: figures/Methodology.pdf Graphic file (type pdf)
 <use figures/Methodology.pdf>
-Package pdftex.def Info: figures/Methodology.pdf  used on input line 547.
+Package pdftex.def Info: figures/Methodology.pdf  used on input line 559.
 (pdftex.def)             Requested size: 375.80544pt x 531.56267pt.
 [17] [18]
-<figures/Upgradeability_finder1.png, id=230, 6601.66376pt x 1879.02pt>
+<figures/Upgradeability_finder1.png, id=238, 6601.66376pt x 1879.02pt>
 File: figures/Upgradeability_finder1.png Graphic file (type png)
 <use figures/Upgradeability_finder1.png>
 Package pdftex.def Info: figures/Upgradeability_finder1.png  used on input line
- 584.
+ 596.
 (pdftex.def)             Requested size: 375.80544pt x 106.94469pt.
  [19]
-<figures/Assignment_finder.png, id=240, 3570.33875pt x 1586.92876pt>
+<figures/Assignment_finder.png, id=248, 3570.33875pt x 1586.92876pt>
 File: figures/Assignment_finder.png Graphic file (type png)
 <use figures/Assignment_finder.png>
-Package pdftex.def Info: figures/Assignment_finder.png  used on input line 604.
+Package pdftex.def Info: figures/Assignment_finder.png  used on input line 616.
 
 (pdftex.def)             Requested size: 375.80544pt x 167.03197pt.
  [20] [21] [22]
-<figures/bent.png, id=286, 1395.2125pt x 485.815pt>
+<figures/bent.png, id=294, 1395.2125pt x 485.815pt>
 File: figures/bent.png Graphic file (type png)
 <use figures/bent.png>
-Package pdftex.def Info: figures/bent.png  used on input line 707.
+Package pdftex.def Info: figures/bent.png  used on input line 719.
 (pdftex.def)             Requested size: 281.85587pt x 98.13979pt.
  [23]
-<figures/Admins.png, id=302, 1708.3825pt x 849.1725pt>
+<figures/Admins.png, id=309, 1708.3825pt x 849.1725pt>
 File: figures/Admins.png Graphic file (type png)
 <use figures/Admins.png>
-Package pdftex.def Info: figures/Admins.png  used on input line 735.
+Package pdftex.def Info: figures/Admins.png  used on input line 747.
 (pdftex.def)             Requested size: 469.75502pt x 233.49077pt.
 
 
-LaTeX Warning: Citation `eip1967' on page 24 undefined on input line 739.
+LaTeX Warning: Citation `eip1967' on page 24 undefined on input line 751.
 
 
 Underfull \vbox (badness 1490) has occurred while \output is active []
@@ -780,11 +780,11 @@ LaTeX Warning: There were undefined references.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 54.
  ) 
 Here is how much of TeX's memory you used:
- 10196 strings out of 480994
- 150045 string characters out of 5912143
- 439041 words of memory out of 5000000
- 25296 multiletter control sequences out of 15000+600000
- 542098 words of font info for 64 fonts, out of 8000000 for 9000
+ 10210 strings out of 480994
+ 150203 string characters out of 5912143
+ 438043 words of memory out of 5000000
+ 25304 multiletter control sequences out of 15000+600000
+ 544113 words of font info for 72 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  44i,17n,89p,1633b,454s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2019/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc
@@ -795,18 +795,20 @@ sr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr
 /local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/lo
 cal/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local
 /texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/te
-xlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/tex
-live/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texl
-ive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texli
-ve/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb></usr/local/texlive
-/2019/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/tex
-live/2019/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/local/texli
-ve/2019/texmf-dist/fonts/type1/public/wasy-type1/wasy10.pfb></usr/local/texlive
-/2019/texmf-dist/fonts/type1/public/wasy-type1/wasy9.pfb>
-Output written on main.pdf (29 pages, 1861106 bytes).
+xlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmss9.pfb></usr/local/texl
+ive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texli
+ve/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive
+/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/
+2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/2
+019/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb></usr/local/texlive/201
+9/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive
+/2019/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/local/texlive/2
+019/texmf-dist/fonts/type1/public/wasy-type1/wasy10.pfb></usr/local/texlive/201
+9/texmf-dist/fonts/type1/public/wasy-type1/wasy9.pfb>
+Output written on main.pdf (29 pages, 1880679 bytes).
 PDF statistics:
- 475 PDF objects out of 1000 (max. 8388607)
- 390 compressed objects within 4 object streams
- 157 named destinations out of 1000 (max. 500000)
+ 489 PDF objects out of 1000 (max. 8388607)
+ 401 compressed objects within 5 object streams
+ 159 named destinations out of 1000 (max. 500000)
  64 words of extra memory for PDF output out of 10000 (max. 10000000)
 
