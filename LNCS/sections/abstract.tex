@@ -2,6 +2,12 @@
 
 \begin{abstract}
 
-In this paper we explore how developers torture an immutable blockchain into allowing smart contracts to be upgraded. 
+Smart contracts are peices of codes that are deployed to the blockchain systems, to remove the barrier of trusting middleman to run specific logic. Ethereum is the first and mostly used public blockchain that introduced rich smart contracts that are not just limited to some specific scripts (like Bitcoin scripting language). Smart contracts are supposed to be immutable and tamper proof which means the code cannot be changed just after deployment to the blockchain. This feature of smart contracts are in contrast with Software Engineering idealogy, because codes are prone to bugs and also new features and functionalities need to be added to the software.
+During the time, huge hacks happened to Ethereum smart contracts (e.g. DAO hack) which brought developers to rethink about the immutability and find ways to change the smart contracts after deployment to the blockchain. Two main questions in this regard is \textit{how to add upgradeability to the smart contract?} and \textit{who is responsible to enforce changes to the system?}.
+
+In this paper we explore how developers torture an immutable blockchain into allowing smart contracts to be upgraded. To answer the first question we investigate all different patterns in the wild that bring upgradeability feature to Ethereum smart contracts. Then we evaluate each pattern to give developers insight that which pattern is proper for their Decentralized Application (Dapp) and the pros and cons of each pattern. The most used upgradeability pattern in Ethereum blockchain right now is called \textbf{Proxy Patterns}.
+In the later part of the paper we proposed a novel way to find smart contracts that use Proxy Patterns to add upgradeability feature by investigating all transactions confirmed to the Ethereum blockchain for a period of one year starting from September 2020. 
+
+To answer the second question we examine all proxy contracts we have collected from the previous analysis, to find their \textit{admin account}, the agent authorized to upgrade the system, and find their admin type; Externlly Owned address (EOA) in which one person can decide to change the system, Multi-Signature Wallets in which limited number of persons can change the system and Decentralized Governance models. The first two admin types are bring risks to the system and these are against the sprit of decentralization in blockchain space. 
 
 \end{abstract}
