@@ -156,7 +156,7 @@ This wholesale pattern is not a tenable solution to upgradability as it as only 
 \eg miners) agreed to suspend immutability, they can in theory allow changes to a contract's logic and/or state. If agreement is not unanimous, the blockchain can be forked into two systems---one with the change and one without. 
 
 In 2016, a significant security breach of a decentralized application called `the DAO' caused the Ethereum project to propose overriding the immutability of this particular smart contract to reverse the impacts of attack. In the unusual circumstances of this case, it was possible to propose and deploy the fix before the stolen ETH could be extracted from the contract and circulated. Nodes with a philosophical objection to overriding immutability continued operating, without deploying the fix, under the name Ethereum Classic.
-
+%Need to talk about L2 (Roll-ups) --> They can roll-back the chain state similar to the DAO fork (they can setup new desired rollup state and bridge regarding that).
 %\textbf{Upgradeability is a Bug!}~\cite{Upg-Bug}.
 
 % = = =
@@ -447,94 +447,18 @@ Upgrading a smart contract can be done by sending a transaction into the system.
 
 
  \section{Measurement study}
- \textcolor{red}{This section contains two parts Jeremy. The first part is what I did before starting the Transaction based analysis and it is searching on verified smart contracts to find OpenZeppelin upgradeable proxies. I just keep it, so you can read and remove it if you think we do not need it on the paper.}
 
- In this section we aim to shed light on these vital unanswered questions: 
- \begin{enumerate}
-  \item How many of the existing Dapps on the Ethereum blockchain are upgradeable?
-  \item Who can control these upgradeable Dapps (i.e who is the admin)? 
-  \item In what extent the Dapp can be changed?
-  \item What is the average frequency of updates on the Ethereum Dapps?
-  \item How many times the admin of upgradeable contracts changes on average?
-\end{enumerate}
+In this section we aim to shed light on the state of upgradeable smart contracts on Ethereum blockchain. Between all different patterns described in previous sections we focused on finding the \textit{Delegate-call} based upgradeable contracts. We explain the reason of focusing on \textit{Delegate-call} pattern below. 
 
-For now, we focused on the \textit{DelegateCall-based upgrade} pattern because it is the most favorite pattern for Dapp developers.
+There is no general way to detect \textit{Retail Change} patterns in large-scale, in which one or multiple state variables can be changed inside the contract by admin of the contract, because there is no general way to distinct between a changeable state variable inside a contract that can be updated and non-critical one. It really depends on the business logic of the smart contract.
 
-To have analysis on Ethereum blockchain some widely used methodologies are Transaction-based analysis, Bytecode based analysis, Etherscan Verified Smart Contracts based analysis or combination of these methods. The first and second methodologies need to access to an Ethereum full archival node. But the last approach need to collect smart contracts from a third party service named Etherscan.io in which the Dapp developers are able to put their high-level language smart contracts which will be checked and verified from the bytecode of the Dapp on the Ethereum blockchain.
+\textit{Wholesale change} approaches consist of \textit{Call-based}, \textit{Delegatecall-based} and \textit{Metamorphic} patterns. The Call-based pattern is an old fashion way of adding upgradeability to a system. This type is not widely used nowadays. On the other hand, \textit{Delegate-call}  pattern is the most-used pattern in ethereum contracts and this is why we focused on this pattern in our research. \textit{Metamorphic} pattern is very new and not well-tested yet. Also it has limitations such as the state of the contract should wiped out before upgrade each time because of need of self-destruction. Also there are some risks to this pattern. For instance there are discussions in Ethereum community about removing \textit{Selfdesctruct} opcode from EVM~\cite{selfDestruct}. 
 
-\subsection{Verified Smart Contract Based Analysis}
-In the first attempt we conducted a measurement study based on verified smart contracts on Etherscan to find instances of OpenZeppelin upgradeable proxy contracts. OpenZeppelin is a team that built well-known libraries for ethereum developers. One of their is upgradeability plugins. There two different versions of the OpenZeppelin upgrade libraries: version 2.6 and version 3+. 
-We used smart-contract-sanctuary~\cite{smart_contract_sanctuary} which is a data set of all ethereum smart contracts verified on Etherscan. For this analysis we analyzed 93,000 smart contracts that are deployed on the main Ethereum blockchain and verified their contracts on Etherscan. 
+In the above paragraph we claimed that the \textit{Call-based} pattern is not widely used these days. To prove this claim we perform an analysis on 93,000 verified smart contracts in smart contract sanctuary database~\cite{smart_contract_sanctuary} which gathers all verified smart contracts from \textit{Etherscan} blockchain explorer. As mentioned in previous sections \textit{Call-based} patterns consist of a logic contract and storage contract. The storage contract should define all storage variables needed for the system and must have getters and setters for these variables. Storage contract is the part that is not changing in upgrade events. So the developers should be sure that all state variables that are needed are defined in the deployment time or using tricks and patterns that give the developers ability to add new state variables after deployment. \textit{Eternal Storage} pattern is using a key-value based structure for the storage contract by using \textit{mappings} for defining all variables which gives the developers ability to add new variables after deployment. This is the reason that why Eternal Storage is widely used as the storage contract in \textit{Call-based} patterns. In this analysis, we try to find contracts that uses eternal storage structure in their logic using Regular Expression analysis. \emph{470} contract are found that uses eternal storage patterns and then we filtered them to find contracts that uses eternal storage structure and only contains getter and setter functions and not any other logics (the reason is described in the previous sections). After filtering we come up with \emph{170} unique eternal storage contracts that are used as storage contract of upgradeable Dapps. Checking the time of deployment of these contracts show that the latest one was deployed on July 2018 which show that this pattern is not widely used anymore these days (the reasons are discussed in the evaluation section).
 
-To find the smart contracts which used different versions of the OpenZeppelin upgradeability library, two different approaches are used. First, we used an Abstract Syntax Tree (AST) based similarity detector: Solidity Doppelgaenger~\cite{solidity-doppelganger}. We found 143 smart contracts that used version 2.6 and 125 version 3+ OpenZeppelin upgrade libraries. 
+In the further part of this section we focus on finding contracts that are using \textit{Delegatecall-based} patterns to add upgradeability feature by describing the \textit{methodology} of our work, the \textit{implementation} of the methodology and the \textit{results}.  
 
-In another attempt, we used Regular Expression (regex) to find if the smart contracts on our data set used the interface (function and variable used on the code) of the each version of the OpenZeppelin libraries. The unique interface that used in each version of the OpenZeppelin libraries helps us to find them just by checking the interface. We found 922 contracts using V2.6 and 309 contracts using V3+. All results from AST-based detection was found on the interface detection results. So we used the results from interface detection for the rest of this part.
-
-Now that we have the address of upgradeable smart contracts we can check how many times the upgrade happened for each and how many times the admin of the upgradeable contract is changed. For this purpose, OpenZeppelin libraries have used Ethereum Events on the functions in which the upgrade happens (Event "Upgraded") and the admin changes (Event "AdminChanged") and fired these events when the upgrade happened or the admin changed. We capture these events for each contract address using Etherscan Ethereum Log API service.
-
-\begin{figure}[t]
-  \centering
-      \subfloat[OpenZeppelin V2.6]{\includegraphics[width=0.45\columnwidth]{figures/UpgradeV26.png}\label{fig:upgradev26}}
-      \qquad
-      \subfloat[OpenZeppelin V3+]{\includegraphics[width=0.45\columnwidth]{figures/upgradev3.png}\label{fig:upgradev3}}
-  \caption{Number of Dapps (y-axis) over number of upgrades (x-axis) \label{fig:upgrade}}
-\end{figure}
-\begin{figure}[t]
-  \centering
-      \subfloat[OpenZeppelin V2.6]{\includegraphics[width=0.45\columnwidth]{figures/Adminv26.png}\label{fig:adminv26}}
-      \qquad
-      \subfloat[OpenZeppelin V3+]{\includegraphics[width=0.45\columnwidth]{figures/Adminv3.png}\label{fig:adminv3}}
-  \caption{Number of Dapps (y-axis) over number of Admin Changes (x-axis) \label{fig:admin}}
-\end{figure}
-The results for each version is:
-\begin{itemize}
-  \item For V2.6 (922 contracts):
-  \begin{itemize}
-    \item Upgrade Happens (see figure~\ref{fig:upgradev26}):
-    \begin{itemize}
-      \item 110 with One Upgrade, 60 with Two Upgrade, 2 with 20 upgrades, 5 with Five upgrade, 4 with 7 Upgrades, 3 with 10,12,15,16 Upgrades, 1 with 16 upgrades
-    \end{itemize}
-    \item Admin Change Happens (see figure~\ref{fig:upgradev3}):
-    \begin{itemize}
-      \item 57 with One Change, 14 with Two change, 4 with Three change, 1 with 4 changes, 1 Dapp with 5, 6,7,9 Changes
-    \end{itemize}
-  \end{itemize}
-  \item For V3+ (309 contracts):
-  \begin{itemize}
-    \item Upgrade Happens (see figure~\ref{fig:adminv26}):
-    \begin{itemize}
-      \item 30 with One Upgrade, 10 with Two Upgrade, 4 with Three upgrade, 2 with 4 Upgrades, 3 with 5 Upgrades, 2 with 7 Upgrades
-    \end{itemize}
-    \item Admin Change Happens (see figure~\ref{fig:adminv3}):
-    \begin{itemize}
-      \item 11 with One Change, 1 with Two change
-    \end{itemize}
-  \end{itemize}
-\end{itemize}
-
-
-\textcolor{red}{Next section is the recent analysis which I used transaction based analysis to find proxy contracts.}
-
-
-
-\subsection{Hybrid Analysis (Transaction and Bytecode based)}
-
-In this part we focused on finding the \textit{Delegate-call} based upgradeable contracts. Before start explaining the process of finding upgradeable proxies, we describe why we focused on finding this pattern. 
-
-\textit{Retail Change} methods is not possible to detect in large-scale. In \textit{Parameter change} method, one or multiple state variables can be changed inside the contract via a governance process. There is no distinction between a regular changeable state variable inside a contract and upgradeable one. The only way to detect these changes is reverse checking. In other words finding contracts that are govern the system and then find state variables that these governors can control. This way is possible for governance smart contract but not possible for Multi-Sig wallets and EOAs. 
-\textit{Component Change} is very similar to parameter change method but here an address to another contract is changing. This method is not detectable in large scale as well because in this pattern the main contract calls another contract which does not have any specific patterns. This architecture is very regular in Ethereum blockchain so the only way to find them is reverse analysis that described above.
-
-\textit{Wholesale change} approaches consist of \textit{Call-based}, \textit{Delegatecall-based} and \textit{Metamorphic} patterns. The Call-based pattern is an old fashion way of adding upgradeability to a system. This type is not used nowadays. On the other hand, \textit{Delegate-call}  pattern is widely used in ethereum contracts and this is the reason that we focused on this pattern. \textit{Metamorphic} pattern is very new and not well-tested yet. Also it has limitations such as the state of the contract should wiped out before upgrade each time because of need of self-destruction. Also there are some risks to this pattern. For instance there are discussions in Ethereum community about removing \textit{Selfdesctruct} opcode from EVM~\cite{selfDestruct}. 
-
-In the above paragraph we claimed that the \textit{Call-based} pattern is not widely used these days. To prove this claim we perform an analysis on 93,000 verified smart contracts in smart contract sanctuary database~\cite{smart_contract_sanctuary}. As mentioned in previous sections \textit{Call-based} patterns consist of a logic contract and storage contract. The storage contract should define all storage variables needed for the system and must have getters and setters for these variables. Because the storage contract is not changeable in upgrade event the developers should be sure that all state variables that are needed are defined. One trick that give the developers ability to add new state variables after deployment is using \textit{Eternal Storage} pattern which described in previous version. This is the reason that why Eternal Storage is widely used in \textit{Call-based} patterns. In this analysis, we try to find contracts that uses eternal storage structure in their logic using Regular Expression analysis. \emph{470} contract are found that uses eternal storage patterns and then we filtered them to find contracts that uses eternal storage structure and only contains getter and setter functions and not other logics. After filtering the we come up with \emph{170} unique eternal storage contracts that are used as storage contract of upgradeable Dapps. The newest contract was deployed on 2018 which show that this pattern is not widely used these days.
-
-In the further part of this section we focus on finding contracts that are using \textit{Delegatecall-based} patterns to add upgradeability feature.
-
-
-
-In the further sections we describe the \textit{methodology} of our work, the \textit{implementation} of the methodology and the \textit{results}.  
-
-\subsubsection{Methodology}
+\subsection{Methodology}
 As mentioned in classification section, the \textit{DelegateCall-based} upgradeability approach consists of a storage contract (a.k.a proxy contract) and a logic contract (a.k.a implementation contract). 
 
 Proxy contract is a simple type of smart contract in which there is a fallback function. Fallback function is a function inside a smart contract that do not have a function name. It means if a user sends a transaction to the contract including a call to a function that does not exists on the contract, it will passed into the fall back function and the logic inside the fall back function will be executed. So if a user calls a contract with a function signature that does not exist on that contract, it is equal to calling the fallback function.
@@ -844,5 +768,67 @@ We did not try to find the governance contracts because in the case of rug pulls
 
 \section{discussion}
 %\subsection{Off chain upgrades (UNiswap Arbitrum)}: On-chain voting for an off-chain process. Other types of upgrade. Like front end changes etc.
+
+In this section we aim to shed light on these vital unanswered questions: 
+ \begin{enumerate}
+  \item How many of the existing Dapps on the Ethereum blockchain are upgradeable?
+  \item Who can control these upgradeable Dapps (i.e who is the admin)? 
+  \item In what extent the Dapp can be changed?
+  \item What is the average frequency of updates on the Ethereum Dapps?
+  \item How many times the admin of upgradeable contracts changes on average?
+\end{enumerate}
+
+\section{Appendix}
+To have analysis on Ethereum blockchain some widely used methodologies are Transaction-based analysis, Bytecode based analysis, Etherscan Verified Smart Contracts based analysis or combination of these methods. The first and second methodologies need to access to an Ethereum full archival node. But the last approach need to collect smart contracts from a third party service named Etherscan.io in which the Dapp developers are able to put their high-level language smart contracts which will be checked and verified from the bytecode of the Dapp on the Ethereum blockchain.
+
+\subsection{Verified Smart Contract Based Analysis}
+In the first attempt we conducted a measurement study based on verified smart contracts on Etherscan to find instances of OpenZeppelin upgradeable proxy contracts. OpenZeppelin is a team that built well-known libraries for ethereum developers. One of their is upgradeability plugins. There two different versions of the OpenZeppelin upgrade libraries: version 2.6 and version 3+. 
+We used smart-contract-sanctuary~\cite{smart_contract_sanctuary} which is a data set of all ethereum smart contracts verified on Etherscan. For this analysis we analyzed 93,000 smart contracts that are deployed on the main Ethereum blockchain and verified their contracts on Etherscan. 
+
+To find the smart contracts which used different versions of the OpenZeppelin upgradeability library, two different approaches are used. First, we used an Abstract Syntax Tree (AST) based similarity detector: Solidity Doppelgaenger~\cite{solidity-doppelganger}. We found 143 smart contracts that used version 2.6 and 125 version 3+ OpenZeppelin upgrade libraries. 
+
+In another attempt, we used Regular Expression (regex) to find if the smart contracts on our data set used the interface (function and variable used on the code) of the each version of the OpenZeppelin libraries. The unique interface that used in each version of the OpenZeppelin libraries helps us to find them just by checking the interface. We found 922 contracts using V2.6 and 309 contracts using V3+. All results from AST-based detection was found on the interface detection results. So we used the results from interface detection for the rest of this part.
+
+Now that we have the address of upgradeable smart contracts we can check how many times the upgrade happened for each and how many times the admin of the upgradeable contract is changed. For this purpose, OpenZeppelin libraries have used Ethereum Events on the functions in which the upgrade happens (Event "Upgraded") and the admin changes (Event "AdminChanged") and fired these events when the upgrade happened or the admin changed. We capture these events for each contract address using Etherscan Ethereum Log API service.
+
+\begin{figure}[t]
+  \centering
+      \subfloat[OpenZeppelin V2.6]{\includegraphics[width=0.45\columnwidth]{figures/UpgradeV26.png}\label{fig:upgradev26}}
+      \qquad
+      \subfloat[OpenZeppelin V3+]{\includegraphics[width=0.45\columnwidth]{figures/upgradev3.png}\label{fig:upgradev3}}
+  \caption{Number of Dapps (y-axis) over number of upgrades (x-axis) \label{fig:upgrade}}
+\end{figure}
+\begin{figure}[t]
+  \centering
+      \subfloat[OpenZeppelin V2.6]{\includegraphics[width=0.45\columnwidth]{figures/Adminv26.png}\label{fig:adminv26}}
+      \qquad
+      \subfloat[OpenZeppelin V3+]{\includegraphics[width=0.45\columnwidth]{figures/Adminv3.png}\label{fig:adminv3}}
+  \caption{Number of Dapps (y-axis) over number of Admin Changes (x-axis) \label{fig:admin}}
+\end{figure}
+The results for each version is:
+\begin{itemize}
+  \item For V2.6 (922 contracts):
+  \begin{itemize}
+    \item Upgrade Happens (see figure~\ref{fig:upgradev26}):
+    \begin{itemize}
+      \item 110 with One Upgrade, 60 with Two Upgrade, 2 with 20 upgrades, 5 with Five upgrade, 4 with 7 Upgrades, 3 with 10,12,15,16 Upgrades, 1 with 16 upgrades
+    \end{itemize}
+    \item Admin Change Happens (see figure~\ref{fig:upgradev3}):
+    \begin{itemize}
+      \item 57 with One Change, 14 with Two change, 4 with Three change, 1 with 4 changes, 1 Dapp with 5, 6,7,9 Changes
+    \end{itemize}
+  \end{itemize}
+  \item For V3+ (309 contracts):
+  \begin{itemize}
+    \item Upgrade Happens (see figure~\ref{fig:adminv26}):
+    \begin{itemize}
+      \item 30 with One Upgrade, 10 with Two Upgrade, 4 with Three upgrade, 2 with 4 Upgrades, 3 with 5 Upgrades, 2 with 7 Upgrades
+    \end{itemize}
+    \item Admin Change Happens (see figure~\ref{fig:adminv3}):
+    \begin{itemize}
+      \item 11 with One Change, 1 with Two change
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
 
 \input{sections/table}
