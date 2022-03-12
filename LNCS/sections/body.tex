@@ -652,13 +652,11 @@ So, totally out of 7.3k proxy contract, \textbf{3558} are controlled by an EOA a
 In this part we dug deeper and explain why having EOA and Multi-Sig type admin is risky and what can be the consequences of them.
 
 A Rug Pull happens when the developer team or the agent who control a decentralized application leave support of the project and withdraw or sell the liquidity of the project\cite{rugPool}.
-
 The developer team may put a backdoor in the code and in a specific time, use that backdoor to drain the liquidity from the project. It is impossible for a normal user to detect such a backdoor in the code because a majority of these projects do not make their solidity code open source and if they do, a normal user cannot read code to find a backdoor. But, in this type of rug pulls a pro user who can read solidity code can detect such a backdoor if the source code is public and if not they can get the bytecode from Ethereum public node and decompile it into solidity to find the backdoor.
 
-There is another type of rug pulls which cannot be detected by any user. In this type the developer team make the smart contracts upgradeable. In the first version of the smart contract they do not put any back doors but in a proper time they will upgrade the system into another version which contains a back door and they will rug on users. 
+There is another type of rug pulls which cannot be detected by any user. In this type the developer team make the smart contracts upgradeable. In the first version of the smart contract they do not put any back doors but in a proper time they will upgrade the system into another version which contains a back door and they will rug on users. We describe the same incident happened to Bent Finance protocol below:
 
-\subsubsection{Bent Finance Hack.}
-
+\paragraph{Bent Finance Hack.}
 Bent Finance\footnote{\url{https://app.bentfinance.com/}} is a staking and farming platform. They are using \textit{Transparent Upgradeable Proxy} pattern in their system. The admin of the proxy was an EOA at the time of incident. The malicious developer deployed a new implementation contract\footnote{\url{https://etherscan.io/address/0xb45d6c0897721bb6ffa9451c2c80f99b24b573b9}} in which it provides a huge amount of token to the malicious actor's address \footnote{0xd23cfffa066f81c7640e3f0dc8bb2958f7686d1f}. The malicious code can be seen in the figure \ref{bentFi}
 
 \begin{figure}[t]
@@ -667,48 +665,14 @@ Bent Finance\footnote{\url{https://app.bentfinance.com/}} is a staking and farmi
   \caption{Bent Finance Malicious Code}
 \end{figure}
 
-Afterwards, the attacker upgraded the proxy to the malicious implementation contract and by doing that the huge amount was assigned to the attacker. Once the balance was assigned the attacker upgrade the proxy back to the latest non-backdoored version to hide the exploit. 
-Having huge amount of cvxcrv tokens, the attacker drained liquidity from cvxcrv and MIM pool\cite{bentFinanceHack}.
+Afterwards, the attacker upgraded the proxy to the malicious implementation contract and by doing that the huge amount was assigned to the attacker. Once the balance was transferred to the attacker, they upgrade the proxy back to the latest non-backdoored version to hide the exploit. 
+Having huge amount of the tokens, the attacker drained liquidity from Curve Finance protocol which is a decentralized exchange \cite{bentFinanceHack}.
 
 This is a real world example of how having a proxy with EOA or multi-sig admins can be exploited and rug pulled.
 
-% Admin types and intro
-
-
-
-
-% Level of intervention of each Dapp (pauseable etc.)
-% History of upgrades --> How many times a Dapp upgraded before (using events etc...)
-
-% \section{Concluding Remarks}
-
-
-% \subsection{Registry pattern}
-% Registry contracts are probably the simplest approach to upgradeability. Registry pattern consist of two main contracts: registry and logic contract. Registry contract holds the addresses of logic contracts and whenever it receives a transaction it will pass it to the related logic contract. 
-% If the development team decide to upgrade the smart contract, they can deploy another smart contract and then just change the pointer of the registry smart contact to the new smart contract.
-
-% The main disadvantage of this approach is that in upgrading event, there should be a manual or automated migration plan to transfer data from the old contract into the new upgrade smart contract.
-% Another drawback of this pattern is that it also introduces additional complexity for external clients who would also need to call into the registry before interacting with the system
-
-
-%Idea: see how frequent each project uses its upgradeability feature to upgrade the contract and why?
-
-%In proxy storage layout you should take care that: 
-% 1. never remove variable
-% 2. never change var type
-% 3. never change inheritance order
 
 
 %Implementation of Eternal storage in call based upgrades: https://medium.com/cardstack/upgradable-contracts-in-solidity-d5af87f0f913
-% Good classificaton: https://medium.com/1milliondevs/solidity-storage-layout-for-proxy-contracts-and-diamonds-c4f009b6903
-% New storage type *Dimond Storage*: https://medium.com/1milliondevs/new-storage-layout-for-proxy-contracts-and-diamonds-98d01d0eadb
-%https://medium.com/1milliondevs/new-storage-layout-for-proxy-contracts-and-diamonds-98d01d0eadb
-% Upgradability checklist: https://blog.trailofbits.com/2020/06/12/upgradeable-contracts-made-safer-with-crytic/
-
-
-%ToDo: Write about OpenZeppelin upgrade bug : https://blog.trailofbits.com/2018/09/05/contract-upgrade-anti-patterns/
-%ToDo: Gas cost comparison between different implementation (using different number and types of the storage variables)
-
 
 \section{discussion}
 %\subsection{Off chain upgrades (UNiswap Arbitrum)}: On-chain voting for an off-chain process. Other types of upgrade. Like front end changes etc.
