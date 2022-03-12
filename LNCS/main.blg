@@ -1,26 +1,28 @@
-This is BibTeX, Version 0.99d (TeX Live 2017/Debian)
-Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
+This is BibTeX, Version 0.99d (TeX Live 2021)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: main.aux
 The style file: splncs04.bst
-Database file #1: bib/pulp.bib.bib
-Database file #2: bib/new.bib.bib
+Database file #1: bib/pulp.bib
+Database file #2: bib/new.bib
 Warning--I didn't find a database entry for "eip1967"
 Warning--empty journal in rugPool
 Warning--empty year in rugPool
+Warning--empty journal in uupsEIP
+Warning--empty year in uupsEIP
 Warning--empty journal in aaveBreak
 Warning--empty year in aaveBreak
 Warning--empty journal in ToBantiPattern
 Warning--empty year in ToBantiPattern
+Warning--empty journal in delegatecallForwarders
+Warning--empty year in delegatecallForwarders
 Warning--empty journal in selfDestruct
 Warning--empty year in selfDestruct
-Warning--empty journal in socialUpgrade
-Warning--empty year in socialUpgrade
 Warning--empty journal in certikReport
 Warning--empty year in certikReport
 Warning--empty journal in bentFinanceHack
 Warning--empty year in bentFinanceHack
-Warning--empty journal in Upg-Bug
-Warning--empty year in Upg-Bug
+Warning--empty journal in minimalProxy
+Warning--empty year in minimalProxy
 Warning--empty journal in solidity-doppelganger
 Warning--empty year in solidity-doppelganger
 Warning--empty journal in smart_contract_sanctuary
@@ -29,45 +31,45 @@ Warning--empty journal in securityAdvise
 Warning--empty year in securityAdvise
 Warning--empty journal in uupsAttacks
 Warning--empty year in uupsAttacks
-You've used 12 entries,
+You've used 13 entries,
             2850 wiz_defined-function locations,
-            652 strings with 6296 characters,
-and the built_in function-call counts, 3522 in all, are:
-= -- 220
-> -- 89
+            656 strings with 6451 characters,
+and the built_in function-call counts, 3945 in all, are:
+= -- 248
+> -- 111
 < -- 0
-+ -- 39
-- -- 26
-* -- 223
-:= -- 497
++ -- 48
+- -- 34
+* -- 255
+:= -- 555
 add.period$ -- 0
-call.type$ -- 12
-change.case$ -- 49
+call.type$ -- 13
+change.case$ -- 56
 chr.to.int$ -- 0
-cite$ -- 36
-duplicate$ -- 363
-empty$ -- 350
-format.name$ -- 27
-if$ -- 694
+cite$ -- 39
+duplicate$ -- 401
+empty$ -- 382
+format.name$ -- 37
+if$ -- 776
 int.to.chr$ -- 0
-int.to.str$ -- 12
-missing$ -- 85
-newline$ -- 42
-num.names$ -- 24
-pop$ -- 231
+int.to.str$ -- 13
+missing$ -- 95
+newline$ -- 45
+num.names$ -- 26
+pop$ -- 258
 preamble$ -- 1
-purify$ -- 37
+purify$ -- 43
 quote$ -- 0
-skip$ -- 95
+skip$ -- 103
 stack$ -- 0
-substring$ -- 61
-swap$ -- 110
+substring$ -- 66
+swap$ -- 125
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 48
-warning$ -- 24
-while$ -- 24
-width$ -- 14
-write$ -- 89
-(There were 25 warnings)
+type$ -- 52
+warning$ -- 26
+while$ -- 26
+width$ -- 15
+write$ -- 96
+(There were 27 warnings)

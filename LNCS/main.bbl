@@ -6,6 +6,10 @@
 \bibitem{rugPool}
 Academy, B.: Rug pull \url{https://academy.binance.com/en/glossary/rug-pull}
 
+\bibitem{uupsEIP}
+Barros, G., Gallagher, P.: Eip-1822: Universal upgradeable proxy standard
+  (uups) \url{https://eips.ethereum.org/EIPS/eip-1822}
+
 \bibitem{aaveBreak}
 of~Bits~Blog, T.: Breaking aave upgradeability
   \url{https://blog.trailofbits.com/2020/12/16/breaking-aave-upgradeability/}
@@ -14,27 +18,27 @@ of~Bits~Blog, T.: Breaking aave upgradeability
 of~Bits~Blog, T.: Contract upgrade anti-patterns
   \url{https://blog.trailofbits.com/2018/09/05/contract-upgrade-anti-patterns/}
 
+\bibitem{delegatecallForwarders}
+Buterin, V.: Delegatecall forwarders: how to save ~50-98% on making many new
+  contracts with the same code
+  \url{https://www.reddit.com/r/ethereum/comments/6c1jui/delegatecall_forwarders_how_to_save_5098_on/}
+
 \bibitem{selfDestruct}
 Buterin, V.: Expectations for backwards-incompatible changes / removal of
   features that may come soon
   \url{https://www.reddit.com/r/ethereum/comments/lx32kv/expectations_for_backwardsincompatible_changes/}
 
-\bibitem{socialUpgrade}
-Collins, P.: Not all smart contracts are immutable — create upgradable smart
-  contracts
-  \url{https://betterprogramming.pub/not-all-smart-contracts-are-immutable-create-upgradable-smart-contracts-e4e933b7b8a9}
-
 \bibitem{certikReport}
-Company, C.: The security of defi security 2021
+Company, C.: The state of defi security 2021
   \url{https://www.businesswire.com/news/home/20220113005054/en/CertiK-Releases-2021-State-of-DeFi-Security-Report}
 
 \bibitem{bentFinanceHack}
 Finance, B.: Bent update
   \url{https://bentfi.medium.com/bent-update-12ae69a41dc6}
 
-\bibitem{Upg-Bug}
-Marx, S.: Upgradeability is a bug
-  \url{https://medium.com/consensys-diligence/upgradeability-is-a-bug-dba0203152ce}
+\bibitem{minimalProxy}
+Murray, P., Welch, N., Messerman, J.: Eip-1167: Minimal proxy contract
+  \url{https://eips.ethereum.org/EIPS/eip-1167}
 
 \bibitem{solidity-doppelganger}
 Ortner, M.: Solidity doppelgaenger
