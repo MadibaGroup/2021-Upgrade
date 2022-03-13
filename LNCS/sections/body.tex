@@ -156,7 +156,7 @@ This wholesale pattern is not a tenable solution to upgradability as it as only 
 \eg miners) agreed to suspend immutability, they can in theory allow changes to a contract's logic and/or state. If agreement is not unanimous, the blockchain can be forked into two systems---one with the change and one without. 
 
 In 2016, a significant security breach of a decentralized application called `the DAO' caused the Ethereum project to propose overriding the immutability of this particular smart contract to reverse the impacts of attack. In the unusual circumstances of this case, it was possible to propose and deploy the fix before the stolen ETH could be extracted from the contract and circulated. Nodes with a philosophical objection to overriding immutability continued operating, without deploying the fix, under the name Ethereum Classic.
-
+%Need to talk about L2 (Roll-ups) --> They can roll-back the chain state similar to the DAO fork (they can setup new desired rollup state and bridge regarding that).
 %\textbf{Upgradeability is a Bug!}~\cite{Upg-Bug}.
 
 % = = =
@@ -446,10 +446,243 @@ Upgrading a smart contract can be done by sending a transaction into the system.
 % upgrading in dark: https://forum.makerdao.com/t/mip15-dark-spell-mechanism/2578
 
 
- \section{Measurement study}
- \textcolor{red}{This section contains two parts Jeremy. The first part is what I did before starting the Transaction based analysis and it is searching on verified smart contracts to find OpenZeppelin upgradeable proxies. I just keep it, so you can read and remove it if you think we do not need it on the paper.}
+ \section{Finding Upgradeable Contracts on Ethereum}
 
- In this section we aim to shed light on these vital unanswered questions: 
+In this section we aim to shed light on the state of upgradeable smart contracts on Ethereum blockchain. Between all different patterns described in previous sections we focused on finding the \textit{Delegate-call} based upgradeable contracts. We explain the reason of focusing on \textit{Delegate-call} pattern below. 
+
+There is no general way to detect \textit{Retail Change} patterns in large-scale, in which one or multiple state variables can be changed inside the contract by admin of the contract, because there is no general way to distinct between a changeable state variable inside a contract that can be updated and non-critical one. It really depends on the business logic of the smart contract.
+
+\textit{Wholesale change} approaches consist of \textit{Call-based}, \textit{Delegatecall-based} and \textit{Metamorphic} patterns. The Call-based pattern is an old fashion way of adding upgradeability to a system. This type is not widely used nowadays. On the other hand, \textit{Delegate-call}  pattern is the most-used pattern in ethereum contracts and this is why we focused on this pattern in our research. \textit{Metamorphic} pattern is very new and not well-tested yet. Also it has limitations such as the state of the contract should wiped out before upgrade each time because of need of self-destruction. Also there are some risks to this pattern. For instance there are discussions in Ethereum community about removing \textit{Selfdesctruct} opcode from EVM~\cite{selfDestruct}. 
+
+In the above paragraph we claimed that the \textit{Call-based} pattern is not widely used these days. To prove this claim we perform an analysis on 93,000 verified smart contracts in smart contract sanctuary database~\cite{smart_contract_sanctuary} which gathers all verified smart contracts from \textit{Etherscan} blockchain explorer. As mentioned in previous sections \textit{Call-based} patterns consist of a logic contract and storage contract. The storage contract should define all storage variables needed for the system and must have getters and setters for these variables. Storage contract is the part that is not changing in upgrade events. So the developers should be sure that all state variables that are needed are defined in the deployment time or using tricks and patterns that give the developers ability to add new state variables after deployment. \textit{Eternal Storage} pattern is using a key-value based structure for the storage contract by using \textit{mappings} for defining all variables which gives the developers ability to add new variables after deployment. This is the reason that why Eternal Storage is widely used as the storage contract in \textit{Call-based} patterns. In this analysis, we try to find contracts that uses eternal storage structure in their logic using Regular Expression analysis. \emph{470} contract are found that uses eternal storage patterns and then we filtered them to find contracts that uses eternal storage structure and only contains getter and setter functions and not any other logics (the reason is described in the previous sections). After filtering we come up with \emph{170} unique eternal storage contracts that are used as storage contract of upgradeable Dapps. Checking the time of deployment of these contracts show that the latest one was deployed on July 2018 which show that this pattern is not widely used anymore these days (the reasons are discussed in the evaluation section).
+
+% Add the create2 paper results
+In the further part of this section we focus on finding contracts that are using \textit{Delegatecall-based} patterns to add upgradeability feature by describing the \textit{methodology} of our work, the \textit{implementation} of the methodology and the \textit{results}.  
+
+\subsection{Methodology}
+As mentioned in classification section, the \textit{DelegateCall-based} upgradeability approach consists of a storage contract (a.k.a proxy contract) and a logic contract (a.k.a implementation contract). 
+
+Proxy contract is a simple type of smart contract in which there is a \textit{Fallback} function. Fallback function is a function inside smart contracts that do not have a function name. If a user sends a transaction to the contract including a call to a function that does not exists on the contract, it will passed into the fall back function and the logic inside the fallback function will be executed. So if a user calls a contract with a function signature that does not exist on that contract, it is equal to calling the fallback function.
+
+Inside the fallback function of a proxy contract, there is a delegate call to the address of \textit{implementation contract} and pass the whole input data of the transaction to the implementation contract without altering it. In the rest of the paper, we we call implementation address inside the proxy, \emph{Target address}.
+
+All proxy contracts have the above structure. But \textit{Upgradeable proxy contracts} should have another extra condition as well. The agent that is responsible of changes in the smart contract contract (a.k.a \emph{admin}) must have the ability to change target address inside the proxy. If a proxy does not have this condition, it means that the contract is just forwarding the calls into a fixed implementation contract for the rest of its life. So, this type of proxies are not upgradeable. There are bunch of patterns that follows this structure (e.g. Minimal Proxies~\cite{minimalProxy}, Delegate call forwarders~\cite{delegatecallForwarders}, etc.) which we call them \textit{Forwarders} in the rest of the paper. So, for upgradeable proxies the target address must be changeable.
+
+By collecting transactions and information regarding those transaction, we filter transactions to the proxy contracts by checking if these transactions pass a fallback function which delegate called the entire message data into another contract without any altering the data.
+
+As discussed above, these proxies can be forwarders or upgradeable proxies. To find upgradeable proxies we should filter them by checking whether the target address variable is changeable or not.
+
+We first check if the target address comes from an external call to another contract. If yes we should just check that callee contract that if the target address inside it is changeable. If yes the proxy contract is a \textit{Beacon Proxy} contract. In this case our proxy contract grabs the target address from another contract (a.k.a Beacon contract) each time and because this address is changeable inside the beacon contract, the admin of the beacon can just change this address from the beacon contract and upgrade the system whenever they want.
+
+If the address does not come from an external call, then we check if the there is any function or way to change the target address inside the proxy itself. If yes then our proxy is an upgradeable proxy because the admin can just change the target address using that specific function inside the proxy and upgrade the system.
+
+If there is no way to change the target address inside the proxy, then we pass it to another final filter. There is another way of implementing upgradeable contracts named \textit{Universal Upgradeable Proxy Standard (UUPS)} that discussed in the classification section. In this method, the target address is changeable using the implementation contract. So to filter and find them, we check the implementation contract to find out if there is any function inside the implementation contract by which the admin can change the target address inside the proxy using that function. If yes then our proxy is a UUPS proxy contract other wise the proxy is not upgradeable.
+
+The whole process is depicted on figure~\ref{flowchart}.
+
+\begin{figure}[t]
+  \includegraphics[width=0.8\textwidth]{Methodology.pdf}\label{flowchart}
+  \caption{Flowchart of the Process}
+\end{figure}
+
+
+\subsubsection{Implementation}\label{findingProxies}
+In this section we describe the processes of finding upgradeable proxy contracts explained in the previous section in detail of implementation and execution. 
+Each block of Ethereum blockchain consists of transactions that processed in that exact block. To get all transaction details we need to replay the transaction and collect the data of execution of the transaction. Ethereum full archival node has a method, \textit{trace\_transaction}, that gives the \textit{Parity VM transaction traces} of the transactions executed on the specific block. This transaction traces are composed of \textit{actions}. Each action gives data about each specific part of the execution of the transaction and consists of the opcode instruction that is executed on that action and the input data relevant to the that instruction and also information about how it manipulates the state, memory or stack of the Ethereum Virtual Machine (EVM). 
+
+Having the transaction traces for each block, we will search to find actions that consists of \textit{callType}. When an action has callType field it means that there is a call happened in that specific action, which means one of \textit{Call},\textit{Static Call} or \textit{Delegatecall} happened in that action. we picked actions that have \textit{callType} and this call type is \textit{delegate call}. Also each action has an \textit{input} element for messages that shows the call data (the data that is used for the calling the callee address). 
+If the input element of the selected actions are equal to the input element of their previous action with the same transaction hash, it means the transaction passes a fallback function which delegate calls it to another contract. 
+Because the input is not changed after the call it means that it passes a fallback function because the function selector (first four byes of the input) has not been changed which means the called function does not exists in the contract, so the fallback is called. Also the delegate call in the action shows that inside that fallback function there is a delegatecall that passes the whole message data to the target address contract. So, these contracts meet first condition described in the methodology part and these contracts are proxy contracts. We collect \textit{From address},\textit{To address} and the \textit{transaction hash} of these picked actions and pick the unique from addresses of this data. From address is the address of sender of transaction (proxy contract addresses), to address is the address which the proxy sends the transaction into (implementation contract addresses) and transaction hash is the transaction identifier that is used in Ethereum blockchain. 
+
+As discussed before, these selected contracts are proxy contracts and not necessarily upgradeable proxy contracts. So, we need to filter the \textit{forwarders} from proxy contracts to find upgradeable proxy contracts. As mentioned in methodology section, the upgradeable proxy contracts must satisfy a condition; the admin of the contract should be able to change the target address. In other words, we should check if the target address inside the proxy contract is changeable or not.
+
+There are five regular ways for the situation that the target address is fixed and not changeable on the contract:
+\begin{enumerate}
+  \item The target address is hardcoded in the contract without assignment to any variables
+  \item The target address is saved in a constant variable type 
+  \item The target address is saved in an immutable variable type and the deployer sets it via a constructor function
+  \item The target address is defined in a storage variable, but there is no function or a way to change this address after contract deployment (neither in proxy contract nor in implementation contract)
+  \item The proxy contract grabs the target address each time by calling another contract and there is no way on the callee contract to change this address
+\end{enumerate} 
+
+In the first three situations, the target address amount will be appeared on the runtime bytecode (the bytecode that is saved in the blockchain after deployment) of the smart contract. We can get the bytecode of each proxy contract that are collected from previous part using the \textit{eth\_getCode} method of a Ethereum archival node and check whether the target address is appeared on the bytecode or not. To have the target addresses we just need to collect The \textit{To addresses} that we collected on the previous part which are supposed to be the implementation addresses because the proxy contract delegate calls into these addresses. So we check if the target address is appeared on the bytecode of the proxy contract. If yes, these proxies are not upgradeable proxies and they are forwarder contracts because the address is hardcoded on the bytecode and cannot be changed after deployment. Finding the forwarders, we removed them from the list of the proxy contracts.
+
+For the situation 4, we need other processes to check whether the implementation address is changeable or not. We need to design a filter to tell us if there is a way to change the target address after deployment or not. We will describe the filter in the later part of the paper, but for now let's assume that we have a module named \textit{Assignment Checker} that checks the code and tells us that whether there is a function inside the contract that the caller can change the \textit{target address} using the function. If yes we mark the contract as an upgradeable proxy contract because there is a way in the proxy contract to change the target address and point it to the new implementation contract and upgrade the system.
+
+For the situation 5, we check the proxy contract to find whether each time before the delegate call, the target address inside the proxy contract is coming from an external call to another contract. If yes the we check the callee smart contract (a.k.a Beacon contract) that if the target address is changeable inside that contract or not. If it is changeable we mark the proxy as \textit{Beacon Proxy} otherwise it is a \textit{Forwarder}. 
+
+But this is not the end of story. There is another proposed upgradeable proxy contract pattern, named Universal Upgradeable Proxy Standard (UUPS) also known as EIP-1822~\cite{uupsEIP} that described in the previous sessions. In this type of proxy contracts, the target address can be changed using the implementation contract and not the proxy itself. As mentioned before the code of the implementation contract is executed in the context of the proxy contract and so it will change the storage state of the proxy contract. If we have a function in the implementation contract that gives us the ability to change the storage slot of the target address, we can upgrade the system by calling that function of implementation contract through proxy itself. We couldn't catch this type of upgradeable contracts by the previous processes because we just checked if there is a function inside the proxy contract itself that can change the target address.
+
+We can tackle this problem by first finding the storage slot of the target address inside proxy contract. Then by using the \textit{Assignment Module} to check if there is a function inside implementation contract which gives the admin right to change the target address. So first we should find the storage slot of the proxy contract in which the target address is saved. There are two EIPs out there that makes it easy to find these storage slots that suggested to be used to save target address for upgradeable proxies; EIP-1967 \footnote{0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc} and EIP-1822 \footnote{0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7}, suggested randomly selected storage slots for target address to mitigate the overwriting on these slots. The UUPS contracts are usually using one of these two storage slots to save their target address.
+
+%The more general way to do this is not using these proposed slots from these EIPs for this process. The general way is to find the storage slot from the proxy contract and then check if admin can change this specific storage slot inside the implementation contract. But this way is not doable in large scale because in \textit{Assignment checker} module we need to decompile the bytecode which is time consuming for contracts that have a large bytecodes. Implementation contracts are usually large pieces of codes. So, it is not possible to do this process in a large-scale for all proxy contracts that are found from the previous parts. This is the reason that we limit our filter to specific storage slots proposed in EIP 1967 and EIP 1822.
+
+So for this part we use the remained proxy contract addresses from the previous part. First we select the contracts that their target address is saved on the mentioned storage slots and if the target address is saved on the slot, check the implementation contract to find variable regarding that storage slot defined in the implementation contract. Afterwards check if the variable is changeable in a function in implementation contract. If it is changeable, it means that the admin can upgrade the system using a function on the implementation contract, and so the proxy is an UUPS contract. 
+
+The whole process is depicted on figure~\ref{fig:finderModule}.
+
+\begin{figure}[t]
+  \includegraphics[width=0.8\textwidth]{figures/Upgradeability_finder1.png}\label{fig:finderModule}
+  \caption{Upgradeability Proxy Contract Finder}
+\end{figure}
+
+\subsubsection{Assignment Checker Module}
+
+As mentioned in the previous part, we need a module to check whether the admin can change target address on the proxy contract,using a function in the proxy contract, implementation contract or beacon contract. For this purpose the module must get the \textit{Bytecode} of the proxy,implementation or beacon address as input and find the variable name and also its storage slot of the target address. Then checks to find out is there any function inside the contract that gives the admin the ability to change the target address.
+
+We use bytecode decompiler named \textit{Panoramix decompiler} \footnote{\url{https://github.com/palkeo/panoramix}} to decompile the bytecode into well-formatted python language codes. The decompiled code gives us all storage variables of the related contract and the storage slots of those variables in a function named \textbf{Storage}. On the other hand, the decompiled code will tell us if a function is \textit{Payable} or not. Among these Payable functions the one that does not have name or its name is fallback is the \textit{fallback} function of the contract. So we will try to find the line of code that \textit{Delegate Call} happened on it and collect these lines. Now that we have storage variable names and storage slots of these variables and also the line of code inside fallback that have the delegatecall, we will check to find the target address variables. We are doing that by checking if one of the storage variables inside Storage function is used in the line of code that contains delegate call. We will add them to an array of implementation addresses.
+% or if there is a hash a text is inside the line of the code (if there is 'sha3' inside the line). 
+
+There is two other steps here. First finding other variable names with the same storage slots as the implementation addresses we found from the first step by checking the Storage function and also finding another variables that being assigned to those implementation variables in some other part of the code. We will add these two type of variables to the implementation addresses as well.
+
+Now that we have a list for implementation addresses, we will search through the code to find if any assignment happened to one of them. If yes we will pick the variables that is assigned to target variable and then check if this assignment happened in a specific function and to one of the inputs of that function. In this case this function will be the upgrade function because the caller of this function can upgrade the target address by calling this function with desired input. 
+
+To summarize what we did, we find all possible variables in the code that can change the target address inside the contract and check if there is any function inside them that can assign new address to the target address variable.
+
+The whole process is depicted on figure~\ref{assignmentFinder}.
+
+\begin{figure}[t]
+  \includegraphics[width=0.8\textwidth]{figures/Assignment_finder.png}\label{assignmentFinder}
+  \caption{Assignment CheckerModule}
+\end{figure}
+
+
+
+\subsubsection{Results}
+
+Having access to an Ethereum full archival node we have collected transaction traces of transactions included in 2,064,595 blocks of Ethereum blockchain, starting from block number \textit{\#10800000} to \textit{\#12864595}. It covers transactions on the Ethereum blockchain from \textit{Sep-05-2020} to \textit{Jul-20-2021}. 
+
+Having transaction traces and the actions of each transaction, we have collected \textit{From} address (address of sender of the transaction), \textit{To} address (destination address of the transaction) and \textit{Transaction Hash} of actions which has \textit{delegateCall} as their \textit{Call Type} and their input is the same as their previous action. As mentioned in the previous part the From addresses are the address of the proxy contracts.
+
+To have the proxy contract, we find the unique From addresses from all collected transactions which gives us \textit{1,427,215} unique proxy contracts. But bunch of these proxies are using a shared implementation contracts. We decide to weed out the proxy contracts that share the same implementation contract, however it is possible that two different Dapp use same implementation contract for their proxy contract. The reason for this decision is that there are some Dapps like opensea~\footnote{\url{opensea.io}} that create proxies for each of their user and these proxies share the same implementation contract (it will reduce the redundancy). So after filtering proxies with the same implementation contracts we come up with \textit{13,088} contracts.
+
+Afterwards we filter \textit{Forwarder Contracts} from our data set by checking if the \textit{To address} appears on the contract's bytecode and then pick the upgradeable proxy contracts by checking if implementation addresses is changeable inside their code. Totally we find \textit{7,470} regular upgradeable proxy contracts. 
+
+On the other hand, we checked the remained proxy contracts to find out if their implementation address is based on EIP-1822 or EIP-1967 proposed storage slots. On these selected contracts we picked their implementation address contract and check if the implementation address consists a function to change the implementation address on the proxy contract, if yes we mark the address as upgradeable proxy contract. The outcome of this last filter is \textit{403} upgradeable proxy contracts that uses Universal Upgradeable Proxy Pattern. Also our code result shows \textit{352} unique beacon proxy contracts as a result as well.
+
+At the end we have \textit{8,225} upgradeable proxy contracts. We randomly sampled 150 contracts from these contracts and manually check them and all of them were upgradeable proxy contract. On the other hand, we sampled 150 contracts from the contracts that marked as non-upgradeable contracts and check them manually. between these 150 contract just two of them were upgradeable and it was a false-negative. The reason that our model did not catch this contract was failure happened on the decompiler to decompile the implementation contract code and so our assignment checker detector could not catch them. 
+
+
+\section{Finding Admin of the Proxies}
+
+In this section we propose a novel way to find the the admin of the proxy contract (agent responsible to upgrade the proxy contract), and classify them based on their account type. We apply the method on the data set we provided from previous analysis. We also shed light on the risks regarding the number of decision makers who have authority to change the whole logic of the Dapps that are using proxy contract.
+
+The question which we are going to answer in this part is who has the ability to upgrade the system? There should be an agent who decides on the upgrades of the system. Generally, there are three main types of admins for upgradeable smart contracts; a single Ethereum address (a.k.a EOA), Multi Signature wallets and Governance schemes. The first and second options are adding centralization to the system because limited number of private keys can change the whole logic of the system. Based on \textit{The State of DeFi Security 2021}~\cite{certikReport} report by Certik company~\footnote{\url{certik.com}}, \textbf{Centralization} is the most common attack vector of the hacked DeFi projects, so remaining a centralization point by giving critical roles to one or limited number of persons can be very dangerous.
+We are describing three types of admins bellow:
+
+\paragraph{Externally owned Address(EOA)}
+The easiest and the fastest way to upgrade a system is by using a single address as the admin. This is the most centralized solution we have for upgrading a system. The main problem with this issue is the security of the system because it only depends on a single private key hold by the owner. If the owner is malicious or if her private key is compromised then the entire system is on the risk.
+
+\paragraph{Multi-Sig}
+A \textit{m out of n} Multi-sig wallet is a smart contract that can manage a transactions only if m number out of a specified n EOAs agree and sign the transaction. We can use address of a Multi-sig wallet as the admin of the system. In case of a upgrade or responding to an incident m out of n number of the governors can permit to upgrade the system.
+
+This is a better answer to the decision making of the upgrade compare to using an EOA in case of centrality, while keeping the speed of an upgrade process. However, it is not decentralized. The problem here is that the Ethereum system is pseudo anonymous. So, there is not any way to identify the person behind an Ethereum address. So, the malicious developer team can keep m signatures out of n in their hands and in a desired time, they can upgrade a system to a malicious version and rug on the users.
+One way to reduce this risk and level of centralization is to use different trusted teams' addresses who are stakeholders of the system in the multi-sig wallet.
+Also it is good to mention that there are some types of governance voting which is known by \textit{Off-chain Governance Schemes} in which users who hold governance tokens can signal their votes on a proposals in an off-chain tools like \textit{Discord} or \textit{Snapshot} and then another agents which are usually a part of multi signature schemes can put the results on chain and execute the actions if needed.
+
+We put the off chain governance in the Multi-sig category because at the end, this multi-signature wallet is the only on chain agent who is responsible to change the system and there is no way to enforce the signers to reflect the off-chain agreement results to the smart contract and they can decide to change the results.
+
+\paragraph{On-Chain Governance Voting}
+The most decentralized way to decide on a system change is to do it using decentralized voting. This can be done by distributing governance voting tokens to the community and then they can vote on a change proposal by staking their voting token. 
+There are some critique to this method. Governance by voting has an inherit time delay to the upgrading process. This raises a problem when the system needs an instant upgrade (e.g, responding to an incident). This means we need another mechanism to quickly fix bugs and upgrade the system on the event of incidents in conjunction with the voting process (\eg Global shutdown in MakerDAO).
+It is also not cost-efficient for the voters because all token holders must send a transaction for voting and needs to pay network fee.
+The other problem with this method is fair distribution of the tokens. If the governance token does not distribute fairly and the majority of tokens granted to the limited number of users, then it is very similar to the multi-sig method which is more costly and complex. Because, whales of the governance token can vote to any desired change of the system similar to the multi-sig.
+ 
+This type of admins are the most decentralize solution and reduces the risk by giving the voting right to all the token holders to be be a part of system upgrades and vote on the changes. However, as mentioned above it really depends on the distribution of the tokens.
+
+
+
+
+\subsection{Exploring Admin Types}
+
+As described above, proxy contracts may have three types of the admin; EOA, Multi-Sig and Governance Contract. In EOA and Multi-sig types a person or a limited number of persons can may decide take control of the system. The risks regarding each admin type discussed above and bring us to try to find the admin types of the proxy contract we found in our first analysis.
+
+\subsubsection{Measurement Study}
+In the previous parts,we gathered 7.3k upgradeable proxy contracts. In this part we try to find the admin of each proxy contract and recognize the type of the admin (i.e EOA,Multi-Sig,Governance).
+Here we describe our methodology of finding the admin addresses and its type. The whole process is depicted in the figure\ref{Admins}.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=1.0\textwidth]{figures/Admins.png}\label{Admins}
+  \caption{Admin Types}
+\end{figure}
+
+\paragraph{EIP-1967.}As mentioned above EIP-1967~\cite{eip1967} suggested specific arbitrary slots for upgradeable proxy contracts to store implementation contract's address and \textit{Admin address}\footnote{Storage slot 0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103 for admin}.
+
+In first step we use \textit{eth\_getStorageAt} method of an Ethereum full archival node to search the EIP-1967 specified storage slot for admins on our 7.3k proxy contracts. If the result of this method is non-zero it means that the proxy uses EIP-1967 standard because the specified storage slot is an arbitrary slot and one can store variable in this slot just by defining this slot which means that they used EIP-1967.
+
+So, for non zero results, we capture the address which is the address of admin of the proxy. Now we try to find the type of these admin addresses. Having the address of the admin we use \textit{eth\_getCode} method to check the code of the admin account. If the code is empty, it means that this account is not a smart contract so it is an EOA. we find \textit{900} EOA admins that their proxy uses EIP-1967 standard.
+
+The remained admin addresses are contract because their account keeps code. This contract can be multi signature smart contract wallets. The most widely used multi signature wallet is Gnosis Safe\footnote{\url{https://gnosis-safe.io/}} wallets. We automatically checked if the code of the admin address is the Gnosis wallet multi signature patterns. After picking Gnosis safe wallets we manually checked \%10 of the remained addresses to find if they used other patterns for their multi signature wallet and we found some other patterns (e.g. MultiSignatureWalletWithDailyLimit, etc.). After Finding all these types we checked the admin codes to see whether they are multi signature wallets. We find \textit{255} admin accounts that uses multi signature wallets as their admin.
+
+There is another class of admin contracts named \textit{Admin Proxy} contracts. These admin proxy contracts are another layer of re-direction between the real admin and the Dapp's proxy contract. The admin proxy contracts are proxy contracts that redirect the messages from the real admin into the Dapp's proxy. The only person who can use admin proxy is the admin (a.k.a owner) of the admin proxy. So we first filter the admin proxy contracts using the codes we get from the previous part and then try to find the owner of the admin proxy contracts. The owner of admin proxy contract (the real admin) also can be EOA, Multi-sig or governance contract. Finding the owner of the admin proxy contract, we used \textit{eth\_getCode} method to check the code of these account and find out if they are EOAs or Multi-signatures or governance schemes. Doing this we find \textit{1202} EOA admin accounts and \textit{567} multi signature admins. We marked the remained proxy admin addresses as Governance/Not Known admin types and we have \textit{462} of them. There were also non admin proxy contracts which use EIP-1967 but they were not EOA or Multi signatures. We marked them as Governance/Not Known admin types and we have \textit{53} of them.
+
+
+\paragraph{Non EIP-1967.}
+
+For proxy contracts which not use EIP-1967, the problem is we don't know where the admin address is saved in the proxy contract's storage (what is the storage slot of the admin address). It can be saved in a storage slot of the contract or be hardcoded in the smart contract\footnote{There are some other possible ways to store the admin address for instance saving it in another contract and each time make an external call to get the address but to our knowledge this pattern is not widely used as a standard}. 
+
+So there are two ways that the admin address is saved in the proxy contract. It can be saved as a storage variables or it can be hardcoded as a fixed address.
+
+In storage variable case, the first question is in which storage slot the admin address is stored. So, the first step is to find the storage slot of the admin address variable. Also for the fixed address we should find the fixed address of the admin directly.
+
+To find the slot of the storage variable in which admin address is saved, we first find the function in which the proxy can be upgraded. For finding the upgrade function we exactly do what we did in \ref{findingProxies} part. We first find the storage variable in which we saved the implementation address and then we find a function in which the implementation address can be changed using the inputs of that specific function. 
+
+The upgrade function of a proxy contract is a critical function and the only account that can call this function should be the admin of the proxy contract. So, there should be an access control check inside the upgrade function to check whether transaction sender is equal to the admin address or not.
+So, after finding the upgrade function we search for conditionals that checks the caller of the transaction and by doing that we can find the admin address or the storage variable in which the admin address is stored.
+
+
+If the admin address is stored in a storage variable, then we should find the storage slot of that specific storage variable. For finding the storage slot we do what we did in \ref{findingProxies} part by using \textit{def storage} function of the decompiler and check the storage slot of the storage variable we found, and the admin address is saved on it. 
+Now we have the storage slot of the admin address and we should start doing all the things we did for EIP-1967 in the previous part. 
+In the EIP-1967 the storage slot for admin address was pre-specified and we do not need to find the slot but in this case we use the above methodology to find the slot but the further steps are the same as EIP-1967.
+So, by using the \textit{eth\_getCode} method for admin address inside the storage slot we find above, we can check wether the admin is EOA, Multi-sig, Governance, Proxy admin or not known.
+In this part we find \textit{1313} EOA addresses and \textit{104} multi-sig admins. Also by checking proxy admins we find \textit{92} EOA addresses and \textit{16} Multi signatures that uses proxy admin as a level of indirection. 
+
+In another case the admin address may be stored directly in a specific arbitrary storage slots. In this type the compiler will specify the address using the \textit{sha3} hash notation. In this case same as above we find the conditional check on the transaction sender and then find the storage slot in that line and hash of that pre-specified string. 
+By finding this arbitrary storage slot and doing the same processes we did in the previous part we find \textit{2} EOA addresses and \textit{10} Multi-sig addresses.
+
+The only case that is left is proxy contracts, in which the address of the admin is hardcoded inside them. It very straight forward. We find the upgrade function and the access control check on the caller of the transaction and then pick the fixed admin address and do the same processes mentioned above to find the admin types. There are \textit{49} EOAs, \textit{36} multi-signature admins and \textit{160} governance and not known admin addresses. 
+
+So, totally out of 7.3k proxy contract, \textbf{3558} are controlled by an EOA address, \textbf{988} are controlled by a multi signature wallet and \textbf{2924} addresses are governance controlled or our methodology could not find their type.
+
+%We did not try to find the governance contracts because in the case of rug pulls only EOAs and Multi signature wallets are in a critical risk, so we did not attempt to recognize the governance contract admins. Also we should mention that our methodology failed in some cases due to the problems regarding the decompiler. In some cases the decompiler was not able to decompile the code or some part of the code which our code dropped those addresses as unknown results. 
+
+% Bent Finance hack
+\subsection{(Risks regarding EOA and Multi-Sig admin Types (Rug Pulls)}
+In this part we dug deeper and explain why having EOA and Multi-Sig type admin is risky and what can be the consequences of them.
+
+A Rug Pull happens when the developer team or the agent who control a decentralized application leave support of the project and withdraw or sell the liquidity of the project\cite{rugPool}.
+The developer team may put a backdoor in the code and in a specific time, use that backdoor to drain the liquidity from the project. It is impossible for a normal user to detect such a backdoor in the code because a majority of these projects do not make their solidity code open source and if they do, a normal user cannot read code to find a backdoor. But, in this type of rug pulls a pro user who can read solidity code can detect such a backdoor if the source code is public and if not they can get the bytecode from Ethereum public node and decompile it into solidity to find the backdoor.
+
+There is another type of rug pulls which cannot be detected by any user. In this type the developer team make the smart contracts upgradeable. In the first version of the smart contract they do not put any back doors but in a proper time they will upgrade the system into another version which contains a back door and they will rug on users. We describe the same incident happened to Bent Finance protocol below:
+
+\paragraph{Bent Finance Hack.}
+Bent Finance\footnote{\url{https://app.bentfinance.com/}} is a staking and farming platform. They are using \textit{Transparent Upgradeable Proxy} pattern in their system. The admin of the proxy was an EOA at the time of incident. The malicious developer deployed a new implementation contract\footnote{\url{https://etherscan.io/address/0xb45d6c0897721bb6ffa9451c2c80f99b24b573b9}} in which it provides a huge amount of token to the malicious actor's address \footnote{0xd23cfffa066f81c7640e3f0dc8bb2958f7686d1f}. The malicious code can be seen in the figure \ref{bentFi}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.6\textwidth]{figures/bent.png}\label{bentFi}
+  \caption{Bent Finance Malicious Code}
+\end{figure}
+
+Afterwards, the attacker upgraded the proxy to the malicious implementation contract and by doing that the huge amount was assigned to the attacker. Once the balance was transferred to the attacker, they upgrade the proxy back to the latest non-backdoored version to hide the exploit. 
+Having huge amount of the tokens, the attacker drained liquidity from Curve Finance protocol which is a decentralized exchange \cite{bentFinanceHack}.
+
+This is a real world example of how having a proxy with EOA or multi-sig admins can be exploited and rug pulled.
+
+
+
+%Implementation of Eternal storage in call based upgrades: https://medium.com/cardstack/upgradable-contracts-in-solidity-d5af87f0f913
+
+\section{discussion}
+%\subsection{Off chain upgrades (UNiswap Arbitrum)}: On-chain voting for an off-chain process. Other types of upgrade. Like front end changes etc.
+
+
+
+\section{Appendix}
+
+\subsection{Verified Smart Contract Based Analysis}
+In this section we aim to shed light on these vital unanswered questions: 
  \begin{enumerate}
   \item How many of the existing Dapps on the Ethereum blockchain are upgradeable?
   \item Who can control these upgradeable Dapps (i.e who is the admin)? 
@@ -457,12 +690,8 @@ Upgrading a smart contract can be done by sending a transaction into the system.
   \item What is the average frequency of updates on the Ethereum Dapps?
   \item How many times the admin of upgradeable contracts changes on average?
 \end{enumerate}
-
-For now, we focused on the \textit{DelegateCall-based upgrade} pattern because it is the most favorite pattern for Dapp developers.
-
 To have analysis on Ethereum blockchain some widely used methodologies are Transaction-based analysis, Bytecode based analysis, Etherscan Verified Smart Contracts based analysis or combination of these methods. The first and second methodologies need to access to an Ethereum full archival node. But the last approach need to collect smart contracts from a third party service named Etherscan.io in which the Dapp developers are able to put their high-level language smart contracts which will be checked and verified from the bytecode of the Dapp on the Ethereum blockchain.
 
-\subsection{Verified Smart Contract Based Analysis}
 In the first attempt we conducted a measurement study based on verified smart contracts on Etherscan to find instances of OpenZeppelin upgradeable proxy contracts. OpenZeppelin is a team that built well-known libraries for ethereum developers. One of their is upgradeability plugins. There two different versions of the OpenZeppelin upgrade libraries: version 2.6 and version 3+. 
 We used smart-contract-sanctuary~\cite{smart_contract_sanctuary} which is a data set of all ethereum smart contracts verified on Etherscan. For this analysis we analyzed 93,000 smart contracts that are deployed on the main Ethereum blockchain and verified their contracts on Etherscan. 
 
@@ -513,125 +742,6 @@ The results for each version is:
 \end{itemize}
 
 
-\textcolor{red}{Next section is the recent analysis which I used transaction based analysis to find proxy contracts.}
-
-
-
-\subsection{Hybrid Analysis (Transaction and Bytecode based)}
-
-In this part we focused on finding the \textit{Delegate-call} based upgradeable contracts. Before start explaining the process of finding upgradeable proxies, we describe why we focused on finding this pattern. 
-
-\textit{Retail Change} methods is not possible to detect in large-scale. In \textit{Parameter change} method, one or multiple state variables can be changed inside the contract via a governance process. There is no distinction between a regular changeable state variable inside a contract and upgradeable one. The only way to detect these changes is reverse checking. In other words finding contracts that are govern the system and then find state variables that these governors can control. This way is possible for governance smart contract but not possible for Multi-Sig wallets and EOAs. 
-\textit{Component Change} is very similar to parameter change method but here an address to another contract is changing. This method is not detectable in large scale as well because in this pattern the main contract calls another contract which does not have any specific patterns. This architecture is very regular in Ethereum blockchain so the only way to find them is reverse analysis that described above.
-
-\textit{Wholesale change} approaches consist of \textit{Call-based}, \textit{Delegatecall-based} and \textit{Metamorphic} patterns. The Call-based pattern is an old fashion way of adding upgradeability to a system. This type is not used nowadays. On the other hand, \textit{Delegate-call}  pattern is widely used in ethereum contracts and this is the reason that we focused on this pattern. \textit{Metamorphic} pattern is very new and not well-tested yet. Also it has limitations such as the state of the contract should wiped out before upgrade each time because of need of self-destruction. Also there are some risks to this pattern. For instance there are discussions in Ethereum community about removing \textit{Selfdesctruct} opcode from EVM~\cite{selfDestruct}. 
-
-In the above paragraph we claimed that the \textit{Call-based} pattern is not widely used these days. To prove this claim we perform an analysis on 93,000 verified smart contracts in smart contract sanctuary database~\cite{smart_contract_sanctuary}. As mentioned in previous sections \textit{Call-based} patterns consist of a logic contract and storage contract. The storage contract should define all storage variables needed for the system and must have getters and setters for these variables. Because the storage contract is not changeable in upgrade event the developers should be sure that all state variables that are needed are defined. One trick that give the developers ability to add new state variables after deployment is using \textit{Eternal Storage} pattern which described in previous version. This is the reason that why Eternal Storage is widely used in \textit{Call-based} patterns. In this analysis, we try to find contracts that uses eternal storage structure in their logic using Regular Expression analysis. \emph{470} contract are found that uses eternal storage patterns and then we filtered them to find contracts that uses eternal storage structure and only contains getter and setter functions and not other logics. After filtering the we come up with \emph{170} unique eternal storage contracts that are used as storage contract of upgradeable Dapps. The newest contract was deployed on 2018 which show that this pattern is not widely used these days.
-
-In the further part of this section we focus on finding contracts that are using \textit{Delegatecall-based} patterns to add upgradeability feature.
-
-
-
-In the further sections we describe the \textit{methodology} of our work, the \textit{implementation} of the methodology and the \textit{results}.  
-
-\subsubsection{Methodology}
-As mentioned in classification section, the \textit{DelegateCall-based} upgradeability approach consists of a storage contract (a.k.a proxy contract) and a logic contract (a.k.a implementation contract). 
-
-Proxy contract is a simple type of smart contract in which there is a fallback function. Fallback function is a function inside a smart contract that do not have a function name. It means if a user sends a transaction to the contract including a call to a function that does not exists on the contract, it will passed into the fall back function and the logic inside the fall back function will be executed. So if a user calls a contract with a function signature that does not exist on that contract, it is equal to calling the fallback function.
-
-Inside the fall back function of the proxy contracts, there is a delegate call to the address of \textit{implementation contract} and pass the input data of the transaction to the implementation contract without altering it. In the rest of the paper, we we call implementation address inside the proxy, \emph{Target address}.
-
-All proxy contracts have the above structure. But \textit{Upgradeable proxy contracts} should have another extra condition as well. The agent that responsible of changes in the smart contract contract (a.k.a \emph{admin}) must have the ability to change target address inside the proxy. If a proxy does not have this condition, it means that the contract is just forwarding the calls into a fixed implementation contract for the rest of its life and so, this proxy is not upgradeable. There are bunch of patterns that follows this structure (e.g. Minimal Proxies, Delegate call forwarders, etc.) which we call them \textit{Forwarders} in the rest of the paper. So, for upgradeable proxies the target address should be changeable.
-
-Collecting transactions and information regarding these transaction, we filter transactions to the proxy contracts by checking if these transactions pass a fallback function which delegate calls the message data into another contract without any changes.
-
-As discussed above, these proxies can be forwarders or upgradeable proxies. To find upgradeable proxies we should filter them by checking whether the target address is changeable for the proxy contract or not.
-
-We first check if the target address comes from an external call to another contract. If yes we should just check that callee contract that if the target address inside it is changeable. If yes the proxy contract is \textit{Beacon Proxy} contract. In this case our proxy contract grabs the target address from another contract (a.k.a Beacon contract) each time and because this address is changeable inside the beacon contract, the admin can just change this address from the beacon contract and upgrade the system whenever they want.
-
-If the address does not come from an external call, then we check if the there is any function or way to change the target address inside the proxy itself. If yes then our proxy is an upgradeable proxy because the admin can just change the target address through that function inside the proxy and upgrade the system.
-
-If there is no way to change the target address inside the proxy, then we pass it to another filter. There is another way of implementing upgradeable contracts named \textit{Universal Upgradeable Proxy Standard (UUPS)} that discussed in previous parts. In this method, the target address is changeable using the implementation contract. So to filter and find them, we check the implementation contract to find out if there is any function inside the implementation contract that the admin can change the target address using that function. If yes then our proxy is UUPS proxy other wise the proxy is not upgradeable.
-
-The whole process is depicted on figure~\ref{flowchart}.
-
-\begin{figure}[t]
-  \includegraphics[width=0.8\textwidth]{Methodology.pdf}\label{flowchart}
-  \caption{Flowchart of the Process}
-\end{figure}
-
-
-\subsubsection{Implementation}\label{findingProxies}
-In this section we describe the processes of finding upgradeable proxy contracts explained in the previous section in detail of implementation and execution. 
-Each block of Ethereum blockchain is consist of transactions that processed in that exact block. To get all transaction details we need to replay the transaction and collect the data of execution. Ethereum full archival node has a method, \textit{trace\_transaction},  that gives the \textit{Parity VM transaction traces} inside an specific block. Each transaction trace is composed of actions that each of them consists of an opcode relevant to the code of smart contract and the transaction that is sent to the blockchain and manipulate the state, memory or stack of the Ethereum blockchain. 
-
-Having the transaction traces for each block, we will search to find actions that consists of \textit{callType} . If the trace consists of callType element it means that a \textit{Call},\textit{Static Call} or \textit{Delegatecall} happened in that action. we picked actions that have \textit{callType} and this call type is \textit{delegate call}. Also each action has an \textit{input} element for messages that have a call data. If the input element of the selected actions are equal to the input element of their previous action it will be interpreted as the transaction goes through a fallback function that delegate calls it to another contract. Because the input or call data is not changed, in the delegate call it means that there is no function with the function selector specified by the input on the smart contract and so the transaction went into a fallback function. Also because there is a delegate call into another contract with the same input it means that inside that fallback function there is a delegatecall that passes the whole message data to the target address contract.So, these contracts meet our first condition that described above and we mark them as \textit{Proxy Contracts}and collect \textit{From address},\textit{To address} and the \textit{transaction hash} of these picked actions and pick the unique from addresses of this data. From address is the address of sender of transaction, to address is the address which the proxy sends the transaction into and transaction hash is the transaction identifier that is used in Ethereum blockchain. 
-
-As discussed before, these selected contracts are proxy contracts and not necessarily upgradeable proxy contracts. So, we need to filter the forwarders from proxy contracts to find upgradeable proxy contracts. As mentioned in methodology section, the upgradeable proxy contracts must have a condition; the admin of the contract should be able to change the target address. In other words, we should check if the target address inside the proxy contract is changeable or not.
-
-Five regular ways for the situation that the target address is fixed and not changeable on the contract:
-\begin{enumerate}
-  \item The target address is hardcoded in the contract without assignment to any variables
-  \item The target address is saved in a constant or immutable variable type 
-  \item The deployer adds the target address via a constructor function
-  \item The target address is defined in a storage variable, but there is no function or a way to change this address after contract deployment
-  \item The proxy contract grabs the target address each time by calling another contract and there is no way on the callee contract to change this address
-\end{enumerate} 
-
-In the first three situations, the target address amount will be appeared on the bytecode of the smart contract. So, we can get the bytecode of each proxy contract that are collected from previous part using the \textit{eth\_getCode} method of a Ethereum archival node. Then we need to check if the target address is appeared on the bytecode or not. To have the target addresses we just need to collect The \textit{To addresses} that we collected on the previous part which are supposed to be the implementation addresses because the proxy contract delegate calls into these addresses. So we easily checked if the \textit{To addresses} are appeared on the bytecode of the \textit{From addresses} (which is the proxy contract's bytecode). If yes, these proxies are not upgradeable proxies and they are forwarder contracts.
-
-For the situation 4, we need other processes to check whether the implementation address is changeable or not. We need to design a filter to tell us is there a way to change the target address or not. We will describe the filter in the later part of the paper, but for now let's assume that we have a filter module named \textit{Assignment Checker} that checks and tells us that whether there is a function inside the proxy contract that can change the target address by calling a function. If yes mark the contract as an upgradeable proxy contract. So, now we have output addresses that their contract has fall back functions that delegate calls the whole data into another implementation contract and their target address is changeable on the proxy contract. So, we have a dataset of upgradeable proxy contracts.
-
-For the situation 5, we check the proxy contracts to find if the target address inside the proxy contract is coming from an external call to another contract. If yes the we check the callee smart contract (a.k.a Beacon contract) that if the target address is changeable inside that contract or not. If it is changeable we mark the proxy as \textit{Beacon Proxy} otherwise it is a \textit{Forwarder}. 
-
-But this is not the end of story. There is another proposed upgradeable proxy contract pattern, named Universal Upgradeable Proxy Standard (UUPS) also known as EIP-1822 that described in the previous sessions. In this type of proxy contracts, the amount of target address is changeable using the implementation smart contract. As mentioned above the code of the implementation contract is executed in the context of the proxy contract and so it will change the storage state of the proxy contract. If we have a function in the implementation contract that gives us the ability to change the storage slot of the target address inside the proxy contract's storage, we can upgrade the system by calling that function of implementation contract. We couldn't catch this type of upgradeable contracts by the previous processes because we just checked if there is a function inside the proxy contract that can change the target address.
-
-We can tackle this problem by first finding the storage slot inside proxy contract in which the implementation address is recorded. Then check if the admin of the implementation contract can change the variable defined on that specific storage slot using a function inside the implementation contract. So first we should find the storage slot of the proxy contract in which the target address is saved. There are two EIPs out there that makes it easy to find these storage slots that should be used  to save target address for upgradeable proxies; EIP-1967 \footnote{0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc} and EIP-1822 \footnote{0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7}.suggested randomly selected storage addresses for implementation addresses to mitigate the overwriting on these slots. The general way to do this is not using these proposed slots from these EIPs for this process. The general way is to find the storage slot from the proxy contract and then check if admin can change this specific storage slot inside the implementation contract. But this way is not doable in large scale because in \textit{Assignment checker} module we need to decompile the bytecode which is time consuming for contracts that have a large bytecodes. Implementation contracts are usually large pieces of codes. So, it is not possible to do this process in a large-scale for all proxy contracts that are found from the previous parts. This is the reason that we limit our filter to specific storage slots proposed in EIP 1967 and EIP 1822.
-
-So for this part we use the remained proxy contract addresses from the previous part. First we select the contracts that their target address is saved on the specific storage slots mentioned above and if yes check the implementation contract to find variable regarding that storage slot. Afterwards check if the variable is changeable via implementation contract. As mentioned before, the \textit{To addresses} are the implementation contracts. We first find the variable in the implementation contract that is saved in the mentioned slots. Then pass it to our filter \textit{Assignment Checker} to check if the admin of the contract is able to change it or not. If it is changeable, it means that the admin can upgrade the system using a function on the implementation contract, and so the proxy is an UUPS contract. 
-
-The whole process is depicted on figure~\ref{fig:finderModule}.
-
-\begin{figure}[t]
-  \includegraphics[width=0.8\textwidth]{figures/Upgradeability_finder1.png}\label{fig:finderModule}
-  \caption{Upgradeability Proxy Contract Finder}
-\end{figure}
-
-\subsubsection{Assignment Checker Module}
-
-As mentioned in the previous part, we need a module to check if the admin can change target address on the proxy contract, implementation contract or beacon contract. For this purpose we need a module that gets \textit{{Bytecode}} of the proxy/implementation address as input and find the variable name and storage slot of the variable that the target address is saved into it and then check to find out is there any function inside the contract that gives the admin the ability to change the target address.
-
-We use bytecode decompiler named \textit{Panoramix decompiler} to decompile the bytecodes into well-formated python language codes. The decompiled code gives us all storage variables and their storage slots in a function named \textbf{Storage}. On the other hand, the decompiled code will tell us if a function is \textit{Payable} or not. Among these Payable functions the one that does not have name or its name is fallback is the \textit{fallback} function of the contract. So we will try to find the line that \textit{Delegate Call} happened on it and collet these lines. Now that we have storage variable names and storage slots of these variables and also the line of code inside fallback that have the delegatecall, we will check to find the target address variables. We are doing that by checking if one of the storage variables is used inside the line of code that contains delegation. 
-% or if there is a hash a text is inside the line of the code (if there is 'sha3' inside the line). 
-
-There is two other steps here. First if there is a variable name in the storage function of decompiled code that has the same slot with implementation variables we captured from previous part we will add those variables to target address variables. Also if we find another variable that being assigned to captured target address variables, we will add them to the implementation addresses as well.
-
-Now that we have a list for target variables, we will search through the code to find if any assignment happened to one of them. If yes we will pick the variables that is assigned to target variable and then check if this picked variable is the input of the function in which the assignment occurred. If yes it means that there is a function that the admin can change target address using this function.
-
-To summarize what we did, we find all possible variables in the code that can change the target address inside the proxy/implementation contract and check if there is any function inside them that can alter the implementation address.
-
-The whole process is depicted on figure~\ref{assignmentFinder}.
-
-\begin{figure}[t]
-  \includegraphics[width=0.8\textwidth]{figures/Assignment_finder.png}\label{assignmentFinder}
-  \caption{Assignment CheckerModule}
-\end{figure}
-
-
-
-\subsubsection{Results}
-Having access to an Ethereum full archival node we have collected transaction traces of transactions included in 2,064,595 blocks of Ethereum blockchain, starting from block number \textit{\#10800000} to \textit{\#12864595}. It covers transactions on the Ethereum blockchain from \textit{Sep-05-2020} to \textit{Jul-20-2021}. 
-
-Having transaction traces and the actions of each transaction, we have collected \textit{From} address (address of sender of the transaction), \textit{To} address (destination address of the transaction) and \textit{Transaction Hash} of actions which has \textit{delegateCall} as their \textit{Call Type} that their input is the same as their previous action.
-
-To have the proxy contract, we find the unique From addresses from all collected transactions which gives us \textit{1,427,215} unique proxy contracts. But bunch of these proxies are using a shared implementation contracts. So after filtering proxies with the same implementation contracts we come up with \textit{13,088} contracts.
-
-Afterwards we filter \textit{Forwarder Contracts} from our data set by checking if the To address appears on the contract's bytecode and then pick the upgradeable proxy contracts by checking if implementation addresses is changeable inside their code. Totally we find \textit{7,470} regular upgradeable proxy contracts. 
-
-On the other hand, we checked the remained proxy contracts to find out if their implementation address is based on EIP-1822 or EIP-1967 proposed storage slots. On these selected contracts we picked their implementation address contract and check if the implementation address is able to change the implementation address on the proxy contract, if yes we mark the address as upgradeable proxy contract. The outcome of this last filter is \textit{403} upgradeable proxy contracts that uses Universal Upgradeable Proxy Pattern. Also our code result shows \textit{352} unique beacon proxy contracts as a result as well.
-
-At the end we have \textit{8,225} upgradeable proxy contracts. We randomly sampled 150 contracts from these contracts and manually check them and all of them were upgradeable proxy contract. On the other hand, we sampled 150 contracts from the contracts that marked as non-upgradeable contracts and check them manually. between these 150 contract just two of them was upgradeable and it was a false-negative. The reason that our model did not catch this contract was failure happened on the decompiler to decompile the implementation contract code and so assignment checker detector could not catch them. 
-
 \subsection{Attacking Universal Upgradeable Proxy Standard (UUPS) contracts}
 In the previous sections \ref{sysComplexity} (in Delegate-call section) we discussed that the implementation function should not contain \textit{constructor} function and instead of that there should be regular function namely \textit{Initialize} function that can be called just once and has the same functionality as constructor function. So the contract creator must call initialize function through proxy contract quickly after deploying the proxy contract. The Initialize function does not have any access control because it is considered to be called once and this function is responsible to define the owner so before calling this function we don't have the owner's address to check it for access control of the function. This is the main reason that there should be a check to be sure that this function can just be called once and not more. Regularly, the deployer (the dev team) will define and initialize the owner of the contract (address which have the control of upgrading the system) via initialize function. So if the initialize function can be called more than once, or the deployer do not initialize the contract, then any external address can call initialize function and change the owner of the contract and take control of the contract. But this is not the case and less likely to happens because this is the first row of checklist of this type of upgradeability pattern.
 
@@ -660,189 +770,5 @@ We try to check all UUPS contracts that we have to find if any of them can be ex
 Checking the list above we find 15 contracts in our data set which were exploitable till September 9, 2021 and openzeppelin team patched them by initializing the contract. It means that an attacker could deploy a new malicious contract which executes self-destruct on any calls to it. Then take control of the implementation contract by calling initialize function of them. Afterwards, the attacker should find the function inside the implementation contract that have a delegate call inside it and find the target address. There should be a function inside implementation contract to change the address to the malicious contract that the attacker deployed recently and just after that the attacker call the function to execute a delegate call into the malicious contract and then self-destruct the implementation contract.
 
 We find 61 UUPS contracts that are not initialized and anybody can take control of these implementation contracts but because these contracts do not use delegate call or self-destruct, they are not exploitable by this type of attack.
-
-\subsection{Rug Pulls (Exit Scams)}
-
-
-% What is a rug pool and how can it happen
-% 1. Backdoor in the code
-% 2. Upgrade the system and add a backdoor
-
-%%%%******************* Certik
-
-
-A Rug Pull happens when the developer team or the agent who control a decentralized application leave support of the project and withdraw or sell the liquidity of the project\cite{rugPool}.
-
-The developer team may put a backdoor in the code and in a specific time use that backdoor to drain the liquidity from the project. It is impossible for a normal user to detect such a backdoor in the code because a majority of these projects do not make their solidity code open source and if they do, a normal user cannot read code to find a backdoor. But, in this type of rug pulls a pro user who can read solidity code can detect such a backdoor if the source code is public and if not they can get the bytecode from Ethereum public node and decompile it into solidity to find the backdoor.
-
-There is another type of rug pulls which cannot be detected by any user. In this type the developer team make the smart contracts upgradeable. In the first version of the smart contract they do not put any back doors but in a proper time they will upgrade the system into another version which contains a back door and they will rug on users. 
-
-% Why admin is important and what are the types of admins
-
-The question which raised here is who can upgrade the system? There should be an agent who decides on the upgrades of the system. Generally, there are three main types of admins for upgradeable smart contracts; a single Ethereum address (a.k.a EOA), Multi Signature wallets and Governance schemes. The first and second options are adding centralization to the system. Based on \textit{The Security of DeFi Security 2021}~\cite{certikReport} report by Certik company, \textbf{Centralization} is the most common attack vector of the hacked DeFi projects, so remaining a centralization point by giving a critical roles to one or limited number of persons can be very dangerous.
-We are describing three types of admins bellow:
-
-
- \paragraph{Externally owned Address(EOA)}
-The easiest and the fastest way to upgrade a system is through a single address which is the owner of smart contract. This is the most centralized solution we have for upgrading a system. The main problem with this issue is the security of the system because it only depends on a single private key hold by the owner. In case of malicious party or if the owner's private key is compromised then the entire system is on the risk.
-
-In case of rug pulls a malicious developer can just upgrade the system into a new version and put a backdoor inside it and steal all the funds.
- \paragraph{Multi-Sig}
- A \textit{m out of n} Multi-sig wallet is a smart contract that can manage a transactions only if m number out of a specified n EOAs agree and sign the transaction. We can use address of a Multi-sig wallet as the owner of the system. In case of a upgrade or responding to an incident m number of the governors can permit to upgrade the system.
-
- This is a better answer to the decision making of the upgrade compare to using an EOA in case of centrality while keeping the speed of an upgrade process. However, it is not decentralized. The problem here is that the Ethereum system is pseudo anonymous. So, there is not any way to identify the person behind an Ethereum address. So, in case of rug pools, the malicious developer team can keep m signatures out of n in their hands and in a proper time, they can upgrade a system to a malicious version and rug on the users.
-
- One way to reduce this risk and level of centralization is to use different trusted teams' addresses who are stakeholders of the system in the multi-sig wallet. 
-
-Also it is good to mention that there are some types of governance voting which is known by \textit{Off-chain Governance Schemes} in which users who hold governance tokens can signal their votes on a proposals in an off-chain tools like \textit{Discord} or \textit{Snapshot} and then another agents which are usually a part of multi signature schemes can put the results on chain and execute the actions if needed.
-
-We put the off chain governance in the Multi-sig category because at the end this multi-signature wallet is the only on chain agent who is responsible to change the system and there is no way to enforce the off-chain agreements to them other than making trust on them.
-
-\paragraph{On-Chain Governance Voting}
-The most decentralized way to decide on a system change is to do it using decentralized voting. This can be done by distributing governance voting tokens to the community and then they can vote on a change proposal by staking their voting token. 
-
-There are some critique to this method. Governance by voting has an inherit time delay to the upgrading process. This raises a problem when the system needs an instant upgrade (\eg responding to an incident). This means we need another mechanism to quickly fix bugs and upgrade the system on the event of incidents in conjunction with the voting process (\eg Global shutdown in MakerDAO).
-
-It is also not cost-efficient for the voters because all token holders must send a transaction and needs to pay network fee.
-
-The other problem with this method is fair distribution of the tokens. If the governance token does not distribute fairly and the majority of tokens granted to the limited number of users, then it is very similar to the multi-sig method which is more costly and complex. Because, whales of the governance token can vote to any desired change of the system similar to the multi-sig.
- 
-In case of rug pulls this type of admins are the resistant type against rug pulls because the whole token holders can be part of a system upgrade and vote on the changes. However, as mentioned above it really depends on the distribution of the tokens. If the tokens are on the hand of limited persons then they can decide to rug the users.
-
-% Bent Finance hack 
-\paragraph{Bent Finance Hack.}
-
-Bent Finance\footnote{\url{https://app.bentfinance.com/}} is a staking and farming platform. They are using \textit{Transparent Upgradeable Proxy} pattern in their system. The admin of the proxy was an EOA at the time of incident. The malicious developer deployed a new implementation contract\footnote{\url{https://etherscan.io/address/0xb45d6c0897721bb6ffa9451c2c80f99b24b573b9}} in which it provides a huge amount of token to the malicious actor's address \footnote{0xd23cfffa066f81c7640e3f0dc8bb2958f7686d1f}. The malicious code can be seen in the figure \ref{bentFi}
-
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=0.6\textwidth]{figures/bent.png}\label{bentFi}
-  \caption{Bent Finance Malicious Code}
-\end{figure}
-
-Afterwards, the attacker upgraded the proxy to the malicious implementation contract and by doing that the huge amount was assigned to the attacker. Once the balance was assigned the attacker upgrade the proxy back to the latest non-backdoored version to hide the exploit. 
-Having huge amount of cvxcrv tokens, the attacker drained liquidity from cvxcrv and MIM pool\cite{bentFinanceHack}.
-
-This is a real world example of how having a proxy with EOA or multi-sig admins can be exploited and rug pulled.
-
-% Admin types and intro
-
-\subsubsection{Exploring Admin Types}
-As described above, proxy contracts may have three types of the admin; EOA, Multi-Sig and Governance Contract. In EOA and Multi-sig types a person or a limited number of persons can may decide take control of the system. So, they can upgrade the system into a newer version and change the logic of the contract as they wanted to. 
-
-EOA is the most risky type because just one person can decide to change the the logic of the system and upgrade it to a desired version. M out of N Multi Signature admins are less riskier than EOAs but in case that M persons of these N, decide to take control of the system they can. The problem with multi sig wallets are that the identity of the persons behind each address is hard to be recognized. So ,malicious developers can take control of M addresses and can decide to change the system whenever they wanted to.
-
-Governance contracts are the safest way to decide about the upgrade events. In this model a governance token will be distributed to the users. Some members (a.k.a Proposers) can declare a proposal to change the system and then token holder can vote on the change. If the proposal is getting accepted then the protocol will be changed. The possible weak point of this system is how these tokens are distributed. If the token distribution is not fair, then huge amount of voting power will be in hand of limited persons/organizations and they can decide on the change of the system as they desired.
-
-The fact that smart contracts and Dapps that their admins are EOA and Multi-signature are in a great risk to be rug pulled or shut down and their user may lose huge amount of funds bring us to find the admins and their types for the proxy contracts we find in the previous parts.
-% The way we want to find admins
-%Methodology
-\subsubsection{Methodology}
-
-In the previous parts,we gathered 7.3k upgradeable proxy contracts. In this part we try to find the admin of each proxy contract and recognize the type of the admin (i.e EOA,Multi-Sig,Governance).
-In this part we describe our methodology of finding the admin and its type. The whole process is depicted in the figure\ref{Admins}.
-
-\begin{figure}
-  \centering
-  \includegraphics[width=1.0\textwidth]{figures/Admins.png}\label{Admins}
-  \caption{Admin Types}
-\end{figure}
-
-\paragraph{EIP-1967.}As mentioned above EIP-1967~\cite{eip1967} suggested specific arbitrary slots for upgradeable proxy contracts to store implementation contract's address and \textit{Admin address}\footnote{Storage slot 0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103 for admin}.
-
-% Boro tu folder final + ax ru takhte lab check kon marahel ro tozih bede
-%Bayad proxy admin ro ham tozih bedi
-% Aval EIP 1967 ke rahate bad inke chejuri mishe multi-sig ha ro peyda kard bad Proxy adminesh ke kolan chie proxy admin o ina va bad az peyda kardanesh chejuri mishe admin asli ro peyda kard + inke baghiashun governance + nn hastan
-
-In first step we use \textit{eth\_getStorageAt} method of an Ethereum full archival node to search the EIP-1967 specified storage slot for admins on our 7.3k proxy contracts. If the result of this method is non-zero it means that the proxy uses EIP-1967 standard because the specified storage slot is random and one can store variable in this slot just by defining this slot which means that they used EIP-1967.
-
-
-So, for non zero results, we capture the address which is the address of admin of the proxy. Now we try to find the type of these admin addresses. Having the address of the admin we use \textit{eth\_getCode} method to check the code of the admin account. If the code is empty, it means that this address is not a smart contract so it is an EOA. we find \textit{900} EOA admins that their proxy uses EIP-1967 standard.
-
-The remained admin addresses are contract because their account keeps code. This contract can be multi signature smart contract wallets. The most widely used multi signature wallet is Gnosis Safe\footnote{\url{https://gnosis-safe.io/}} wallets. We automatically checked if the code of the admin address is the Gnosis wallet multi signature patterns. After picking Gnosis safe wallets we manually checked \%10 of the remained addresses to find if they used other patterns for their multi signature wallet and we found some other patterns (e.g. MultiSignatureWalletWithDailyLimit, etc.). After Finding all these types we checked the admin codes to see whether they are multi signature wallets. We find \textit{255} admin accounts that uses multi signature wallets for their decision on the systems changes.
-
-There is another class of admin contracts named \textit{Admin Proxy} contracts. These admin proxy contracts are another layer of re-direction between the real admin and the Dapp's proxy contract. The admin proxy contracts are proxy contracts that redirect the messages from the real admin into the Dapp's proxy. The only person who can use admin proxy is the admin (a.k.a owner) of the admin proxy. So we first filter the admin proxy contracts using the codes we get from the previous part and then try to find the owner of the admin proxy contracts. The owner of admin proxy contract also can be EOA, Multi-sig or governance contract. Finding the owner of the admin proxy contract, we used \textit{eth\_getCode} method to check the code of these account and find out if they are EOAs or Multi-signatures or governance schemes. Doing this we find \textit{1202} EOA admin accounts and \textit{567} multi signature admins. We marked the remained proxy admin addresses as Governance/Not Known admin types and we have \textit{462} of them. There were also non admin proxy contracts which use EIP-1967 but they were not EOA or Multi signatures. We marked them as Governance/Not Known admin types and we have \textit{53} of them.
-
-
-\paragraph{Non EIP-1967.}
-
-% Vase non EIP 1967 ha bayad begim chejuri peydashun mikonim :
-% 1. Finding the upgrade function
-% 2. Finding a check on caller if it is:
-
-For proxy contracts which not use EIP-1967, the problem is we don't know how the admin address is being saved in the proxy contract. It can be saved in a storage slot of the contract or be hardcoded in the smart contract\footnote{There are some other possible ways to store the admin address for instance saving it in another contract and each time make an external call to get the address but to our knowledge this pattern is not used as a standard (By doing sample checking we find out widely used patterns)}. 
-
-So there are two ways that the admin address is saved in the proxy contract. It can be saved as a storage variables or it can be hardcoded as a fixed address.
-
-In storage variable case the first question is in which storage slot the admin address is stored. So, the first step is to find the storage slot of the admin address variable. % Caller --> admin slot || Sha3('')
-For the fixed address we should find the fixed address of the admin directly.
-
-For finding the slot of the storage variable in which admin address is saved we first find the function in which the proxy can be upgraded. For finding the upgrade function we exactly do what we did in \ref{findingProxies} part. We first find the storage variable in which we saved the implementation address and then we find a function in which the implementation address can be changed using the inputs of the function. 
-
-The upgrade function of a proxy contract is a critical function and the only account that can call this function should be the admin of the proxy contract. Otherwise the other parties who can call this function can change the implementation address and take control of the proxy contract. So, there should be a check inside the upgrade function to check whether transaction sender is equal to the admin address or not.
-
-So, after finding the upgrade function we search for conditionals that checks the caller of the transaction and by doing that we can find the admin address or the storage variable in which the admin address is stored.
-
-%   a. storage variable --> Find the slot of that storage and then check the address inside it
-
-If the admin address is stored in a storage variable, then we should find the storage slot of that specific storage variable. For finding the storage slot we do what we did in \ref{findingProxies} part by using \textit{def storage} of the decompiler and check the storage slot of the storage variable we find and the admin address is saved in it. Now we have the storage slot of the admin address and we should start doing all the things we did for EIP-1967 in the previous part. In the EIP-1967 the storage slot for admin address was pre-specified and we do not need to find the slot but in this case we use the above methodology to find the slot but the further steps are the same as EIP-1967.
-So, by using the \textit{eth\_getCode} method for admin address inside the storage slot we find above, we can check wether the admin is EOA, Multi-sig, Governance, Proxy admin or not known.
-In this part we find \textit{1313} EOA addresses and \textit{104} multi-sig admins. Also by checking proxy admins we find \textit{92} EOA addresses and \textit{16} Multi signatures. 
-
-%   b. If they used hash of sth (Sha3 ...)
-
-Another case the admin address may be stored directly in a specific arbitrary storage slots. In this type the compiler will specify the address using the \textit{sha3} hash notation. In this case same as above we find the conditional check on the transaction sender and then find the storage slot in that line and hash of that pre-specified string. 
-By finding this arbitrary storage slot and doing the same processes we did in the previous part using admin address we find \textit{2} EOA addresses and \textit{10} Multi-sig addresses.
-
-%   c. If they used a fixed address as their admin
-
-The only case that is left is proxy contract in which the address of the admin is hardcoded inside them. It very straight forward. We find the upgrade function and the conditional check on the caller of the transaction and then pick the fixed admin address and do the processes mentioned above to find the admin types. There are \textit{49} EOAs, \textit{36} multi-signature admins and \textit{160} governance and not known admin addresses. 
-
-
-%Total stats
-%why we cannot find some of them.
-
-So, totally out of 7.3k proxy contract, \textbf{3558} are controlled by an EOA address, \textbf{988} are controlled by a multi signature wallet and \textbf{2924} addresses are governance controlled or our methodology could not find them.
-
-We did not try to find the governance contracts because in the case of rug pulls only EOAs and Multi signature wallets are in a critical risk, so we did not attempt to recognize the governance contract admins. Also we should mention that our methodology failed in some cases due to the problems regarding the decompiler. In some cases the decompiler was not able to decompile the code or some part of the code which our code dropped those addresses as unknown results. 
-
-
-
-
-% Level of intervention of each Dapp (pauseable etc.)
-% History of upgrades --> How many times a Dapp upgraded before (using events etc...)
-
-% \section{Concluding Remarks}
-
-
-% \subsection{Registry pattern}
-% Registry contracts are probably the simplest approach to upgradeability. Registry pattern consist of two main contracts: registry and logic contract. Registry contract holds the addresses of logic contracts and whenever it receives a transaction it will pass it to the related logic contract. 
-% If the development team decide to upgrade the smart contract, they can deploy another smart contract and then just change the pointer of the registry smart contact to the new smart contract.
-
-% The main disadvantage of this approach is that in upgrading event, there should be a manual or automated migration plan to transfer data from the old contract into the new upgrade smart contract.
-% Another drawback of this pattern is that it also introduces additional complexity for external clients who would also need to call into the registry before interacting with the system
-
-
-%Idea: see how frequent each project uses its upgradeability feature to upgrade the contract and why?
-
-%In proxy storage layout you should take care that: 
-% 1. never remove variable
-% 2. never change var type
-% 3. never change inheritance order
-
-
-%Implementation of Eternal storage in call based upgrades: https://medium.com/cardstack/upgradable-contracts-in-solidity-d5af87f0f913
-% Good classificaton: https://medium.com/1milliondevs/solidity-storage-layout-for-proxy-contracts-and-diamonds-c4f009b6903
-% New storage type *Dimond Storage*: https://medium.com/1milliondevs/new-storage-layout-for-proxy-contracts-and-diamonds-98d01d0eadb
-%https://medium.com/1milliondevs/new-storage-layout-for-proxy-contracts-and-diamonds-98d01d0eadb
-% Upgradability checklist: https://blog.trailofbits.com/2020/06/12/upgradeable-contracts-made-safer-with-crytic/
-
-
-%ToDo: Write about OpenZeppelin upgrade bug : https://blog.trailofbits.com/2018/09/05/contract-upgrade-anti-patterns/
-%ToDo: Gas cost comparison between different implementation (using different number and types of the storage variables)
-
-
-\section{discussion}
-%\subsection{Off chain upgrades (UNiswap Arbitrum)}: On-chain voting for an off-chain process. Other types of upgrade. Like front end changes etc.
 
 \input{sections/table}
