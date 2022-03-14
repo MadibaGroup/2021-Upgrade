@@ -1,4 +1,4 @@
-This is BibTeX, Version 0.99d (TeX Live 2019)
+This is BibTeX, Version 0.99d (TeX Live 2021)
 Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: main.aux
 The style file: splncs04.bst
@@ -15,8 +15,6 @@ Warning--empty journal in ToBantiPattern
 Warning--empty year in ToBantiPattern
 Warning--empty journal in delegatecallForwarders
 Warning--empty year in delegatecallForwarders
-Warning--empty journal in selfDestruct
-Warning--empty year in selfDestruct
 Warning--empty journal in certikReport
 Warning--empty year in certikReport
 Warning--empty journal in bentFinanceHack
@@ -31,45 +29,45 @@ Warning--empty journal in securityAdvise
 Warning--empty year in securityAdvise
 Warning--empty journal in uupsAttacks
 Warning--empty year in uupsAttacks
-You've used 13 entries,
+You've used 12 entries,
             2850 wiz_defined-function locations,
-            656 strings with 6451 characters,
-and the built_in function-call counts, 3945 in all, are:
-= -- 248
-> -- 111
+            652 strings with 6242 characters,
+and the built_in function-call counts, 3658 in all, are:
+= -- 230
+> -- 104
 < -- 0
-+ -- 48
-- -- 34
-* -- 255
-:= -- 555
++ -- 45
+- -- 32
+* -- 237
+:= -- 515
 add.period$ -- 0
-call.type$ -- 13
-change.case$ -- 56
+call.type$ -- 12
+change.case$ -- 52
 chr.to.int$ -- 0
-cite$ -- 39
-duplicate$ -- 401
-empty$ -- 382
-format.name$ -- 37
-if$ -- 776
+cite$ -- 36
+duplicate$ -- 371
+empty$ -- 353
+format.name$ -- 35
+if$ -- 719
 int.to.chr$ -- 0
-int.to.str$ -- 13
-missing$ -- 95
-newline$ -- 45
-num.names$ -- 26
-pop$ -- 258
+int.to.str$ -- 12
+missing$ -- 88
+newline$ -- 42
+num.names$ -- 24
+pop$ -- 239
 preamble$ -- 1
-purify$ -- 43
+purify$ -- 40
 quote$ -- 0
-skip$ -- 103
+skip$ -- 95
 stack$ -- 0
-substring$ -- 66
-swap$ -- 125
+substring$ -- 61
+swap$ -- 116
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 52
-warning$ -- 26
-while$ -- 26
-width$ -- 15
-write$ -- 96
-(There were 27 warnings)
+type$ -- 48
+warning$ -- 24
+while$ -- 24
+width$ -- 14
+write$ -- 89
+(There were 25 warnings)
