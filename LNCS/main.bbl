@@ -3,9 +3,6 @@
 \providecommand{\urlprefix}{URL }
 \providecommand{\doi}[1]{https://doi.org/#1}
 
-\bibitem{rugPool}
-Academy, B.: Rug pull \url{https://academy.binance.com/en/glossary/rug-pull}
-
 \bibitem{uupsEIP}
 Barros, G., Gallagher, P.: Eip-1822: Universal upgradeable proxy standard
   (uups) \url{https://eips.ethereum.org/EIPS/eip-1822}

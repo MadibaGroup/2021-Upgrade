@@ -941,6 +941,7 @@ INPUT /Users/greatsao/Documents/GitHub/2021-Upgrade/LNCS/figures//New-method.png
 INPUT /Users/greatsao/Documents/GitHub/2021-Upgrade/LNCS/figures//New-method.png
 INPUT /Users/greatsao/Documents/GitHub/2021-Upgrade/LNCS/figures//New-method.png
 INPUT /Users/greatsao/Documents/GitHub/2021-Upgrade/LNCS/figures//New-method.png
+INPUT /usr/local/texlive/2021/texmf-dist/fonts/tfm/public/cm/cmbxti10.tfm
 INPUT /Users/greatsao/Documents/GitHub/2021-Upgrade/LNCS/figures/Upgradeability_finder1.png
 INPUT /Users/greatsao/Documents/GitHub/2021-Upgrade/LNCS/figures/Upgradeability_finder1.png
 INPUT /Users/greatsao/Documents/GitHub/2021-Upgrade/LNCS/figures/Upgradeability_finder1.png
@@ -999,6 +1000,7 @@ INPUT /usr/local/texlive/2021/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.e
 INPUT /usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
 INPUT /usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb
 INPUT /usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb
+INPUT /usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmbxti10.pfb
 INPUT /usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb
 INPUT /usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb
 INPUT /usr/local/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb

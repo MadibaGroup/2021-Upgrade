@@ -5,8 +5,6 @@ The style file: splncs04.bst
 Database file #1: bib/pulp.bib
 Database file #2: bib/new.bib
 Warning--I didn't find a database entry for "eip1967"
-Warning--empty journal in rugPool
-Warning--empty year in rugPool
 Warning--empty journal in uupsEIP
 Warning--empty year in uupsEIP
 Warning--empty journal in aaveBreak
@@ -29,45 +27,45 @@ Warning--empty journal in securityAdvise
 Warning--empty year in securityAdvise
 Warning--empty journal in uupsAttacks
 Warning--empty year in uupsAttacks
-You've used 12 entries,
+You've used 11 entries,
             2850 wiz_defined-function locations,
-            652 strings with 6242 characters,
-and the built_in function-call counts, 3658 in all, are:
-= -- 230
-> -- 104
+            647 strings with 6157 characters,
+and the built_in function-call counts, 3371 in all, are:
+= -- 212
+> -- 97
 < -- 0
-+ -- 45
-- -- 32
-* -- 237
-:= -- 515
++ -- 42
+- -- 30
+* -- 219
+:= -- 475
 add.period$ -- 0
-call.type$ -- 12
-change.case$ -- 52
+call.type$ -- 11
+change.case$ -- 48
 chr.to.int$ -- 0
-cite$ -- 36
-duplicate$ -- 371
-empty$ -- 353
-format.name$ -- 35
-if$ -- 719
+cite$ -- 33
+duplicate$ -- 341
+empty$ -- 324
+format.name$ -- 33
+if$ -- 662
 int.to.chr$ -- 0
-int.to.str$ -- 12
-missing$ -- 88
-newline$ -- 42
-num.names$ -- 24
-pop$ -- 239
+int.to.str$ -- 11
+missing$ -- 81
+newline$ -- 39
+num.names$ -- 22
+pop$ -- 220
 preamble$ -- 1
-purify$ -- 40
+purify$ -- 37
 quote$ -- 0
-skip$ -- 95
+skip$ -- 87
 stack$ -- 0
-substring$ -- 61
-swap$ -- 116
+substring$ -- 56
+swap$ -- 107
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 48
-warning$ -- 24
-while$ -- 24
-width$ -- 14
-write$ -- 89
-(There were 25 warnings)
+type$ -- 44
+warning$ -- 22
+while$ -- 22
+width$ -- 13
+write$ -- 82
+(There were 23 warnings)
