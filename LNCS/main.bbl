@@ -1,4 +1,4 @@
-\begin{thebibliography}{10}
+\begin{thebibliography}{1}
 \providecommand{\url}[1]{\texttt{#1}}
 \providecommand{\urlprefix}{URL }
 \providecommand{\doi}[1]{https://doi.org/#1}
@@ -6,10 +6,6 @@
 \bibitem{uupsEIP}
 Barros, G., Gallagher, P.: Eip-1822: Universal upgradeable proxy standard
   (uups) \url{https://eips.ethereum.org/EIPS/eip-1822}
-
-\bibitem{aaveBreak}
-of~Bits~Blog, T.: Breaking aave upgradeability
-  \url{https://blog.trailofbits.com/2020/12/16/breaking-aave-upgradeability/}
 
 \bibitem{ToBantiPattern}
 of~Bits~Blog, T.: Contract upgrade anti-patterns
@@ -31,21 +27,5 @@ Finance, B.: Bent update
 \bibitem{minimalProxy}
 Murray, P., Welch, N., Messerman, J.: Eip-1167: Minimal proxy contract
   \url{https://eips.ethereum.org/EIPS/eip-1167}
-
-\bibitem{solidity-doppelganger}
-Ortner, M.: Solidity doppelgaenger
-  \url{https://github.com/tintinweb/solidity-doppelganger}
-
-\bibitem{smart_contract_sanctuary}
-Ortner, M., Eskandari, S.: Smart contract sanctuary
-  \url{https://github.com/tintinweb/smart-contract-sanctuary}
-
-\bibitem{securityAdvise}
-Palladino, S.: Security advisory: Initialize uups implementation contracts
-  \url{https://forum.openzeppelin.com/t/security-advisory-initialize-uups-implementation-contracts/15301}
-
-\bibitem{uupsAttacks}
-Palladino, S.: Uupsupgradeable vulnerability post-mortem
-  \url{https://forum.openzeppelin.com/t/uupsupgradeable-vulnerability-post-mortem/15680}
 
 \end{thebibliography}

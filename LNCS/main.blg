@@ -7,8 +7,6 @@ Database file #2: bib/new.bib
 Warning--I didn't find a database entry for "eip1967"
 Warning--empty journal in uupsEIP
 Warning--empty year in uupsEIP
-Warning--empty journal in aaveBreak
-Warning--empty year in aaveBreak
 Warning--empty journal in ToBantiPattern
 Warning--empty year in ToBantiPattern
 Warning--empty journal in delegatecallForwarders
@@ -19,53 +17,45 @@ Warning--empty journal in bentFinanceHack
 Warning--empty year in bentFinanceHack
 Warning--empty journal in minimalProxy
 Warning--empty year in minimalProxy
-Warning--empty journal in solidity-doppelganger
-Warning--empty year in solidity-doppelganger
-Warning--empty journal in smart_contract_sanctuary
-Warning--empty year in smart_contract_sanctuary
-Warning--empty journal in securityAdvise
-Warning--empty year in securityAdvise
-Warning--empty journal in uupsAttacks
-Warning--empty year in uupsAttacks
-You've used 11 entries,
+You've used 6 entries,
             2850 wiz_defined-function locations,
-            647 strings with 6157 characters,
-and the built_in function-call counts, 3371 in all, are:
-= -- 212
-> -- 97
+            626 strings with 5453 characters,
+and the built_in function-call counts, 1886 in all, are:
+= -- 118
+> -- 57
 < -- 0
-+ -- 42
-- -- 30
-* -- 219
-:= -- 475
++ -- 25
+- -- 18
+* -- 124
+:= -- 267
 add.period$ -- 0
-call.type$ -- 11
-change.case$ -- 48
+call.type$ -- 6
+change.case$ -- 27
 chr.to.int$ -- 0
-cite$ -- 33
-duplicate$ -- 341
-empty$ -- 324
-format.name$ -- 33
-if$ -- 662
+cite$ -- 18
+duplicate$ -- 188
+empty$ -- 178
+format.name$ -- 20
+if$ -- 368
 int.to.chr$ -- 0
-int.to.str$ -- 11
-missing$ -- 81
-newline$ -- 39
-num.names$ -- 22
-pop$ -- 220
+int.to.str$ -- 6
+missing$ -- 45
+newline$ -- 24
+num.names$ -- 12
+pop$ -- 122
 preamble$ -- 1
-purify$ -- 37
+purify$ -- 21
 quote$ -- 0
-skip$ -- 87
+skip$ -- 48
 stack$ -- 0
-substring$ -- 56
-swap$ -- 107
+substring$ -- 31
+swap$ -- 60
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 44
-warning$ -- 22
-while$ -- 22
-width$ -- 13
-write$ -- 82
-(There were 23 warnings)
+type$ -- 24
+warning$ -- 12
+while$ -- 12
+width$ -- 7
+write$ -- 47
+(There were 13 warnings)
