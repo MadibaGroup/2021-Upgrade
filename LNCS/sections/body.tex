@@ -155,7 +155,7 @@ As it is concerning that a contract's code could completely change, we note that
 \subsection{Consensus Override}
 \label{sec:hardfork}
 
-This wholesale pattern is not a tenable solution to upgradability as it as only been used rarely under extraordinary circumstances, but we include it for completeness. Immutability is enforced by the consensus of the blockchain network. If participating nodes (
+This wholesale pattern is not a tenable solution to upgradeability as it as only been used rarely under extraordinary circumstances, but we include it for completeness. Immutability is enforced by the consensus of the blockchain network. If participating nodes (
 \eg miners) agreed to suspend immutability, they can in theory allow changes to a contract's logic and/or state. If agreement is not unanimous, the blockchain can be forked into two systems---one with the change and one without. 
 
 In 2016, a significant security breach of a decentralized application called `the DAO' caused the Ethereum project to propose overriding the immutability of this particular smart contract to reverse the impacts of attack. In the unusual circumstances of this case, it was possible to propose and deploy the fix before the stolen ETH could be extracted from the contract and circulated. Nodes with a philosophical objection to overriding immutability continued operating, without deploying the fix, under the name Ethereum Classic.
