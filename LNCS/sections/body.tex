@@ -91,7 +91,7 @@ The DeFi lending platform Compound uses this pattern for their interest rate mod
 
 Upgradeable functional components need to be pre-determined before deploying the primary contract. Once the primary contract is deployed, it is not possible to add upgradeability to existing (non-upgradable) functions. It also cannot be directly used to add new functions to a contract. Finally, this pattern is most straightforward when the primary contract only uses the return value from the function to modify its own state. Thus, the function is either `pure' (relies only on the parameters to determine the output) or `view' (can read state from itself or other contracts, but cannot write state). If the function modifies the state of the primary contract, the primary contract must either expose its state variables to the secondary contract (by implementing setter functions), or it can run the function using \texttt{DelgateCall} if the secondary contract has no state of its own. 
 
-This upgrade pattern suggests a way forward for wholesale changes to the entire contract: create a generic `proxy' contract that forwards all functions to a secondary contract. To work seamlessly, this requires some further engineering (see sections~\ref{} and \ref{})) but will see such proxy contracts based on \texttt{Call} and \texttt{DelegateCall} shortly.
+This upgrade pattern suggests a way forward for wholesale changes to the entire contract: create a generic `proxy' contract that forwards all functions to a secondary contract. To work seamlessly, this requires some further engineering (sections~\ref{sec:callbased} and \ref{sec:delegatecall}).
 
 % = = =
 
@@ -102,19 +102,31 @@ This upgrade pattern suggests a way forward for wholesale changes to the entire 
 
 % = = =
 
-\subsection{Contract Migration}
-\label{sec:migration}
+\subsection{Consensus Override}
+\label{sec:hardfork}
 
-The two previous patterns enable portions of a smart contract to be modified. The remaining patterns strive to allow an entire contract to be modified or, more simply, replaced. The simplest pattern is to deploy a new version of the contract at a new address, and then inform users to use the new version---sometimes called a `social upgrade.' One example is Uniswap, which is on version 3 at the time of writing. Versions 1 and 2 are still operable at their original addresses. 
+The two previous patterns enable portions of a smart contract to be modified. The remaining patterns strive to allow an entire contract to be modified or, more simply, replaced. The first wholesale pattern is not a tenable solution to upgradeability as it as only been used rarely under extraordinary circumstances, but we include it for completeness. 
 
-Contract migration does not require developers to instrument their contracts with complex logic, as in the data separation patterns below, which can ease auditability and gas costs for using the contract. However, depending on the application, there may be a need to transfer the data stored in the old contract to the new version. This is generally done in one of two ways. The first is to collate the state of the old contract off-chain and place it into the new contract's constructor (or split it into multiple function calls, as needed). If the old contract was instrumented with an ability to pause it, this can eliminate race-conditions that could otherwise be problematic during the data migration phase. The second method is specific for certain types of data like a user's balance of tokens. For things like this, a manual migration can be initiated by (and paid in gas fees by) the user when they want to move their balance from the old contract to the new contract.  
- 
- % JC: do we *need* one or it is useful?
- %Also we need a \textit{Migrator} contract if we decided to outsource the data migration into the users.
+Immutability is enforced by the consensus of the blockchain network. If participating nodes (\eg miners) agreed to suspend immutability, they can in theory allow changes to a contract's logic and/or state. If agreement is not unanimous, the blockchain can be forked into two systems---one with the change and one without. In 2016, a significant security breach of a decentralized application called `the DAO' caused the Ethereum Foundation to propose overriding the immutability of this particular smart contract to reverse the impacts of attack. In the unusual circumstances of this case, it was possible to propose and deploy the fix before the stolen ETH could be extracted from the contract and circulated. Nodes with a philosophical objection to overriding immutability continued operating, without deploying the fix, under the name Ethereum Classic.
+%Need to talk about L2 (Roll-ups) --> They can roll-back the chain state similar to the DAO fork (they can setup new desired rollup state and bridge regarding that).
+%\textbf{Upgradeability is a Bug!}~\cite{Upg-Bug}.
+
 
 % = = =
 
-\subsection{Create2-based Metamorphosis}
+\subsection{Contract Migration}
+\label{sec:migration}
+
+The simplest wholesale upgrade pattern is to deploy a new version of the contract at a new address, and then inform users (and the web applications they use) to use the new version---called a `social upgrade.' One example is Uniswap, which is on version 3 at the time of writing. Versions 1 and 2 are still operable at their original addresses. 
+
+Contract migration does not require developers to instrument their contracts with any new logic to support upgradability, as in many of the remaining patterns, which can ease auditability and gas costs for using the contract. However for most applications, there will be a need to transfer the data stored in the old contract to the new version. This is generally done in one of two ways. The first is to collate the state of the old contract off-chain and load it into the new contract (\eg via its constructor). If the old contract was instrumented with an ability to pause it, this can eliminate race-conditions that could otherwise be problematic during the data migration phase. The second method, specific to certain applications like tracking a user's balance of tokens, is to have the user initiate (and pay the gas) for a transfer of their balance from the old system to the new one.
+ 
+ % JC: do we *need* one or it is useful?
+ %Also we need a \textit{Migrator} contract if we decided to outsource the data migration into the users.
+ 
+ % = = =
+
+\subsection{\texttt{CREATE2}-based Metamorphosis}
 \label{sec:metamorphic}
 
 Is it possible to do contract migration, but deploy the new contract to the \textit{same} address as the original contract, effectively overwriting it? If so, developers can dispense with the need for a social upgrade (but would still need to accomplish data migration). At first glance, this should not be possible on Ethereum, however a set of opcodes can be `abused' to allow it: specifically, the controversial\footnote{\href{https://www.reddit.com/r/ethereum/comments/lx32kv/expectations\_for\_backwardsincompatible\_changes/}{``Expectations for backwards-incompatible changes / removal of features that may come soon.'' V. Buterin, Reddit r/ethereum, Mar 2021.}} \texttt{SELFDESTRUCT} opcode and the 2019-deployed \texttt{CREATE2}. 
@@ -125,7 +137,7 @@ Consider a contract, called Factory, that has the bytecode of another contract, 
 
 %The initialization bytecode passed to \texttt{CREATE2} will be recorded in the transaction call and then executed, but it is not stored in contract A. The expected result of executing the initialization bytecode is that contract A's runtime bytecode will be deployed at the determined address. 
 
-Assume the developer wants to deploy contract A using metamorphosis and later update it to contract B.\footnote{Medium: \url{https://medium.com/@0age/the-promise-and-the-peril-of-metamorphic-contracts-9eb8b8413c5e}} The developer first deploys a factory contract with a function that accepts A's (runtime) bytecode as a parameter (which includes the ability to self destruct). The factory then deploys A at an arbitrary address and stores the address in a variable called codeLocation. The factory then deploys a simple `transient' contract using \texttt{CREATE2} at address T. This contract performs a callback to the factory contract, asks for factory.codeLocation, and copies the code it finds there into its own storage for its runtime bytecode and returns. As a consequence, A's bytecode is now deployed at address T. 
+Assume the developer wants to deploy contract A using metamorphosis and later update it to contract B.\footnote{\href{https://medium.com/@0age/the-promise-and-the-peril-of-metamorphic-contracts-9eb8b8413c5e}{``The Promise and the Peril of Metamorphic Contracts.'' 0age, Medium, Feb 2019.}} The developer first deploys a factory contract with a function that accepts A's (runtime) bytecode as a parameter (which includes the ability to self destruct). The factory then deploys A at an arbitrary address and stores the address in a variable called codeLocation. The factory then deploys a simple `transient' contract using \texttt{CREATE2} at address T. This contract performs a callback to the factory contract, asks for factory.codeLocation, and copies the code it finds there into its own storage for its runtime bytecode and returns. As a consequence, A's bytecode is now deployed at address T. 
 
 To upgrade to contract B, the developer calls \texttt{SELFDESTRUCT} on A. It then calls the factory with contract B's bytecode. The factory executes the same way placing a pointer to B in factory.codeLocation. Importantly, it generates the same address T when it invokes CREATE2 since the `transient' contract is identical to what it was the first time---this contract does not contain contract A or B's runtime code, it just contains abstract instructions on how to load code. The result is contract B's runtime bytecode being deployed at address T where contact A was. 
  
@@ -152,42 +164,42 @@ As it is concerning that a contract's code could completely change, we note that
 
 % = = =
 
-\subsection{Consensus Override}
-\label{sec:hardfork}
+\subsection{\texttt{CALL}-based Data Separation}
+\label{sec:callbased}
 
-This wholesale pattern is not a tenable solution to upgradeability as it as only been used rarely under extraordinary circumstances, but we include it for completeness. Immutability is enforced by the consensus of the blockchain network. If participating nodes (
-\eg miners) agreed to suspend immutability, they can in theory allow changes to a contract's logic and/or state. If agreement is not unanimous, the blockchain can be forked into two systems---one with the change and one without. 
+To avoid moving the stored data from a contract to an upgraded contract, a contract could instead store all of its data in an external ``storage'' contract. In this pattern, calls are made to a ``logic'' contract which implements the function (or reverts if the function is not defined). Whenever the logic contract needs to read or write data, it will call the storage contract using setter/getter (aka accessor/mutator) functions. An upgrade consists of (1) deploying a new logic contract, (2) pausing the storage contract, (3) granting the new logic contract access to the storage contract, (4) revoking access from the old contract, and (5) unpausing the storage contract. 
 
-In 2016, a significant security breach of a decentralized application called `the DAO' caused the Ethereum Foundation to propose overriding the immutability of this particular smart contract to reverse the impacts of attack. In the unusual circumstances of this case, it was possible to propose and deploy the fix before the stolen ETH could be extracted from the contract and circulated. Nodes with a philosophical objection to overriding immutability continued operating, without deploying the fix, under the name Ethereum Classic.
-%Need to talk about L2 (Roll-ups) --> They can roll-back the chain state similar to the DAO fork (they can setup new desired rollup state and bridge regarding that).
-%\textbf{Upgradeability is a Bug!}~\cite{Upg-Bug}.
+An important consideration is that the layout of the storage contract cannot be changed after deployment (\eg we cannot add a new state variable). This can be side-stepped to some extent by implemented a mapping (key-value pair) for each primitive data type. For example, a new uint state variable can be a new entry in the mapping for uints. This is called the Eternal Storage pattern (ERC930). It however requires that every data type be known in advance, and is challenging to use with complex types (\eg structs and mappings themselves).
 
-% = = =
+A variant of this pattern can introduce a third kind of contract, called a proxy contract, to address the social upgrade problem. In this variant, users permanently use the address of the proxy contract and always make function calls to it. The proxy contract stores a pointer (that can be updated) to the most current logic contract, and asks the logic contract to run the function using \texttt{CALL}. Unlike the functional component pattern (Section~\ref{sec:component}), the proxy will catch and forward \textit{any} function (including new functions deployed in updated logic contracts) using its fallback function.  With or without proxies, this pattern is very powerful, but instrumenting a contract to use it requires deep-seated changes to the contract code. As our measurements will show, it has fallen out of favour for the cleaner \texttt{DELEGATECALL}-based pattern (Section~\ref{sec:delegatecall}) that addresses the same issues with simpler instrumentation. 
 
-\subsection{Call-based Data Separation}
+% JC: already covered by contract migration :
+%In this type of upgrade the address of the contract will be changed after upgrade so we need to aware our users about the change and interacting with the new version. Also it may break the compatibility of the ecosystem. In case of upgrade all smart contracts and Dapps that are interacting with the upgraded smart contract must change the address which they pointed to in order to interact with our contract. It may leads into a disaster if other contracts that are interacting with our contract do not have a way to change the address. We should also make other off-chain services (e.g. exchanges) aware of the change to start using the new version of your contract. In Call-based pattern we should have a way to stop previous version during/after upgrade because both of them are shared the same storage contract. 
 
+% JC: this is covered I think
+%There are three main ways to implement upgrades using data separation pattern. The easiest way is to change the ownership of storage contract into new upgraded logic contract and then \textit{Pause} the old contract using \textit{Circuit Breaker} pattern or set its pointer to 0x0 address. The other solution is to forward the calls receive by the old contract into the new logic contract. The last option is to set a registry contract that just keeps the address of latest version of the logic contract and call into it.
 
-
-The other type of wholesale methods is to separate data and logic part of our codes so, in the upgrade event we can keep the storage contract and just deploy a new logic contract and link the storage to the new version of logic contract.
-There is a debate on whether this type of upgradeability is cheaper or not in comparison to migration method. But, this method is more efficient for Dapps in which we need frequent updates. The other important issue here is who decides on the changes we need for the system which we will discuss on further sections.
-Here we have 2 different choices using \textit{Call} method and \textit{Delegate Call} method to link storage and logic contracts together. We will dive deeper into these two approaches:
-
-% = = =
-
-
-This type is also known as data separation pattern. In this type the interaction between logic and storage contact is handled by Call opcode in Ethereum Virtual Machine (EVM). In call based patterns user is supposed to call the logic contract and the logic contract will interact with the storage by calling setter or getter function inside storage contract whenever needs to read or write a data. The logic contract is the one that should be upgraded.
-
-The most important part in this pattern is that we cannot change the storage layout of the storage contract after deployment. So we cannot add new storage variable after the deployment. But, in most smart contracts we need to add new data for example adding the balance for new user. A solution to this problem is proposed in ERC930 or Eternal Storage pattern. Eternal storage uses mapping (key-value pair) to store data, using one mapping per data type. For instance for integer type we will define a mapping of byte32 to integer. This way we always can add new integer variables to our storage contract just by adding a variable to this mapping and having a new byte32 as key. This pattern is a good solution when we have simple data types like integer, boolean, string, etc. but it is very complex to have a eternal storage layout for complex data types such as structures, mappings or combination of them.
-
-In this type of upgrade the address of the contract will be changed after upgrade so we need to aware our users about the change and interacting with the new version. Also it may break the compatibility of the ecosystem. In case of upgrade all smart contracts and Dapps that are interacting with the upgraded smart contract must change the address which they pointed to in order to interact with our contract. It may leads into a disaster if other contracts that are interacting with our contract do not have a way to change the address. We should also make other off-chain services (e.g. exchanges) aware of the change to start using the new version of your contract. In Call-based pattern we should have a way to stop previous version during/after upgrade because both of them are shared the same storage contract. 
-There are three main ways to implement upgrades using data separation pattern. The easiest way is to change the ownership of storage contract into new upgraded logic contract and then \textit{Pause} the old contract using \textit{Circuit Breaker} pattern or set its pointer to 0x0 address. The other solution is to forward the calls receive by the old contract into the new logic contract. The last option is to set a registry contract that just keeps the address of latest version of the logic contract and call into it.
-
-
-Using Calls-based pattern we eliminate the process of data migration from the old contract to the newer version and it is easy to understand this type of upgradeability pattern. But it is hard for developers to deal with this pattern when their logic contract needs complex data structures such as mapping or structures. Also the developers should change their code a lot if they decide to use this upgradeability pattern in their non-upgradeable code. 
+% JC:  Save evaluation for the table
+% Using Calls-based pattern we eliminate the process of data migration from the old contract to the newer version and it is easy to understand this type of upgradeability pattern. But it is hard for developers to deal with this pattern when their logic contract needs complex data structures such as mapping or structures. Also the developers should change their code a lot if they decide to use this upgradeability pattern in their non-upgradeable code. 
 
 % = = =
 
 \subsection{DelegateCall-based Data Separation}
+\label{sec:delegatecall}
+%In this pattern, a typical function call is chained through three contracts. The call is always made to the same contract, called the proxy contract, that is deployed permanently at a given address. The proxy contract stores a pointer to a second contract, called the logic contract, and implements only a few basic functions (\eg for updating the pointer). Any function (with any other function name) that is invoked is caught by the contract's fallback function and forwarded with the parameters, using \texttt{CALL}, to the logic contract. 
+
+%function () payable public {
+%        address target = logic_contract;
+%        assembly {
+%            let ptr := mload(0x40)
+%            calldatacopy(ptr, 0, calldatasize)
+%            let result := delegatecall(gas, target, ptr, calldatasize, 0, 0)
+%            let size := returndatasize
+%            returndatacopy(ptr, 0, size)
+%            switch result
+%            case 0 { revert(ptr, size) }
+%            case 1 { return(ptr, size) }
+%        }
 
 Similar to call based patterns here we have two contracts, Storage and Logic contract. In this pattern we may have more than one logic contract or storage contract. The difference here is that the user is calling storage contract(s) first (a.k.a proxy contract), and the proxy contract will use \textit{DelegateCall} opcode to link to the logic contract(s) (a.k.a implementation contract). In fact, there is a fallback function inside the proxy contract and inside the proxy, there is a delegate call that forwards the whole message data to the implementation contract.
 The fallback functions in Ethereum will be executed if the user calls the smart contract with a function signature that does not exists on that contract.
