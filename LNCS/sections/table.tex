@@ -1,85 +1,124 @@
 % !TEX root = ../main.tex
 
-\begin{table}[t!]
+\begin{table*}[ht!]
+
+    \renewcommand{\arraystretch}{1}
+    
     \centering
     
-        \begin{tabular}{lllllllllllllll}
+    \begin{tabular*}{0.9\textwidth}{@{\extracolsep{\fill}} lcccccccccccc}
     
-    &
-    \headrow{Can replace entire logic (1)} &
-    
-    \headrow{Remove} & 
-
-    \headrow{Remove} &
-    
-    \headrow{Remove} &
-    
+    \textit{Method} &
+    \headrow{Can replace entire logic} & 
+    \headrow{No need to migrate state from old contract} &  
+    \headrow{User endpoint address unchanged} &
+    \headrow{No need to instrument source} &
     \headrow{No need to deploy a new contract to upgrade} &
-
-    \headrow{No need to migrate state from old contract (2)} &
-
-    \headrow{Remove} &
-
-    \headrow{Function selector clashes risk} &
-
-    \headrow{Storage clashes risk} & 
-
     \headrow{No indirection} & 
-
-    \headrow{User endpoint address unchanged (3)} &
+    \headrow{No downtime to upgrade} &
+    \headrow{No Function selector clashes risk} &
+    \headrow{No Storage clashes risk} & 
+    \headrow{ } & 
+    \headrow{ } \\ \hline 
     
-    \headrow{No downtime to upgrade} & %half dot -> state migration
-
-    \headrow{No need to instrument source (4)} &
-
-    \headrow{Remove} 
-    
-    
+    Parameter Configuration 	&	  &\full&\full&\full&\full &\full&\full&\full&\full&&\\
+    Component Change 	        &	  &\full&\full&\prt	&      &\prt &\full&\full&\full&&\\
+    Contract Migration			&\full&     &     &\full&	   &\full&\full&\full&\full&&\\ 
+    Create2 metamorphosis 		&\full&     &\full&\full&      &\full&	   &\full&\full&&\\
+    Call-based 		            &\full&\full&     &     &	   &	 &\full&\full&\full&&\\ 
+    DelegateCall-based 			&\full&\full&\full&\prt	&	   &     &\full&     &     &&\\ \hline 
     \\
+                                                                                        
+    \end{tabular*}
     
-    \hline
- 
+    \caption{What does the square mean?} %A comparison of key management techniques for Bitcoin (contrasted with traditional financial services). \full~ indicates the category of client is awarded the benefit in the corresponding column. \prt~partially awards the benefit. Details provided inline.}
+    \label{tab:eval}
+    \end{table*}
+      
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{comment}
+
+    \begin{table}[t!]
+        \centering
+        
+            \begin{tabular}{lllllllllllllll}
+        
+        &
+        \headrow{Can replace entire logic (1)} &
+        
+        \headrow{Remove} & 
     
-        \multicolumn{1}{c|}{Parameter Configuration}	& \multicolumn{1}{c|}{}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{} &\multicolumn{1}{c|}{\full} & \multicolumn{1}{c}{\full}\\
+        \headrow{Remove} &
+        
+        \headrow{Remove} &
+        
+        \headrow{No need to deploy a new contract to upgrade} &
     
+        \headrow{No need to migrate state from old contract (2)} &
+    
+        \headrow{Remove} &
+    
+        \headrow{Function selector clashes risk} &
+    
+        \headrow{Storage clashes risk} & 
+    
+        \headrow{No indirection} & 
+    
+        \headrow{User endpoint address unchanged (3)} &
+        
+        \headrow{No downtime to upgrade} & %half dot -> state migration
+    
+        \headrow{No need to instrument source (4)} &
+    
+        \headrow{Remove} 
+        
+        
+        \\
+        
         \hline
-  
-        \multicolumn{1}{c|}{Component Change}	& \multicolumn{1}{c|}{}  & \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\prt} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\prt} &  \multicolumn{1}{c}{\full}\\
+     
         
-
-        \hline
-
-        \makecell{Contract Migration}	& \multicolumn{1}{|c|}{\full}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c}{}\\
+            \multicolumn{1}{c|}{Parameter Configuration}	& \multicolumn{1}{c|}{}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{} &\multicolumn{1}{c|}{\full} & \multicolumn{1}{c}{\full}\\
+        
+            \hline
+      
+            \multicolumn{1}{c|}{Component Change}	& \multicolumn{1}{c|}{}  & \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\prt} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\prt} &  \multicolumn{1}{c}{\full}\\
+            
     
-         \hline
-         \makecell{Create2 metamorphosis}	& \multicolumn{1}{|c|}{\full}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{}&  \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c}{}\\
-
+            \hline
     
-        \hline
-        \makecell{Consensus Override}	& \multicolumn{1}{|c|}{\full}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{}&  \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c}{}\\
-
-        \hline
-
-        \makecell{Call-based}	& \multicolumn{1}{|c|}{\full}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c}{\full}\\        
+            \makecell{Contract Migration}	& \multicolumn{1}{|c|}{\full}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c}{}\\
         
-         \hline
-
-         \makecell{DelegateCall-based}	& \multicolumn{1}{|c|}{\full}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full}&  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\prt} & \multicolumn{1}{c}{\full}\\    
-        
-         \hline
-        
-        
-        \end{tabular}
-        \captionsetup[tabular]{singlelinecheck=off}
-        \caption{What does the square mean?
-        \label{tab:eval}}
-        
-       %% = = = Table bullets: \full and \prt (full and part)
-%\newcommand{\full}{$\bullet$}
-%\newcommand{\prt}{$\circ$}
-       
+             \hline
+             \makecell{Create2 metamorphosis}	& \multicolumn{1}{|c|}{\full}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{}&  \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c}{}\\
     
-    \end{table}
-    %\footnotetext[1]{Design of system in which a parameter can change the logic is hard}
-
-%        \makecell{Diamonds}	& \multicolumn{1}{|c|}{\full}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full\full}&  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\prt} & \multicolumn{1}{c}{\full}\\
+        
+            \hline
+            \makecell{Consensus Override}	& \multicolumn{1}{|c|}{\full}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{}&  \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c}{}\\
+    
+            \hline
+    
+            \makecell{Call-based}	& \multicolumn{1}{|c|}{\full}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c}{\full}\\        
+            
+             \hline
+    
+             \makecell{DelegateCall-based}	& \multicolumn{1}{|c|}{\full}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full}&  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\prt} & \multicolumn{1}{c}{\full}\\    
+            
+             \hline
+            
+            
+            \end{tabular}
+            \captionsetup[tabular]{singlelinecheck=off}
+            \caption{What does the square mean?
+            \label{tab:eval}}
+                \end{table}
+\end{comment}   
