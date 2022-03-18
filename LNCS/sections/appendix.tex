@@ -146,6 +146,8 @@ Using \textit{Call-based} patterns adds higher degree of complexity to the syste
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\clearpage 
+
 \section{Implementation detail of Finding The proxy contracts}
 
 \subsubsection{Implementation}\label{findingProxies}
@@ -188,7 +190,7 @@ The whole process is depicted on figure~\ref{fig:finderModule}.
   \caption{Upgradeability Proxy Contract Finder}
 \end{figure}
 
-\subsubsection{Assignment Checker Module}
+\subsection{Assignment Checker Module}
 
 As mentioned in the previous part, we need a module to check whether the admin can change target address on the proxy contract,using a function in the proxy contract, implementation contract or beacon contract. For this purpose the module must get the \textit{Bytecode} of the proxy,implementation or beacon address as input and find the variable name and also its storage slot of the target address. Then checks to find out is there any function inside the contract that gives the admin the ability to change the target address.
 
@@ -208,7 +210,10 @@ The whole process is depicted on figure~\ref{assignmentFinder}.
   \caption{Assignment CheckerModule}
 \end{figure}
 
-\subsection{Detailed Explanation of finding Admin types}
+% = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
+
+\clearpage
+\section{Detailed Explanation of finding Admin types}
 The whole process is depicted in the figure\ref{Admins}.
 
 \begin{figure}
@@ -254,6 +259,13 @@ By finding this arbitrary storage slot and doing the same processes we did in th
 The only case that is left is proxy contracts, in which the address of the admin is hardcoded inside them. It very straight forward. We find the upgrade function and the access control check on the caller of the transaction and then pick the fixed admin address and do the same processes mentioned above to find the admin types. There are \textit{49} EOAs, \textit{36} multi-signature admins and \textit{160} governance and not known admin addresses. 
 
 So, totally out of 7.3k proxy contract, \textbf{3558} are controlled by an EOA address, \textbf{988} are controlled by a multi signature wallet and \textbf{2924} addresses are governance controlled or our methodology could not find their type.
+
+
+
+% = = = = = = = = = = = = = = = = = = = =
+% = = = = = = = = = = = = = = = = = = = =
+% = = = = = = = = = = = = = = = = = = = =
+
 
 \begin{comment}
 \subsection{Verified Smart Contract Based Analysis}
@@ -316,8 +328,13 @@ The results for each version is:
   \end{itemize}
 \end{itemize}
 
+\end{comment}
 
-\subsection{Attacking Universal Upgradeable Proxy Standard (UUPS) contracts}
+% = = = = = = = = = = = = = = = = = = = =
+% = = = = = = = = = = = = = = = = = = = =
+% = = = = = = = = = = = = = = = = = = = =
+
+\section{Attacking Universal Upgradeable Proxy Standard (UUPS) contracts}
 In the previous sections \ref{sysComplexity} (in Delegate-call section) we discussed that the implementation function should not contain \textit{constructor} function and instead of that there should be regular function namely \textit{Initialize} function that can be called just once and has the same functionality as constructor function. So the contract creator must call initialize function through proxy contract quickly after deploying the proxy contract. The Initialize function does not have any access control because it is considered to be called once and this function is responsible to define the owner so before calling this function we don't have the owner's address to check it for access control of the function. This is the main reason that there should be a check to be sure that this function can just be called once and not more. Regularly, the deployer (the dev team) will define and initialize the owner of the contract (address which have the control of upgrading the system) via initialize function. So if the initialize function can be called more than once, or the deployer do not initialize the contract, then any external address can call initialize function and change the owner of the contract and take control of the contract. But this is not the case and less likely to happens because this is the first row of checklist of this type of upgradeability pattern.
 
 There is another important issue that should take care of. We talked about calling the initialize function through proxy contract. But what about calling this function directly from the implementation contract itself? If the deployer do not call the initialize function directly from implementation contract to initialize it once (and to lock it), then any malicious address can call this function from implementation contract and change the owner inside the implementation contract and take control of the implementation contract. But one can ask what is the issue if another person takes control of the implementation contract. The answer depends on the functions inside the implementation contract and what executions can be done by the owner. If the functions inside implementation contract just change the state, then the attacker cannot attack the system because he/she just can change the state inside the implementation contract and our Dapp relies on the data that are saved inside proxy and not the data inside the implementation contract.
@@ -345,4 +362,4 @@ We try to check all UUPS contracts that we have to find if any of them can be ex
 Checking the list above we find 15 contracts in our data set which were exploitable till September 9, 2021 and openzeppelin team patched them by initializing the contract. It means that an attacker could deploy a new malicious contract which executes self-destruct on any calls to it. Then take control of the implementation contract by calling initialize function of them. Afterwards, the attacker should find the function inside the implementation contract that have a delegate call inside it and find the target address. There should be a function inside implementation contract to change the address to the malicious contract that the attacker deployed recently and just after that the attacker call the function to execute a delegate call into the malicious contract and then self-destruct the implementation contract.
 
 We find 61 UUPS contracts that are not initialized and anybody can take control of these implementation contracts but because these contracts do not use delegate call or self-destruct, they are not exploitable by this type of attack.
-\end{comment}
+

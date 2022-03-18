@@ -290,9 +290,20 @@ Table~\ref{tab:eval} summarizes the pros and cons of each upgradability pattern,
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
- \section{Finding Upgradeable Contracts on Ethereum} \label{sec:proxyFinding}
+ \section{Finding Upgradeable Contracts} 
+ \label{sec:proxyFinding}
+ 
+We now design a series of measurement studies to shed light on the prevalence of the various upgrade patterns. We exclude retail changes from our measurements as variable changes and external function calls are too commonplace to distinguish. We focus on wholesale patterns, and devote the most effort to finding contracts using the \texttt{DELEGATECALL}-based data seperatation pattern (Section~\ref{sec:delegatecall}) as these are the most widely used and there are various sub-types (UUPS, beacon, \etc). The other types of wholesale patterns are: 
+\begin{itemize}
+\item \textbf{Consensus override:} Only 1 occurrence to date (the DAO attack~\cite{}).
+\item \textbf{Contract migration:} Not detectable in code; relies on social communication of the new address.
+\item \textbf{\texttt{CREATE2}-based Metamorphosis.} This was measured by Frowis and Bohme~\cite{} in a broader study of all uses of \texttt{CREATE2}. They found 41 contracts between March 2019 and July 2021 that upgraded using this pattern.
+\item \textbf{\texttt{CALL}-based Data Separation.} We conducted a quick study of 93K contracts with disclosed source code~\cite{smart_contract_sanctuary}. We identified the Eternal Storage pattern using regular expressions and found 140 instances, the newest having been deployed over 3.5 years old. We conclude this pattern is too uncommon today to pursue a deeper bytecode-based on-chain measurement.  
+\end{itemize}
 
- This section aims to shed light on the state of upgradeable smart contracts on the Ethereum blockchain. Between all the different patterns described in previous sections, we focused on finding the \textit{Delegate-call} based upgradeable contracts because it is the most widely used pattern for smart contract upgradeability at the time of writing this paper. The number of Ethereum Improvement Proposals (EIPs) and standards proposed for standardizing this pattern (e.g., EIP-1967, EIP-1822, EIP-2535, etc.) confirms this point. In the further parts of this section, we focus on describing the methodology used for finding upgradeable contracts in Ethereum blockchain, which use \textit{Delegatecall-based} patterns and show the results. 
+
+
+% This section aims to shed light on the state of upgradeable smart contracts on the Ethereum blockchain. Between all the different patterns described in previous sections, we focused on finding the \textit{Delegate-call} based upgradeable contracts because it is the most widely used pattern for smart contract upgradeability at the time of writing this paper. The number of Ethereum Improvement Proposals (EIPs) and standards proposed for standardizing this pattern (e.g., EIP-1967, EIP-1822, EIP-2535, etc.) confirms this point. In the further parts of this section, we focus on describing the methodology used for finding upgradeable contracts in Ethereum blockchain, which use \textit{Delegatecall-based} patterns and show the results. 
 %Here I have the reason why we chose delegate call based patterns:
 
 %There is no general way to detect \textit{Retail Change} patterns in large-scale, in which one or multiple state variables can be changed inside the contract by admin of the contract, because there is no general way to distinct between a changeable state variable inside a contract that can be updated and non-critical one. It really depends on the business logic of the smart contract.
