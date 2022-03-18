@@ -54,6 +54,7 @@ He, N., Wu, L., Wang, H., Guo, Y., Jiang, X.: Characterizing code clones in the
 
 \bibitem{minimalProxy}
 Murray, P., Welch, N., Messerman, J.: Minimal proxy contract. EIP-1167 (2018)
+<<<<<<< Updated upstream
 
 \bibitem{smart_contract_sanctuary}
 Ortner, M., Eskandari, S.: Smart contract sanctuary
@@ -99,5 +100,7 @@ Rodler, M., Li, W., Karame, G.O., Davi, L.: $\{$EVMPatch$\}$: Timely and
 Victor, F., L{\"u}ders, B.K.: Measuring ethereum-based erc20 token networks.
   In: International Conference on Financial Cryptography and Data Security. pp.
   113--129. Springer (2019)
+=======
+>>>>>>> Stashed changes
 
 \end{thebibliography}
