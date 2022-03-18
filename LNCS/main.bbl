@@ -7,6 +7,10 @@
 Barros, G., Gallagher, P.: Eip-1822: Universal upgradeable proxy standard
   (uups) \url{https://eips.ethereum.org/EIPS/eip-1822}
 
+\bibitem{tobBlogPost}
+of~Bits, T.: Contract upgrade anti-patterns
+  \url{https://blog.trailofbits.com/2018/09/05/contract-upgrade-anti-patterns/}
+
 \bibitem{aaveBreak}
 of~Bits~Blog, T.: Breaking aave upgradeability
   \url{https://blog.trailofbits.com/2020/12/16/breaking-aave-upgradeability/}
@@ -20,17 +24,36 @@ Buterin, V.: Delegatecall forwarders: how to save ~50-98% on making many new
   contracts with the same code
   \url{https://www.reddit.com/r/ethereum/comments/6c1jui/delegatecall_forwarders_how_to_save_5098_on/}
 
+\bibitem{chen2021smart}
+Chen, J., Xia, X., Lo, D., Grundy, J.: Why do smart contracts self-destruct?
+  investigating the selfdestruct function on ethereum. ACM Transactions on
+  Software Engineering and Methodology (TOSEM)  \textbf{31}(2),  1--37 (2021)
+
+\bibitem{chen2017adaptive}
+Chen, T., Li, X., Wang, Y., Chen, J., Li, Z., Luo, X., Au, M.H., Zhang, X.: An
+  adaptive gas cost mechanism for ethereum to defend against under-priced dos
+  attacks. In: International conference on information security practice and
+  experience. pp. 3--24. Springer (2017)
+
 \bibitem{certikReport}
 Company, C.: The state of defi security 2021
-  \url{https://www.businesswire.com/news/home/20220113005054/en/CertiK-Releases-2021-State-of-DeFi-Security-Report}
+  \url{https://blog.openzeppelin.com/the-state-of-smart-contract-upgrades/}
 
 \bibitem{bentFinanceHack}
 Finance, B.: Bent update
   \url{https://bentfi.medium.com/bent-update-12ae69a41dc6}
 
+\bibitem{frowisnot}
+Fr{\"o}wis, M., B{\"o}hme, R.: Not all code are create2 equal
+  \url{https://informationsecurity.uibk.ac.at/pdfs/FB-Ethereum-Create2.pdf}
+
+\bibitem{he2020characterizing}
+He, N., Wu, L., Wang, H., Guo, Y., Jiang, X.: Characterizing code clones in the
+  ethereum smart contract ecosystem. In: International Conference on Financial
+  Cryptography and Data Security. pp. 654--675. Springer (2020)
+
 \bibitem{minimalProxy}
 Murray, P., Welch, N., Messerman, J.: Minimal proxy contract. EIP-1167 (2018)
-<<<<<<< Updated upstream
 
 \bibitem{smart_contract_sanctuary}
 Ortner, M., Eskandari, S.: Smart contract sanctuary
@@ -40,8 +63,41 @@ Ortner, M., Eskandari, S.: Smart contract sanctuary
 Palladino, S.: Security advisory: Initialize uups implementation contracts
   \url{https://forum.openzeppelin.com/t/security-advisory-initialize-uups-implementation-contracts/15301}
 
+\bibitem{openzeppelinPost}
+PALLADINO, S.: The state of smart contract upgrades
+  \url{https://blog.openzeppelin.com/the-state-of-smart-contract-upgrades/}
+
 \bibitem{uupsAttacks}
 Palladino, S.: Uupsupgradeable vulnerability post-mortem
   \url{https://forum.openzeppelin.com/t/uupsupgradeable-vulnerability-post-mortem/15680}
+
+\bibitem{perez2022dissimilar}
+Perez, D., Gudgeon, L.: Dissimilar redundancy in defi. arXiv preprint
+  arXiv:2201.12563  (2022)
+
+\bibitem{perez2019broken}
+Perez, D., Livshits, B.: Broken metre: Attacking resource metering in evm.
+  arXiv preprint arXiv:1909.07220  (2019)
+
+\bibitem{pinna2019massive}
+Pinna, A., Ibba, S., Baralla, G., Tonelli, R., Marchesi, M.: A massive analysis
+  of ethereum smart contracts empirical study and code metrics. IEEE Access
+  \textbf{7},  78194--78213 (2019)
+
+\bibitem{reijsbergen2021transaction}
+Reijsbergen, D., Sridhar, S., Monnot, B., Leonardos, S., Skoulakis, S.,
+  Piliouras, G.: Transaction fees on a honeymoon: Ethereum's eip-1559 one month
+  later. In: 2021 IEEE International Conference on Blockchain (Blockchain). pp.
+  196--204. IEEE (2021)
+
+\bibitem{rodler2021evmpatch}
+Rodler, M., Li, W., Karame, G.O., Davi, L.: $\{$EVMPatch$\}$: Timely and
+  automated patching of ethereum smart contracts. In: 30th USENIX Security
+  Symposium (USENIX Security 21). pp. 1289--1306 (2021)
+
+\bibitem{victor2019measuring}
+Victor, F., L{\"u}ders, B.K.: Measuring ethereum-based erc20 token networks.
+  In: International Conference on Financial Cryptography and Data Security. pp.
+  113--129. Springer (2019)
 
 \end{thebibliography}
