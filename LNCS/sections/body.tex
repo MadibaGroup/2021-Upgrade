@@ -32,27 +32,16 @@ Is there a way to deploy upgradeable smart contracts if all smart contracts are 
 
 \paragraph{Related work.} 
 
-A lot has been written in the non-academic arena as technical blog posts ~\cite{}. MOst of section 3 is based on this information. 
+The state of smart contract upgradeability methods in Ethereum is mainly discussed in the non-academic technical blog posts~\cite{openzeppelinPost,tobBlogPost}. In section 3~\ref{sec:classification}, we cover the information regarding upgradeability patterns, provided by the community in these forums and blogs.
 
-CREATE2 paper -> Measurements for only Metamoprhis, we do mostly proxy. ``Using simple heuristics derived from the EIPS we found 223,873 following EIP-897, 0 following EIP-1167, 22,238 following EIP-1822, and 31,432 following EIP-1967.'' By comparison, our model is more generic. 
+In~\cite{frowisnot}, authors conducted a measurement study on the use-cases of the \textit{Create2} opcode in Ethereum blockchain, which one of them is the Metamorphosis upgradeability pattern discussed in~\ref{sec:metamorphic}. Also by using a simple heuristics, they found number of delegate-call based contracts which completely stick into the proxy standards (EIP-897, EIP-1167, EIP-1822, and EIP-1967). In our paper, we focus on the smart contracts that use delegate-call based patterns. Our approach to find such contracts is pattern-based and cross cuts different implementations and not just stick to specific implementation. We also find the admin~\footnote{Agent that is responsible for upgrading the system} of the upgradeable contracts and shed light into the risks regarding different admin types.
 
-USENIX paper -> tool for actually updating a contract, assuming the contract uses a delegatecall-based data seperation pattern. 
-``Dissimilar Redundancy in DeFi'' -> another tool. 
+Several studies~\cite{rodler2021evmpatch,perez2022dissimilar} developed a tool in their research that leveraged delegatecall-based proxy patterns. Also, there has been numerous researches~\cite{perez2019broken,chen2017adaptive,reijsbergen2021transaction,victor2019measuring,pinna2019massive,he2020characterizing} that conducted a measurement study on Ethereum blockchain but concern other aspects. In~\cite{chen2021smart}, authors surveyed use cases of the \textit{SELFDISTRUCT} opcode which can be used to clean up the old contract in contract migration upgradeability pattern~\ref{sec:migration}. But, they do not cover the use of this opcode in the Metamorphosis upgradeability pattern which we explain in section~\ref{sec:metamorphic}.
 
-Other researchers have measurement studies on Ethereum data but concern other aspects: tokens (two erc20), volnerabilities (10 papers), cost of opcodes, impacts of EIP-1559, xxx.
-
-SELFDISTRUCT survey -> contract migration, clean up the old contract. Also useful for metamoprhisis but authors don't cover this
-
-* we are measurement
-* no tools
-* broad set of upgrade pattern
-
-
-\textblue{TBD}
 
 % = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-\section{Classification of Upgrade Patterns}
+\section{Classification of Upgrade Patterns} \label{sec:classification}
 
 \begin{figure}[t]
   \centering
@@ -99,7 +88,7 @@ The simplest upgrade pattern is to allow a system parameter, that is stored in a
 
 While a parameter change allows an authorized user to overwrite memory, a functional component change addresses modifications to the code of a function (and thus, the logic of the contract). In the EVM, code cannot be modified once written and so new code must be deployed to a new contract, but can be arranged to be called from the original contract. 
 
-One way to allow upgradable functions is deploying a helper contract that contains the code for the functions to be upgradeable. Users are given the address of the primary contract, and the address of this secondary (helper) contract is stored as a variable in the primary contract. Whenever thhis function is invoked at the primary contract, the primary contract is pre-programmed to forward the function call, using the opcode \texttt{Call}, to the address it has stored for the secondary contract. To modify the logic of the function, a new secondary contract is deployed at a new address, and an authorized set of individuals can then use a parameter change in the primary contract to update the address of the secondary contract.
+One way to allow upgradable functions is deploying a helper contract that contains the code for the functions to be upgradeable. Users are given the address of the primary contract, and the address of this secondary (helper) contract is stored as a variable in the primary contract. Whenever this function is invoked at the primary contract, the primary contract is pre-programmed to forward the function call, using the opcode \texttt{Call}, to the address it has stored for the secondary contract. To modify the logic of the function, a new secondary contract is deployed at a new address, and an authorized set of individuals can then use a parameter change in the primary contract to update the address of the secondary contract.
 
 The DeFi lending platform Compound uses this pattern for their interest rate models which are tailored specifically for each asset. The model for one asset can be changed without impacting the rest of the contract.
 
