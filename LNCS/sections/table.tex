@@ -6,36 +6,33 @@
         \begin{tabular}{lllllllllllllll}
     
     &
-    \headrow{Can replace entire logic} &
+    \headrow{Can replace entire logic (1)} &
     
-    \headrow{can replace pre-specified part of logic} & 
+    \headrow{Remove} & 
 
-
-    \headrow{Can replace entire state} &
+    \headrow{Remove} &
     
-    \headrow{can change pre-specified state variables} &
+    \headrow{Remove} &
     
-    \headrow{No need to deploy a new contract} &
+    \headrow{No need to deploy a new contract to upgrade} &
 
-    \headrow{No need to migrate state from old contract} &
+    \headrow{No need to migrate state from old contract (2)} &
 
-    \headrow{No need to separate State and Logic} &
+    \headrow{Remove} &
 
-    \headrow{Function Selector Clashes Risk} &
+    \headrow{Function selector clashes risk} &
 
-    \headrow{Storage Clashes Risk} & 
+    \headrow{Storage clashes risk} & 
 
     \headrow{No indirection} & 
 
-
-    \headrow{User endpoint address not changed} &
+    \headrow{User endpoint address unchanged (3)} &
     
+    \headrow{No downtime to upgrade} & %half dot -> state migration
 
-    \headrow{Downtime in upgrade events} &
+    \headrow{No need to instrument source (4)} &
 
-    \headrow{No need to change code to add the upgrade pattern} &
-
-    \headrow{Need to change a state variable} 
+    \headrow{Remove} 
     
     
     \\
@@ -43,41 +40,46 @@
     \hline
  
     
-        \multicolumn{1}{c|}{Parameter Configuration}	& \multicolumn{1}{c|}{}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{} &\multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c}{\checkmark}\\
+        \multicolumn{1}{c|}{Parameter Configuration}	& \multicolumn{1}{c|}{}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{} &\multicolumn{1}{c|}{\full} & \multicolumn{1}{c}{\full}\\
     
         \hline
   
-        \multicolumn{1}{c|}{Component Change}	& \multicolumn{1}{c|}{}  & \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\XBox} & \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\XBox} &  \multicolumn{1}{c}{\checkmark}\\
+        \multicolumn{1}{c|}{Component Change}	& \multicolumn{1}{c|}{}  & \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\prt} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\prt} &  \multicolumn{1}{c}{\full}\\
         
 
         \hline
 
-        \makecell{Contract Migration}	& \multicolumn{1}{|c|}{\checkmark}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c}{}\\
+        \makecell{Contract Migration}	& \multicolumn{1}{|c|}{\full}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c}{}\\
     
          \hline
-         \makecell{Create2 metamorphosis}	& \multicolumn{1}{|c|}{\checkmark}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{}&  \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c}{}\\
+         \makecell{Create2 metamorphosis}	& \multicolumn{1}{|c|}{\full}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{}&  \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c}{}\\
 
     
         \hline
-        \makecell{Consensus Override}	& \multicolumn{1}{|c|}{\checkmark}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{}&  \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c}{}\\
+        \makecell{Consensus Override}	& \multicolumn{1}{|c|}{\full}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{}&  \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c}{}\\
 
         \hline
 
-        \makecell{Call-based}	& \multicolumn{1}{|c|}{\checkmark}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c}{\checkmark}\\        
+        \makecell{Call-based}	& \multicolumn{1}{|c|}{\full}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c}{\full}\\        
         
          \hline
 
-         \makecell{DelegateCall-based}	& \multicolumn{1}{|c|}{\checkmark}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{\checkmark}&  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\XBox} & \multicolumn{1}{c}{\checkmark}\\    
+         \makecell{DelegateCall-based}	& \multicolumn{1}{|c|}{\full}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full}&  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\prt} & \multicolumn{1}{c}{\full}\\    
         
          \hline
         
         
         \end{tabular}
         \captionsetup[tabular]{singlelinecheck=off}
-        \caption{Evaluation\ref{tab:eval}}
+        \caption{What does the square mean?
+        \label{tab:eval}}
+        
+       %% = = = Table bullets: \full and \prt (full and part)
+%\newcommand{\full}{$\bullet$}
+%\newcommand{\prt}{$\circ$}
        
     
     \end{table}
     %\footnotetext[1]{Design of system in which a parameter can change the logic is hard}
 
-%        \makecell{Diamonds}	& \multicolumn{1}{|c|}{\checkmark}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\checkmark} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{\checkmark\checkmark}&  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\checkmark} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\XBox} & \multicolumn{1}{c}{\checkmark}\\
+%        \makecell{Diamonds}	& \multicolumn{1}{|c|}{\full}  & \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\full} &  \multicolumn{1}{c|}{} &  \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{\full\full}&  \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\full} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{\prt} & \multicolumn{1}{c}{\full}\\

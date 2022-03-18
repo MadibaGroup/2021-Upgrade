@@ -4,9 +4,9 @@
 
 \section{Introductory Remarks}
 
-Capitalization, infrastructure, and regulation make new deployments of financial technology challenging. Blockchain systems like Ethereum radically reduce the barrier-to-entry by allowing anyone to deploy any solution, provided it can operate autonomously as software. The key promise of code running on Ethereum is that the code will execute exactly as it is written, and the code that is written can never be changed. Ethereum cannot maintain this promise unconditionally but its assumptions---that certain cryptographic primitives are secure, and that well-intentioned participants outweigh malicious ones---provide a realistic level of assurance. 
+The key promise of a smart contract running on Ethereum is that its code will execute exactly as it is written, and the code that is written can never be changed. While Ethereum cannot maintain this promise unconditionally, its assumptions (\eg cryptographic primitives are secure and well-intentioned participants outweigh malicious ones) provide a realistic level of assurance. 
 
-The immutability of a smart contract's code is related to trust. If Alice can validate the code of a contract, she can trust her money to it and not be surprised by its behaviour. Unfortunately, disguising malicious behaviour in innocuous-looking code is possible, and many blockchain users have been victims of such contracts (`rug pulls'). On the other hand, if the smart contract is long-standing with lots of attention, and perhaps assessments from third-party professional auditors, the immutability of the code can add confidence. 
+The immutability of a smart contract's code is related to trust. If Alice can validate the code of a contract, she can trust her money to it and not be surprised by its behaviour. Unfortunately, disguising malicious behaviour in innocuous-looking code is possible (`rug pulls'), and many blockchain users have been victims. On the other hand, if the smart contract is long-standing with lots of attention, and security assessments from third-party professional auditors, the immutability of the code can add confidence. 
 
 Consider the case where a security vulnerability in the code of a smart contract is discovered. The flip-side of immutability is that it prevents software updates. Less urgently, some software projects may want to roll out new features, which is also blocked by immutability. There is an intense debate about whether this is a positive or negative, with many claiming that `upgradability is a bug.' We do not take a position on this debate. We note that upgradability is happening and we seek to study what is already being done and what is possible. 
 
@@ -20,19 +20,37 @@ Is there a way to deploy upgradeable smart contracts if all smart contracts are 
 
 \section{Background and Related Work}
 
-\begin{figure}[t]
-  \centering
-      \includegraphics[width=0.4\textwidth]{figures/dapp.pdf}
-  \caption{Components of a decentralized application.\label{fig:dapp}}
- \end{figure}
+%\begin{figure}[t]
+%  \centering
+%      \includegraphics[width=0.4\textwidth]{figures/dapp.pdf}
+%  \caption{Components of a decentralized application.\label{fig:dapp}}
+% \end{figure}
 
 \paragraph{Updating vs. upgrading.} Software maintenance is part of software's lifecycle, and the process of changing the product after delivery. Often a distinction is drawn between software \textit{updates} and software \textit{upgrades}. An update modifies isolated portions of the software to fix bugs and vulnerabilities. An upgrade is generally a larger overhaul of the software with significant changes to features and capabilities. In our paper, we will only use the term upgrade and instead distinguish between retail (parameters and isolated code) and wholesale (entire application) changes. 
 
-\paragraph{DApp vs. smart contract.} Figure~\ref{fig:dapp} shows the main components of a decentralized application (DApp). The core component is the smart contract (or simply contract), which is the set of functions and state stored on-chain. When first deployed, the smart contract also includes a constructor function which executes once and is then discarded (to be more precise, a copy of the constructor is stored in the record of transactions, called the calldata, but it is not retained in the EVM and can never be called again). While it is possible to interact directly with a smart contract by invoking its functions through Ethereum, generally users are provided an off-chain website with a user interface. Website actions are translated into calls to the Ethereum network through a set of tools (most prominently web3) in the web interface. 
+%\paragraph{DApp vs. smart contract.} Figure~\ref{fig:dapp} shows the main components of a decentralized application (DApp). The core component is the smart contract (or simply contract), which is the set of functions and state stored on-chain. When first deployed, the smart contract also includes a constructor function which executes once and is then discarded (to be more precise, a copy of the constructor is stored in the record of transactions, called the calldata, but it is not retained in the EVM and can never be called again). While it is possible to interact directly with a smart contract by invoking its functions through Ethereum, generally users are provided an off-chain website with a user interface. Website actions are translated into calls to the Ethereum network through a set of tools (most prominently web3) in the web interface. 
 
-While upgrades to the user interface can significantly change a user experience and expose new features, they are governed by traditional software maintenance. Our paper only considers the on-chain smart contract component, which is significantly more challenging to upgrade as it is on-chain and immutable under reasonable circumstances. 
+While upgrades to a smart contract's user interface (UI) can significantly change a user experience and expose new features, UIs are governed by traditional software maintenance. Our paper only considers the on-chain smart contract component, which is significantly more challenging to upgrade as it is on-chain and immutable under reasonable circumstances. 
 
-\paragraph{Related work.} \textblue{TBD}
+\paragraph{Related work.} 
+
+A lot has been written in the non-academic arena as technical blog posts ~\cite{}. MOst of section 3 is based on this information. 
+
+CREATE2 paper -> Measurements for only Metamoprhis, we do mostly proxy. ``Using simple heuristics derived from the EIPS we found 223,873 following EIP-897, 0 following EIP-1167, 22,238 following EIP-1822, and 31,432 following EIP-1967.'' By comparison, our model is more generic. 
+
+USENIX paper -> tool for actually updating a contract, assuming the contract uses a delegatecall-based data seperation pattern. 
+``Dissimilar Redundancy in DeFi'' -> another tool. 
+
+Other researchers have measurement studies on Ethereum data but concern other aspects: tokens (two erc20), volnerabilities (10 papers), cost of opcodes, impacts of EIP-1559, xxx.
+
+SELFDISTRUCT survey -> contract migration, clean up the old contract. Also useful for metamoprhisis but authors don't cover this
+
+* we are measurement
+* no tools
+* broad set of upgrade pattern
+
+
+\textblue{TBD}
 
 % = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
@@ -139,6 +157,8 @@ Consider a contract, called Factory, that has the bytecode of another contract, 
 
 Assume the developer wants to deploy contract A using metamorphosis and later update it to contract B.\footnote{\href{https://medium.com/@0age/the-promise-and-the-peril-of-metamorphic-contracts-9eb8b8413c5e}{``The Promise and the Peril of Metamorphic Contracts.'' 0age, Medium, Feb 2019.}} The developer first deploys a factory contract with a function that accepts A's (runtime) bytecode as a parameter (which includes the ability to self destruct). The factory then deploys A at an arbitrary address and stores the address in a variable called codeLocation. The factory then deploys a simple `transient' contract using \texttt{CREATE2} at address T. This contract performs a callback to the factory contract, asks for factory.codeLocation, and copies the code it finds there into its own storage for its runtime bytecode and returns. As a consequence, A's bytecode is now deployed at address T. 
 
+\textblue{selfdestruct happens at end of transaction -> race condition}
+
 To upgrade to contract B, the developer calls \texttt{SELFDESTRUCT} on A. It then calls the factory with contract B's bytecode. The factory executes the same way placing a pointer to B in factory.codeLocation. Importantly, it generates the same address T when it invokes CREATE2 since the `transient' contract is identical to what it was the first time---this contract does not contain contract A or B's runtime code, it just contains abstract instructions on how to load code. The result is contract B's runtime bytecode being deployed at address T where contact A was. 
  
 % JC: Not important enough to keep:
@@ -205,11 +225,16 @@ This pattern is a variant on the idea of chaining each function call through a s
 
 This pattern generally cleaner than using the previous \texttt{CALL}-based pattern because the logic contract does not need any instrumentation added to it. It is an exact copy of what the contract would look like if the upgrade pattern was not being used at all. However this does not mean the pattern in a turn-key solution. Each new logic contract needs to be programmed to respect the existing memory layout of the storage contract, which has evolved over the use of all the previous logic contracts. The logic contract also needs to be aware of any functions implemented by the storage contract itself---if the same function exists in both the storage contract and the logic contract (called a function clash), the storage function will take precedence.
 
+% JC: upgradeTo in old logic contract, delegateCall to it
+% JC: add access control everywhere
+
 The main issue with function clashes is that the proxy contract needs, at the very least, to provide an admin (or set of authorized parties) the ability to change the address of the logic contract it delegates to. If this is captured in a function, say \texttt{setLogicContract(addr a)}, then any other function signature will be caught by the proxy's fallback function which will \texttt{DELEGATECALL} it to the current logic contract. Developers can be diligent in ensuring no function signature in the logic contract is equal to the signature of this function in the proxy contract (note that signatures incorporate a truncated hash of the function name, along with the parameters types, so collisions are possible). To sidestep this, another contract can be deployed, called the implementation contract, to hold the address of the logic contract and implement the setter function for it. The proxy contract will get the logic contract address from the implementation contract every time it does a \texttt{DELEGATECALL}. This adds gas but since the proxy contract does not need any function of its own, it removes the risk of function clashes. In this pattern, called \emph{Universal Upgradeable Proxy Standard (UUPS)} (EIP-1822), the admin calls the implementation contract (to upgrade the logic contract), while normal users call the proxy contract to use the DApp. An alternative to UUPS, called a \textit{transparent proxy} (EIP 1538) is to inspect who is calling the proxy contract (using \texttt{msg.sender()})---if it is the admin, the proxy contract catches the function call and if it is anyone else, it is passed to the proxy's fallback function for delegation to the logic contract. 
 
 For some decentralized applications, many copies of the same contract are made. For example, in an on-chain wallet solution, every user might be given their own wallet contract at their own address with only their data stored in it. Consider making such an application upgradable using UUPS. If there are $n$ users, each user gets its own proxy contract (thus $n$ proxy contracts). However the logic contract can be shared across all users. In the \textit{Beacon Proxy} pattern (EIP-1538), a common ``beacon'' contract is hard-coded into all proxy contracts and allows them to obtain the latest logic contract. 
 
 Another drawback of the entire \texttt{DELEGATECALL}-based pattern is that logic contracts need to be aware of the storage layout of the proxy contract. In a stand-alone contract, the compiler (\eg Solidity) will allocate state variables to storage locations, and using \texttt{DELEGATECALL} does not change that, however new logic contracts need to allocate the same variables in the same order as the old contract, even if the variables are not used anymore. This can be made easier with object-oriented patterns: each new logic contract extends the old contract (inheritance-based storage). Other options include mappings for each variable type (eternal storage) or hashing into unique memory slots (unstructured storage). The \textit{Diamond Storage} pattern (EIP-2535) breaks the logic contract into smaller clusters of one or a few functions that can be updated independently, and each can request one or more storage slots in a storage space managed by the proxy contract itself. 
+
+% JC: Diamond sharded -> large contracts
 
 
 
@@ -248,7 +273,7 @@ Another drawback of the entire \texttt{DELEGATECALL}-based pattern is that logic
 \subsection{Evaluation Framework}
 \input{sections/table}
 
-Table~\ref{tab:eval} summarizes the pros and cons of each upgradability pattern. The details of the evaluation are provided in the full version of this paper.\footnote{To be archived. Can be provided anonymously though program chairs.}
+Table~\ref{tab:eval} summarizes the pros and cons of each upgradability pattern. We omit concensus override because unrealistc.  The details of the evaluation are provided in the full version of this paper.\footnote{To be archived. Can be provided anonymously though program chairs.}
 
 
 
@@ -313,6 +338,7 @@ At the end we find \textit{8,225} unique upgradeable proxy contracts with unique
 
 
 \section{Finding Admin of the Proxies}
+\label{sec:governance}
 
 This section proposes a novel way to find the admin of the proxy contract (the agent responsible for upgrading the proxy contract) and classify them based on their account type. We apply the method to the dataset of proxy contracts we provided from the previous section~\ref{sec:proxyFinding}. We also shed light on the risks regarding the number of decision-makers who have the authority to change the whole logic of the Dapps that are using a proxy contract.
 
@@ -360,12 +386,16 @@ The same scenario may happen to all other upgradeable proxy contracts which use 
 
 %We did not try to find the governance contracts because in the case of rug pulls only EOAs and Multi signature wallets are in a critical risk, so we did not attempt to recognize the governance contract admins. Also we should mention that our methodology failed in some cases due to the problems regarding the decompiler. In some cases the decompiler was not able to decompile the code or some part of the code which our code dropped those addresses as unknown results. 
 
-
-
-
 %Implementation of Eternal storage in call based upgrades: https://medium.com/cardstack/upgradable-contracts-in-solidity-d5af87f0f913
 
-\section{discussion}
+\section{Concluding Remarks}
+
+* Which update pattern is the best?
+* Immutabilty is not a reality (cite Angela Welch?) 
+* One approach is too find specifics of upgrade frameworks (libraries, implementations) that are commonly used, our approach is pattern-based and cross cuts different implementations. We demonstrated this to a leading blockchain firm in finding a broader set of contracts potentially volunerable to a bug in a commonly used UUPS libraries. 
+* EOA -> the risk is underestimated -> stories -> that is a mess -> not centralized 
+* Layer 2
+
 %\subsection{Off chain upgrades (UNiswap Arbitrum)}: On-chain voting for an off-chain process. Other types of upgrade. Like front end changes etc.
 
 
