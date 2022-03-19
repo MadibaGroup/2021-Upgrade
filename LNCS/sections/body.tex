@@ -398,12 +398,19 @@ The same scenario may happen to all other upgradeable proxy contracts which use 
 
 \section{Concluding Remarks}
 
-* Which update pattern is the best?
-* Immutabilty is not a reality (cite Angela Welch?) 
-* One approach is too find specifics of upgrade frameworks (libraries, implementations) that are commonly used, our approach is pattern-based and cross cuts different implementations. We demonstrated this to a leading blockchain firm in finding a broader set of contracts potentially volunerable to a bug in a commonly used UUPS libraries. 
-* EOA -> the risk is underestimated -> stories -> that is a mess -> not centralized 
-* Layer 2
+% * Which update pattern is the best?
+In this paper we focused on delegatecall-based patterns because it is the most widely used upgradeability pattern in Ethereum ecosystem right now. The best way to clarify why developers use this pattern more than the others is comparing it to the other patterns. In contract migration and call-based pattern, the developer team must reach out to all users including the centralized third parties and announce the new address of the upgraded contract. Also in contract migration and create2-based metamorphosis pattern, there is a need to transfer the data from old contract which is costly and not efficient. One of the main reasons that call-based pattern is not popular amongst developer comparing delegatecall-based is that the developer team must change the whole code to add call-based upgradeability pattern because of the need of separating the logic part of the code and the storage part. But in delegatecall-based pattern the developer team can just write the code and at the end add the proxy pattern by adding a proxy contract and some little changes. Also in metamorphosis pattern, in the upgrade event the storage of the contract will wiped out and the data is gone which won't happen in proxy. Generally, using metamorphosis is not recomanded because SELFDESTRUCT opcode is a requirement for this pattern and there is huge discussion to remove the opcode from EVM.
 
+%* Immutabilty is not a reality (cite Angela Welch?)
+%* EOA -> the risk is underestimated -> stories -> that is a mess -> not centralized 
+Also in this paper we show that a large number of smart contracts are using proxy patterns and the majority of these proxy contracts are controlled by a centralized entity (one private key (EOA) or limited number of them (Multi-Sig)). This is in contrast to the immutability of decentralized application because in these cases, the admin of the contract can change the whole logic of the contract in their desired time. So decentralized applications are not so immutable anymore, Or maybe using the word \textbf{immutability} for this concept is not a good use as suggested in~\cite{walch2016path}.
+
+%* One approach is too find specifics of upgrade frameworks (libraries, implementations) that are commonly used, our approach is pattern-based and cross cuts different implementations. We demonstrated this to a leading blockchain firm in finding a broader set of contracts potentially volunerable to a bug in a commonly used UUPS libraries.
+In this research our approach is pattern-based and cross cuts different implementations. This leads to finding upgradeable contract that follows the idea and just based on the speciations of standards or well-known libraries. In cases that a vulnerability being found and one of these upgradeability patterns are exploitable to the vulnerability, generic patterns like what we proposed in this paper is helping to find all contracts that follows the pattern and just stick to a specific set of contracts. We have a detailed explanation of the recent attack in UUPS contracts in the appendix~\ref{sec:attackUUPS} to affirm our claim. 
+
+% * Layer 2
+Another point that we talked in the paper is to consider the consensus override~\ref{sec:hardfork} as a type of upgradeability. However this happened just once in Ethereum due to the DAO hack and not supposed to happen again, but we make it bold because the Ethereum blockchain (and also another blockchain systems) are getting more complex during the time and the more complex a system is, the more likely to be exploited. In some situations the only way to make the system back on track is to do a hard fork like the DAO hard fork. 
+It also worths to mention that the layer two solutions such as roll-ups are highly probable to have a consensus override upgrade. The roll-ups chains are system which move computation to the off-chain nodes and just send the final state of the results to the main chain. In case that an exploit happens to these system, they may roll-back and reset the roll-up chain using the consensus override method.   
 %\subsection{Off chain upgrades (UNiswap Arbitrum)}: On-chain voting for an off-chain process. Other types of upgrade. Like front end changes etc.
 
 
