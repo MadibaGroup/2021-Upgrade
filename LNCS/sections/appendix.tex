@@ -25,24 +25,24 @@ Upgradeability patterns in which the developers do not need to change any part o
 \subsubsection{No need to deploy a new contract}
 In some upgradeability patterns, the admin needs to deploy a new smart contract in the process of upgrade which receives nothing. Upgradeability methods which do not need to deploy a new contract for the process of upgrade receive a full dot (\full).
 
-\subsubsection{No indirection}  
+\subsubsection{No indirection between contracts}  
 Indirection happens if the first external message need be forwarded from a contract to another using one of the \texttt{CALL}, \texttt{STATICCALL}, or \texttt{DELEGATECALL} opcodes. Upgradeability methods that do not need any indirections receive a full dot (\full). An upgradeability pattern that contains indirections which adds an extra gas because of adding one or more layers of indirection awarded nothing. An upgradeability method in which not all but just a portion of the incoming transactions need indirection receive half dot (\prt). 
 
 
 \subsubsection{No downtime to upgrade}
 Patterns which have a downtime of the Dapp in the upgrade event receive full dot (\full) otherwise it receives nothing. 
 
-\subsubsection{Function Selector Clashes Risk}
+\subsubsection{Function Selector Clashes}
 Upgradeability methods in which the developer should take care of function selector risks due to the using of \texttt{DELEGATECALL} opcode receive full dot (\full), otherwise receive nothing. 
 
-\subsubsection{Storage Clashes Risk}
+\subsubsection{Storage Clashes}
 Upgradeability methods in which the developer should take care of storage clashes risks in two contracts due to the using of \texttt{DELEGATECALL} opcode receive full dot (\full). 
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Consequences}
+\subsection{Takeaway of Evaluation}
 In this section we discuss about the consequence of each upgrade methods regarding the criteria we mentioned in the previous part for users and developers that want to use the upgradeability pattern or uses a Dapp that uses one of the mentioned patterns.
 
 \subsection{Speed of an Upgrade}
@@ -145,7 +145,8 @@ So for this part we use the remained proxy contract addresses from the previous 
 The whole process is depicted on figure~\ref{fig:finderModule}.
 
 \begin{figure}[t!]
-  \includegraphics[width=0.8\textwidth]{figures/Upgradeability_finder1.png}\label{fig:finderModule}
+  \centering
+  \includegraphics[keepaspectratio,height=22cm, width=100cm]{figures/Upgradeability_finder-3.png}\label{fig:finderModule}
   \caption{Upgradeability Proxy Contract Finder}
 \end{figure}
 
@@ -164,7 +165,8 @@ To summarize what we did, we find all possible variables in the code that can ch
 The whole process is depicted on figure~\ref{assignmentFinder}.
 
 \begin{figure}[t]
-  \includegraphics[width=1\textwidth]{figures/Assignment_finder.png}\label{assignmentFinder}
+  \centering
+  \includegraphics[keepaspectratio,height=22cm, width=30cm]{figures/Assignment_finder.png}\label{assignmentFinder}
   \caption{Assignment CheckerModule}
 \end{figure}
 
