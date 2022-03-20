@@ -7,63 +7,41 @@
  \section{Evaluation of different methods}
  In this section we compare and evaluate different methods discussed in previous section and explain the consequences regarding each method to the users and developers of Dapps.
  \subsection{Criteria}
- There are some characteristics that can help the designer to decide which method should be used on the system and add upgradeability to the Dapp. In this part we pencil out these criteria and evaluate different methods based on these criteria. In this part we describe and specify what it means that each row of our table receives a check mark (\checkmark), double check marks (\checkmark\checkmark), square (\XBox) or nothing. 
+ There are some characteristics that can help the designer to decide which method should be used on the system and add upgradeability to the Dapp. In this part we pencil out these criteria and evaluate different methods based on these criteria. In this part we describe and specify what it means that each row of our table receives a full dot (\full), partial dot (\prt), or nothing. 
  
 \subsubsection{Can replace entire logic}
-An upgradeability method in which the upgrader is able to replace the entire logic of the system earns a check mark(\checkmark) otherwise it receives nothing.
-
-\subsubsection{can replace pre-specified part of logic}
-An upgradeability method in which the upgrader can change \emph{just} pre-specified part of logic of the system (and not entire logic) earns a check mark(\checkmark) otherwise it receives nothing.
-
-\subsubsection{Replace entire state}
-An upgradeability method in which the upgrader can replace the entire state in newer version earns a check mark(\checkmark) otherwise it receives nothing.
-
-\subsubsection{can change pre-specified state variables}
-An upgradeability method in which the upgrader can \emph{just} change some pre-specified state variables receives a check mark (\checkmark) otherwise it awarded nothing.
-
-\subsubsection{No need to deploy a new contract}
-In some upgradeability patterns, the upgrader needs to deploy a new smart contract in the process of upgrade which receives nothing. Upgradeability methods which do not need to deploy a new contract for the process of upgrade receive a check mark (\checkmark).
+An upgradeability method in which the admin is able to replace the entire logic of the system earns a full dot (\full) otherwise it receives nothing.
 
 \subsubsection{No need to migrate state from old contract}
-In some patterns, there is no need to collect data from the old version and push it to the new contract which receive a check mark (\checkmark). On the other hand, patterns which required to migrate data from old version receive nothing.
-
-\subsubsection{No need to separate State and Logic}
-An upgradeability pattern that does not requires separation of logic and storage contracts awarded a check mark (\checkmark) otherwise it receives nothing.
-
-
-\subsubsection{DelegateCall opcode Risks}
-Some of the upgradeability methods utilize \textit{Delegate call} opcode. Using  this opcode bring complexity to the system and needs more security considerations. These security considerations are categorized into two main risks which we explained before; function selector clashes and storage clashes.
-
-\paragraph{Function Selector Clashes Risk}
-Upgradeability methods in which the developer should take care of function selector risks receive check mark (\checkmark), otherwise receive nothing. 
-
-\paragraph{Storage Clashes Risk}
-Upgradeability methods in which the developer should take care of storage clashes risks in two contracts receive check mark (\checkmark), and the methods that the developers must consider this risk and deal with it in more than two contracts receive double check marks (\checkmark\checkmark) otherwise receive nothing. 
-
- \subsubsection{No indirection}  
- Indirection happens if the first external message need be forwarded from a contract to another. Upgradeability methods that do not need any indirections receive a check mark (\checkmark). An upgradeability pattern that contains indirections which adds an extra gas because of adding one or more layers of indirection awarded nothing. An upgradeability method in which just a portion of its transactions (and not all transactions to the contract) need indirection receive square (\XBox). 
+In some patterns, there is no need to collect data from the old version and push it to the new contract which receive a full dot (\full). On the other hand, patterns which required to migrate data from old version receive nothing.
 
 \subsubsection{User endpoint address not changed}
-In some upgradeability methods, after the upgrade process, users must call a new contract address to use the Dapp. It is equivalent to having 2 different Dapps at the  end of the upgrade. Alice uses a DApp X which uses one of the upgradeability patterns at address A before the upgrade. After upgrade, she may be unaware that upgrade happened and use the previous address (receive check mark (\checkmark)) or she may need to use address B instead which receive nothing.
+In some upgradeability methods, after the upgrade process, users must call a new contract address to use the Dapp. It is equivalent to having 2 different Dapps at the end of the upgrade. Alice uses Dapp X which uses one of the upgradeability patterns at address A before the upgrade. After upgrade, she may be unaware that upgrade happened and use the previous address (receive full mark (\full)) or she may need to use address B instead which receive nothing.
+
+\subsubsection{No need to instrument source}
+Upgradeability patterns in which the developers do not need to change any part of the original code to add the upgrade method receives nothing. The methods in which the developers do not need to change the whole code but should add a proxy contract or change just one component of the system receive half dot (\prt) and patterns in which the developers should change the whole code to add upgradeability receive full mark (\full).
 
 
-\subsubsection{Downtime in upgrade events}
-Patterns which we will have a downtime of the Dapp in the upgrade event receive check mark (\checkmark) otherwise it receives nothing. 
+\subsubsection{No need to deploy a new contract}
+In some upgradeability patterns, the admin needs to deploy a new smart contract in the process of upgrade which receives nothing. Upgradeability methods which do not need to deploy a new contract for the process of upgrade receive a full dot (\full).
+
+\subsubsection{No indirection}  
+Indirection happens if the first external message need be forwarded from a contract to another using one of the \texttt{CALL}, \texttt{STATICCALL}, or \texttt{DELEGATECALL} opcodes. Upgradeability methods that do not need any indirections receive a full dot (\full). An upgradeability pattern that contains indirections which adds an extra gas because of adding one or more layers of indirection awarded nothing. An upgradeability method in which not all but just a portion of the incoming transactions need indirection receive half dot (\prt). 
 
 
-\subsubsection{No need to change code to add the upgrade pattern}
-Upgradeability patterns in which the developers do not need to change any part of the original code to add the upgrade method receives nothing. The methods in which the developers do not need to change the whole code but should add a proxy contract or change just one component of the system receive square (\XBox) and patterns in which the devs should change the whole code to add upgradeability receive check mark (\checkmark).
+\subsubsection{No downtime to upgrade}
+Patterns which have a downtime of the Dapp in the upgrade event receive full dot (\full) otherwise it receives nothing. 
 
-\subsubsection{Need to change a state variable}
-Upgradeability patterns in which the upgrader should change a state variable on the upgrade process receive a check mark (\checkmark) otherwise it receives nothing. Two scenario could happen in this case, changing a variable as a upgrade parameter or changing an address variable which is a pointer address in the system. 
+\paragraph{Function Selector Clashes Risk}
+Upgradeability methods in which the developer should take care of function selector risks due to the using of \texttt{DELEGATECALL} opcode receive full dot (\full), otherwise receive nothing. 
 
-% \subsection{Check for existence of new implementation contract}
+\paragraph{Storage Clashes Risk}
+Upgradeability methods in which the developer should take care of storage clashes risks in two contracts due to the using of \texttt{DELEGATECALL} opcode receive full dot (\full). 
 
-% \subsection{Change pattern after deployment}
 
-% \textcolor{red}{Migration is the only way to add upgradeability feature to out smart contract}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Consequences}
 In this section we discuss about the consequence of each upgrade methods regarding the criteria we mentioned in the previous part in users and developers that want to use the upgradeability pattern or uses a Dapp that uses one of the mentioned patterns.
 
