@@ -15,10 +15,6 @@ of~Bits, T.: Contract upgrade anti-patterns
 of~Bits~Blog, T.: Breaking aave upgradeability
   \url{https://blog.trailofbits.com/2020/12/16/breaking-aave-upgradeability/}
 
-\bibitem{ToBantiPattern}
-of~Bits~Blog, T.: Contract upgrade anti-patterns
-  \url{https://blog.trailofbits.com/2018/09/05/contract-upgrade-anti-patterns/}
-
 \bibitem{delegatecallForwarders}
 Buterin, V.: Delegatecall forwarders: how to save ~50-98% on making many new
   contracts with the same code
