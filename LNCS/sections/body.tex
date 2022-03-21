@@ -325,17 +325,32 @@ Recall in the Universal Upgradeable Proxy Standard (UUPS) pattern, the logic con
 
 In the fifth case, we rewind the transaction trace from the proxy-based \texttt{DELEGATECALL} and look for the target address being returned to the proxy contract in another action. If we find it being returned by a contract, we apply the methodology from the fourth case to this contract. If the target address is modifiable, we mark it as using the Beacon proxy upgradability pattern. All contracts that remain after performing all of the checks above are marked as forwarders. 
 
-\subsubsection{Results}
+\subsection{Results}
 
-Having access to an Ethereum full archival node, we have collected transaction traces of transactions included in 2,064,595 blocks of Ethereum blockchain, starting from block number \textit{\#10800000} to \textit{\#12864595}. It covers transactions on the Ethereum blockchain from \textit{Sep-05-2020} to \textit{Jul-20-2021}. 
+\begin{table}[t]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+Proxy Contracts (Total) & 1,427,215  \\ \hline 
+Proxy Contracts (Filtered) & 13,088  \\ \hline 
+Forwarders & 7,470  \\ \hline
+UUPS & 403  \\ \hline
+Beacon & 352  \\ \hline
+Uncategorized but upgradeable & 8,225 \\ \hline
+\end{tabular}
+\caption{\label{tab:updata} Results of each \texttt{DELEGATECALL}-based upgrade pattern for the time-period {Sep-05-2020} to {Jul-20-2021} (2,064,595 blocks).}
+\end{table}
+
+Our measurements cover block number \texttt{10800000} to \texttt{12864595}, which corresponds to the time-period \texttt{Sep-05-2020} to \texttt{Jul-20-2021}, and are reported in Table~\ref{tab:updata}. While we found 1.4M unique proxy contracts, many of these share a common implementation contract and are part of the same larger upgradable system. As one example, the NFT marketplace OpenSea~\footnote{\url{https://opensea.io}} gives each user a unique proxy contract. After clustering contracts, we find 13K unique systems.  
+
+For the 8,225 uncategorized systems, we randomly sampled 150 contracts and manually verified they were upgradeable proxy contracts. We also sampled 150 contracts from the forwarders to verify they are not upgradeable, however we did find 2 false-negatives. Our model did not catch these contracts because a failure happened when decompiling them and our assignment checker detector in turn failed. Note that for UUPS contracts, the implementation contracts are much larger and harder to analyze than the proxy contract itself.
 
 %Having transaction traces and the actions of each transaction, we have collected \textit{From} address (address of sender of the transaction), \textit{To} address (destination address of the transaction) and \textit{Transaction Hash} of actions which has \textit{delegateCall} as their \textit{Call Type} and their input is the same as their previous action. As mentioned in the previous part the From addresses are the address of the proxy contracts.
 
-Applying our methodology gives us \textit{1,427,215} unique proxy contracts. However, a bunch of these proxies is using shared implementation contracts. We decide to weed out the proxy contracts that share the same implementation contract; however, two different Dapps may use the same implementation contract. The reason for this decision is that there are some Dapps like opensea~\footnote{\url{opensea.io}} that create proxy contracts for each of their user, and these proxies share the same implementation contract (it will reduce the redundancy). So after filtering proxies with the same implementation contracts, we come up with \textit{13,088} contracts.
-Afterwards we filter \textit{Forwarder Contracts} from our dataset and then apply the first filter to check if the proxy contract has a method to change the target address. This filter finds \textit{7,470} regular upgradeable proxy contracts.
-On the other hand, checking the remained proxy contracts (the proxies that neither forwarders nor regular upgradeable proxies) by applying the next filters explained in the methodology section, \textit{403} upgradeable proxy contracts found that follow Universal Upgradeable Proxy Pattern and also \textit{352} unique beacon proxy contracts.
+%Applying our methodology gives us \textit{1,427,215} unique proxy contracts. However, a bunch of these proxies is using shared implementation contracts. We decide to weed out the proxy contracts that share the same implementation contract; however, two different Dapps may use the same implementation contract. The reason for this decision is that there are some Dapps like  that create proxy contracts for each of their user, and these proxies share the same implementation contract (it will reduce the redundancy). So after filtering proxies with the same implementation contracts, we come up with \textit{13,088} contracts.
+%Afterwards we filter \textit{Forwarder Contracts} from our dataset and then apply the first filter to check if the proxy contract has a method to change the target address. This filter finds \textit{7,470} regular upgradeable proxy contracts.
+%On the other hand, checking the remained proxy contracts (the proxies that neither forwarders nor regular upgradeable proxies) by applying the next filters explained in the methodology section, \textit{403} upgradeable proxy contracts found that follow Universal Upgradeable Proxy Pattern and also \textit{352} unique beacon proxy contracts.
 
-At the end we find \textit{8,225} unique upgradeable proxy contracts with unique implementation contract. We randomly sampled 150 contracts from these contracts and manually checked them, and all of them were upgradeable proxy contracts. On the other hand, we sampled 150 contracts from those marked as non-upgradeable and checked them manually. Between these 150 contracts, just two were upgradeable. Our model did not catch these contracts because a failure happened on the decompiler to decompile the implementation contract code, so our assignment checker detector could not catch them. The reason is that implementation contracts are much larger in contrast with the proxy contract itself.
 
 
 \section{Finding Admin of the Proxies}
