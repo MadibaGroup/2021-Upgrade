@@ -200,11 +200,12 @@ The whole process is depicted in the figure\ref{Admins}.
 \begin{table}[t]
 \centering
 \begin{tabular}{|l|r|r|r|r|r|r|}
+\hline      &\multicolumn{2}{c|}{EIP-1967} & \multicolumn{4}{c|}{Non-EIP-1967}         \\
 \hline
-Type 				& EIP-1967	& Admin Proxy	& Non-EIP-1967 	& Admin Proxy 	& Arbitrary  	& Proxy 	\\ \hline 
+Type 				& \makecell{Regular\\Admins} & \makecell{Admin\\Proxy} 	& \makecell{Regular\\Admins} 	& \makecell{Admin\\Proxy} & \makecell{Arbitrary\\Slots} &  \makecell{Fixed\\Address}  \\ \hline 
 EOA 				& 900  	& 1202		& 1313		& 92			& 2		& 49 		\\ 
 Multisig 			& 255  	& 567		& 104		& 16			& 10		& 36		\\ 
-Governance/Other 	& 53  	& 462		& ?			& ?			& ?		& 160 	\\ \hline
+Governance/Other 	& 53  	& 462		& -			& -			& -		& 160 	\\ \hline
 \end{tabular}
 \caption{\label{tab:admindata} Results of each admin type in upgradeable contracts for the time-period {Sep-05-2020} to {Jul-20-2021} (2,064,595 blocks).}
 \vspace{-10pt}
@@ -212,7 +213,7 @@ Governance/Other 	& 53  	& 462		& ?			& ?			& ?		& 160 	\\ \hline
 
 \paragraph{EIP-1967.}As mentioned above EIP-1967~\cite{eip1967} suggested specific arbitrary slots for upgradeable proxy contracts to store implementation contract's address and \textit{Admin address}\footnote{Storage slot 0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103 for admin}.
 
-In first step we use \textit{eth\_getStorageAt} method of an Ethereum full archival node to search the EIP-1967 specified storage slot for admins on our 7.3k proxy contracts. If the result of this method is non-zero it means that the proxy uses EIP-1967 standard because the specified storage slot is an arbitrary slot and one can store variable in this slot just by defining this slot which means that they used EIP-1967.
+In first step we use \textit{eth\_getStorageAt} method of an Ethereum full archival node to search the EIP-1967 specified storage slot for admins on our 7,470 proxy contracts. If the result of this method is non-zero it means that the proxy uses EIP-1967 standard because the specified storage slot is an arbitrary slot and one can store variable in this slot just by defining this slot which means that they used EIP-1967.
 
 So, for non zero results, we capture the address which is the address of admin of the proxy. Now we try to find the type of these admin addresses. Having the address of the admin we use \textit{eth\_getCode} method to check the code of the admin account. If the code is empty, it means that this account is not a smart contract so it is an EOA. we find \textit{900} EOA admins that their proxy uses EIP-1967 standard.
 
@@ -246,7 +247,7 @@ By finding this arbitrary storage slot and doing the same processes we did in th
 
 The only case that is left is proxy contracts, in which the address of the admin is hardcoded inside them. It very straight forward. We find the upgrade function and the access control check on the caller of the transaction and then pick the fixed admin address and do the same processes mentioned above to find the admin types. There are \textit{49} EOAs, \textit{36} multi-signature admins and \textit{160} governance and not known admin addresses. 
 
-So, totally out of 7.3k proxy contract, \textbf{3558} are controlled by an EOA address, \textbf{988} are controlled by a multi signature wallet and \textbf{2924} addresses are governance controlled or our methodology could not find their type.
+So, totally out of 7,470 proxy contract, \textbf{3558} are controlled by an EOA address, \textbf{988} are controlled by a multi signature wallet and \textbf{2924} addresses are governance controlled or our methodology could not find their type.
 
 
 
