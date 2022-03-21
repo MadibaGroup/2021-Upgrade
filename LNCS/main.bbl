@@ -3,10 +3,6 @@
 \providecommand{\urlprefix}{URL }
 \providecommand{\doi}[1]{https://doi.org/#1}
 
-\bibitem{uupsEIP}
-Barros, G., Gallagher, P.: Eip-1822: Universal upgradeable proxy standard
-  (uups) \url{https://eips.ethereum.org/EIPS/eip-1822}
-
 \bibitem{tobBlogPost}
 of~Bits, T.: Contract upgrade anti-patterns
   \url{https://blog.trailofbits.com/2018/09/05/contract-upgrade-anti-patterns/}
