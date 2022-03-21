@@ -333,10 +333,10 @@ In the fifth case, we rewind the transaction trace from the proxy-based \texttt{
 \hline
 Proxy Contracts (Total) & 1,427,215  \\ \hline 
 Proxy Contracts (Filtered) & 13,088  \\ \hline 
-Forwarders & 7,470  \\ \hline
+Regular Upgradeable Contracts & 7,470  \\ \hline
 UUPS & 403  \\ \hline
 Beacon & 352  \\ \hline
-Uncategorized but upgradeable & 8,225 \\ \hline
+Uncategorized Upgradeable Contracts & 8,225 \\ \hline
 \end{tabular}
 \caption{\label{tab:updata} Results of each \texttt{DELEGATECALL}-based upgrade pattern for the time-period {Sep-05-2020} to {Jul-20-2021} (2,064,595 blocks).}
 \end{table}
@@ -345,40 +345,44 @@ Our measurements cover block number \texttt{10800000} to \texttt{12864595}, whic
 
 For the 8,225 uncategorized systems, we randomly sampled 150 contracts and manually verified they were upgradeable proxy contracts. We also sampled 150 contracts from the forwarders to verify they are not upgradeable, however we did find 2 false-negatives. Our model did not catch these contracts because a failure happened when decompiling them and our assignment checker detector in turn failed. Note that for UUPS contracts, the implementation contracts are much larger and harder to analyze than the proxy contract itself.
 
-%Having transaction traces and the actions of each transaction, we have collected \textit{From} address (address of sender of the transaction), \textit{To} address (destination address of the transaction) and \textit{Transaction Hash} of actions which has \textit{delegateCall} as their \textit{Call Type} and their input is the same as their previous action. As mentioned in the previous part the From addresses are the address of the proxy contracts.
+% = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 
-%Applying our methodology gives us \textit{1,427,215} unique proxy contracts. However, a bunch of these proxies is using shared implementation contracts. We decide to weed out the proxy contracts that share the same implementation contract; however, two different Dapps may use the same implementation contract. The reason for this decision is that there are some Dapps like  that create proxy contracts for each of their user, and these proxies share the same implementation contract (it will reduce the redundancy). So after filtering proxies with the same implementation contracts, we come up with \textit{13,088} contracts.
-%Afterwards we filter \textit{Forwarder Contracts} from our dataset and then apply the first filter to check if the proxy contract has a method to change the target address. This filter finds \textit{7,470} regular upgradeable proxy contracts.
-%On the other hand, checking the remained proxy contracts (the proxies that neither forwarders nor regular upgradeable proxies) by applying the next filters explained in the methodology section, \textit{403} upgradeable proxy contracts found that follow Universal Upgradeable Proxy Pattern and also \textit{352} unique beacon proxy contracts.
-
-
-
-\section{Finding Admin of the Proxies}
+\section{Finding the Admin}
 \label{sec:governance}
 
-This section proposes a novel way to find the admin of the proxy contract (the agent responsible for upgrading the proxy contract) and classify them based on their account type. We apply the method to the dataset of proxy contracts we provided from the previous section~\ref{sec:proxyFinding}. We also shed light on the risks regarding the number of decision-makers who have the authority to change the whole logic of the Dapps that are using a proxy contract.
+If a contract is upgradeable, someone must be permissioned to conduct upgrades. We call this agent the admin of the contract. In the simplest case, the admin is a single Ethereum account controlled by a private signing key, called an externally owned account (EOA). A breach of this key could lead to malicious updates, as in the case of the lending and yield farming DeFi service Bent Finance ~\cite{bentFinanceHack}. Bent Finance deployed a \textit{Transparent Upgradeable Proxy} with an EOA admin that was breached (unconfirmed if via an external hack or insider attack). The EOA pushed an updated logic contract\footnote{\url{https://etherscan.io/address/0xb45d6c0897721bb6ffa9451c2c80f99b24b573b9}}  which moved tokens valued at \$12M USD into the attacker's account\footnote{0xd23cfffa066f81c7640e3f0dc8bb2958f7686d1f} and then upgraded the logic contract to a clean version to cover-up the attack. Based on \textit{The State of DeFi Security 2021}~\cite{certikReport} report by Certik,\footnote{\url{certik.com}} ``centralization risk'' is the most common attack vector for hacks of DeFi projects. 
+ 
+%Afterward, the attacker upgraded the proxy to the malicious implementation contract, and by doing that, a considerable amount of tokens were assigned to the attacker's address. Once the balance was transferred to the attacker, they upgraded the proxy to the latest non-backdoor version to hide the exploit. 
+%Having a massive amount of tokens, the attacker drained liquidity from Curve Finance protocol, a decentralized exchange.
+%The same scenario may happen to all other upgradeable proxy contracts which use EOA or multi-signature wallets as their admin.
 
-The question we will answer in this part is who can upgrade the system? There should be an agent who decides on the upgrades of the system. Generally, there are three main types of admins for upgradeable smart contracts which we describe below; an Externally Owned Account (EOA), Multi-Signature wallets, and Governance schemes. EOA and multi-signature schemes add centralization risks to the system because a limited number of private keys can change the system's whole logic. Based on \textit{The State of DeFi Security 2021}~\cite{certikReport} report by Certik~\footnote{\url{certik.com}}, \textbf{Centralization} is the most common attack vector of the hacked DeFi projects. In further part of this section, we will explain a real-world incident to show how using an EOA as the admin of an upgradeable proxy contract may lead to loss of funds.
 
-\textit{Externally owned Address(EOA):}
-This most centralized way to deal with admin is to have just one private key controlling the upgrades. Using EOA as admin is the fastest way to respond to incidents, but in case of a malicious admin or a private key compromise, the whole funds are at risk.
+%This section proposes a novel way to find the admin of the proxy contract (the agent responsible for upgrading the proxy contract) and classify them based on their account type. We apply the method to the dataset of proxy contracts we provided from the previous section~\ref{sec:proxyFinding}. We also shed light on the risks regarding the number of decision-makers who have the authority to change the whole logic of the Dapps that are using a proxy contract.
 
-\textit{Multi-Signature Wallet:}
-A \textit{m out of n} Multi-signature wallet is a smart contract that can execute a transaction only if m number out of a specified n EOAs agree and sign the transaction.
-Using multi-sig as admin is a better way to the upgrade's decision-making than using an EOA. However, it may not be decentralized. The problem here is that the Ethereum accounts are pseudo-anonymous, and the identity behind addresses is not recognizable. So, the malicious developer team can keep at least m signatures out of n in their hands, and in the desired time, they can upgrade a system to a malicious version and steal the funds.
-Also, there are some types of governance voting which is known by \textit{Off-chain Governance Schemes} in which users who hold governance tokens can signal their votes on proposals in an off-chain tool like \textit{Discord} or \textit{Snapshot} and then another agent which is a part of multi-signature schemes can put the results on-chain and execute the actions if needed.
-We consider the off-chain governance in the Multi-sig category because, in the end, these multi-signature wallet owners are the only on-chain agents responsible for changing the system, and there is no way to enforce the signers to reflect the off-chain agreement results to the smart contract.
+Control over upgradeability typically falls into one of three categories: 
 
-\textit{On-Chain Governance Voting:}
-The most decentralized way to decide on a system change is to use a decentralized voting scheme. This can be done by distributing governance voting tokens to the community, and then they can vote on a change proposal by staking their voting token. 
-There is some critique to this method. Governance by voting has an inherent time delay to the upgrading process. This raises a problem when the system needs an instant upgrade (e.g., responding to an incident) \footnote{This arises the need for another mechanism to quickly fix bugs and upgrade the system in the event of incidents in conjunction with the voting process (e.g., Global shutdown in MakerDAO).}
-It is also not cost-efficient for the voters because all token holders must send a transaction for voting and pay a network fee.
-The other problem with this method is a fair distribution of the tokens. If the governance tokens are not distributed fairly, and the majority of tokens are granted to a limited number of users, they can change the voting results to their desired outcome.
+%The question we will answer in this part is who can upgrade the system? There should be an agent who decides on the upgrades of the system. Generally, there are three main types of admins for upgradeable smart contracts which we describe below; an Externally Owned Account (EOA), Multi-Signature wallets, and Governance schemes. EOA and multi-signature schemes add centralization risks to the system because a limited number of private keys can change the system's whole logic. 
 
-\subsection{Exploring Admin Types}
-As described above, proxy contracts may have three types of admin: EOA, Multi-Sig, and Governance Contract. In EOA and Multi-sig types, a person or a limited number of persons may decide to take control of the system. The risks regarding each admin type discussed above bring us to find the admin types of all proxy contracts we found in our first analysis.
+\begin{enumerate}
+\item \textbf{Externally owned Address (EOA):}
+One private key controls upgrades. It is highly centralized and one malicious admin or compromised private key could be catastrophic. It is also the fastest way to respond to incidents. An EOA may also pledge to delegate their actions to an off-chain consensus taken on any platform, such as verified users on \textit{Discord} or \textit{Snapshot}, however with no guarantee they will abide by it. In our measurements, we cannot distinguish this subtype as these are off-chain, social arrangements. 
 
-In the previous section~\ref{sec:proxyFinding}, we gathered \textit{7,470} regular upgradeable proxy contracts. In this part, we try to find the admin of each proxy contract and recognize the type of the admin (i.e., EOA, Multi-Sig, Governance).
+\item \textbf{Multi-Signature Wallet:}
+Admin privileges are assigned to a multi-signature wallet, requiring transactions signed by at least $m$ of a pre-specified $n$ EOAs.   This distributes trust to $m-n+1$ honest and uncorrupted EOAs. There is no guarantee different EOAs are operated by different entities and may be security theatre put on by a single controlling entity.
+
+%Using multi-sig as admin is a better way to the upgrade's decision-making than using an EOA. However, it may not be decentralized. The problem here is that the Ethereum accounts are pseudo-anonymous, and the identity behind addresses is not recognizable. So, the malicious developer team can keep at least m signatures out of n in their hands, and in the desired time, they can upgrade a system to a malicious version and steal the funds.
+%Also, there are some types of governance voting which is known by \textit{Off-chain Governance Schemes} in which users who hold governance tokens can signal their votes on proposals in an off-chain tool like \textit{Discord} or \textit{Snapshot} and then another agent which is a part of multi-signature schemes can put the results on-chain and execute the actions if needed.
+%We consider the off-chain governance in the Multi-sig category because, in the end, these multi-signature wallet owners are the only on-chain agents responsible for changing the system, and there is no way to enforce the signers to reflect the off-chain agreement results to the smart contract.
+
+\item \textbf{On-Chain Governance Voting:} A system issues a governance token and circulates it amongst its stakeholders. Updates are decided through a decentralized voting scheme where the weight of the vote from an EOA (or contract address) is proportionate to how many tokens it owns. This system is potentially highly decentralized, but the degree depends on the distribution of tokens (\eg if a single entity controls a majority of tokens, it is effectively centralized). Voting introduces friction: (1) a time delay to every decision---some critical functionality might bypass the vote and use quicker mechanisms (\eg global shutdown in MakerDAO), and (2) on-chain network fees for each vote cast.
+
+\end{enumerate}
+
+\subsection{Measuring Admin Types}
+
+%As described above, proxy contracts may have three types of admin: EOA, Multi-Sig, and Governance Contract. In EOA and Multi-sig types, a person or a limited number of persons may decide to take control of the system. The risks regarding each admin type discussed above bring us to find the admin types of all proxy contracts we found in our first analysis.
+
+In Section~\ref{sec:proxyFinding}, we gathered \textit{7,470} regular upgradeable proxy contracts. In this part, we try to find the admin of each proxy contract and recognize the type of the admin (i.e., EOA, Multi-Sig, Governance).
 Here we describe our methodology of finding the admin addresses and their types. The process can be divided into two main parts: finding the admin account's address and finding the admin type (EOA, Multi-Sig, or decentralized governance).
 
 \textbf{\emph{Finding the Admin Account's Address.}} EIP-1967~\cite{eip1967} suggested specific arbitrary slots for upgradeable proxy contracts to store \textit{Admin address}\footnote{Storage slot 0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103}. So, we first check this specific storage slot and if it is non-zero, the address that is saved inside it, is the admin address. 
@@ -390,19 +394,18 @@ However, not all proxy contracts use the EIP-1967 suggested storage slot. So, fo
 The remaining proxy contracts which are not marked as EOA or Multi-Signatures are marked as decentralized governance or unknown. We add unknown tag, because some of the contracts were using undefined new patterns as their multi-signature contracts and our model has false negatives to detect the multi-signatures. 
 For a detailed explanation of the methodology and implementation, check the appendix.
 
-
 By applying the above methodology in our dataset, the results show that out of \textbf{7,470} proxy contracts, \textbf{3,558} are controlled by an EOA address, \textbf{988} are controlled by a multi-signature wallet, and \textbf{2,924} addresses are either decentralized governance based admins, or unknown type.
 
 The results show that a single EOA account controls 48\% of the proxy contracts and 61\% by an EOA or Multi-Signature wallets control. This is a significant risk to the Ethereum ecosystem because, in these contracts, one or a limited number of persons can decide to change the whole logic of the contract and take control of the funds under the custody of the contract.
-Bent Finance incident~\cite{bentFinanceHack} is a real-world example of what may happen to all these proxy contracts. Bent Finance\footnote{\url{https://app.bentfinance.com/}} is a staking and farming platform. They are using \textit{Transparent Upgradeable Proxy} pattern in their system. The admin of the proxy was an EOA at the time of the incident. The malicious developer deployed a new implementation contract\footnote{\url{https://etherscan.io/address/0xb45d6c0897721bb6ffa9451c2c80f99b24b573b9}} in which it provides a huge amount of token to the malicious actor's address \footnote{0xd23cfffa066f81c7640e3f0dc8bb2958f7686d1f}. 
-Afterward, the attacker upgraded the proxy to the malicious implementation contract, and by doing that, a considerable amount of tokens were assigned to the attacker's address. Once the balance was transferred to the attacker, they upgraded the proxy to the latest non-backdoor version to hide the exploit. 
-Having a massive amount of tokens, the attacker drained liquidity from Curve Finance protocol, a decentralized exchange.
-The same scenario may happen to all other upgradeable proxy contracts which use EOA or multi-signature wallets as their admin.
 
 
 %We did not try to find the governance contracts because in the case of rug pulls only EOAs and Multi signature wallets are in a critical risk, so we did not attempt to recognize the governance contract admins. Also we should mention that our methodology failed in some cases due to the problems regarding the decompiler. In some cases the decompiler was not able to decompile the code or some part of the code which our code dropped those addresses as unknown results. 
 
 %Implementation of Eternal storage in call based upgrades: https://medium.com/cardstack/upgradable-contracts-in-solidity-d5af87f0f913
+
+
+
+% = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 
 \section{Concluding Remarks}
 
