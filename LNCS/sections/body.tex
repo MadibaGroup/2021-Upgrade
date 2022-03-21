@@ -329,21 +329,20 @@ In the fifth case, we rewind the transaction trace from the proxy-based \texttt{
 
 \begin{table}[t]
 \centering
-\begin{tabular}{|l|l|}
+\begin{tabular}{|l|r|}
 \hline
 Proxy Contracts (Total) & 1,427,215  \\ \hline 
 Proxy Contracts (Filtered) & 13,088  \\ \hline 
 Regular Upgradeable Contracts & 7,470  \\ \hline
 UUPS & 403  \\ \hline
 Beacon & 352  \\ \hline
-Uncategorized Upgradeable Contracts & 8,225 \\ \hline
 \end{tabular}
 \caption{\label{tab:updata} Results of each \texttt{DELEGATECALL}-based upgrade pattern for the time-period {Sep-05-2020} to {Jul-20-2021} (2,064,595 blocks).}
 \end{table}
 
 Our measurements cover block number \texttt{10800000} to \texttt{12864595}, which corresponds to the time-period \texttt{Sep-05-2020} to \texttt{Jul-20-2021}, and are reported in Table~\ref{tab:updata}. While we found 1.4M unique proxy contracts, many of these share a common implementation contract and are part of the same larger upgradable system. As one example, the NFT marketplace OpenSea~\footnote{\url{https://opensea.io}} gives each user a unique proxy contract. After clustering contracts, we find 13K unique systems.  
 
-For the 8,225 uncategorized systems, we randomly sampled 150 contracts and manually verified they were upgradeable proxy contracts. We also sampled 150 contracts from the forwarders to verify they are not upgradeable, however we did find 2 false-negatives. Our model did not catch these contracts because a failure happened when decompiling them and our assignment checker detector in turn failed. Note that for UUPS contracts, the implementation contracts are much larger and harder to analyze than the proxy contract itself.
+For the 8,225 upgradeable systems (regular, UUPS and beacon), we randomly sampled 150 contracts and manually verified they were upgradeable proxy contracts. We also sampled 150 contracts from the forwarders to verify they are not upgradeable, however we did find 2 false-negatives. Our model did not catch these contracts because a failure happened when decompiling them and our assignment checker detector in turn failed. Note that for UUPS contracts, the implementation contracts are much larger and harder to analyze than the proxy contract itself.
 
 % = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 
@@ -378,26 +377,22 @@ Admin privileges are assigned to a multi-signature wallet, requiring transaction
 
 \end{enumerate}
 
-\subsection{Measuring Admin Types}
+\subsection{Methodology}
 
 %As described above, proxy contracts may have three types of admin: EOA, Multi-Sig, and Governance Contract. In EOA and Multi-sig types, a person or a limited number of persons may decide to take control of the system. The risks regarding each admin type discussed above bring us to find the admin types of all proxy contracts we found in our first analysis.
 
-In Section~\ref{sec:proxyFinding}, we gathered \textit{7,470} regular upgradeable proxy contracts. In this part, we try to find the admin of each proxy contract and recognize the type of the admin (i.e., EOA, Multi-Sig, Governance).
-Here we describe our methodology of finding the admin addresses and their types. The process can be divided into two main parts: finding the admin account's address and finding the admin type (EOA, Multi-Sig, or decentralized governance).
+We conduct our measurement on the 7,470 regular upgradeable contracts from Section~\ref{sec:proxyFinding}. The process can be divided into two main parts: finding the admin account's address and finding the admin type (EOA, multi-sig, or decentralized governance).
 
-\textbf{\emph{Finding the Admin Account's Address.}} EIP-1967~\cite{eip1967} suggested specific arbitrary slots for upgradeable proxy contracts to store \textit{Admin address}\footnote{Storage slot 0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103}. So, we first check this specific storage slot and if it is non-zero, the address that is saved inside it, is the admin address. 
-However, not all proxy contracts use the EIP-1967 suggested storage slot. So, for non-EIP-1967 proxies, we propose a way to find the storage slot in which the admin address is stored. The process is very similar to how we found storage variable (slot) of the target address in~\ref{sec:proxyFinding}. We first find the function in which the admin can change the \textit{target address} (upgrade function). This function is critical and should only be called by the admin. It means there should be access control to check the caller of the function. We find this access control check, and conclude that the address that is checked inside, is the admin address.
+\paragraph{Finding the admin account's address.} EIP-1967 suggests specific arbitrary slots for upgradeable proxy contracts to store the \textit{admin address}.\footnote{Storage slot 0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103} We first check this specific storage slot and if it is non-zero, we mark what is stored as the admin address. 
+For non-EIP-1967 proxies, we use a process that is very similar to how we found the storage slot of the target address in Section~\ref{sec:proxyFinding}. We first find the function in which the admin can change the \textit{target address} (upgrade function). This function is critical and should only be called by the admin. We extract the access control check and mark the address authorized to run this function as the admin address.
 
-\textbf{\emph{Finding the admin type.}} Having the admin address, we can check if the account is an EOA by just checking if the account consists of a code or not\footnote{using the \textit{eth\_getCode} method for the admin address}. If the contract does not contain code, the admin is an EOA and if it contains code, the admin is another smart contract which can be a multi-signature wallet. The most widely used multi-signature wallet is Gnosis Safe\footnote{\url{https://gnosis-safe.io/}} wallets. We automatically checked if the code of the admin address is the Gnosis multi-signature wallet, and if yes, we marked them as Multi-Signature admins. After picking Gnosis safe wallets, we manually checked 10\% of the remaining addresses to find any other patterns for multi-signature wallets and found other patterns (e.g., MultiSignatureWalletWithDailyLimit, etc.) and added them to the dataset as well. 
+\paragraph{Finding the admin type.} Having the admin address, we can check if the account is an EOA by invoking \texttt{eth\_getCode} on the address from the full node: if it is empty, it is an EOA. Otherwise, it is a contract address. The most common multisig contract is Gnosis Safe.\footnote{\url{https://gnosis-safe.io/}} We automatically mark the admin type as multi-sig if we detect Gnosis safe. We then switch the manual inspection to find other multi-signature wallets (\eg MultiSignatureWalletWithDailyLimit, \etc) and add them to the data set. 
 
-\textit{2,534} contracts between all \textit{7,470} proxies we have, are using another proxy contract as their admin, which is known as \textit{Admin Proxy}. Admin proxy contract adds another layer of indirection. In this case, the real admin (owner of the admin proxy) sends their desired transaction to the admin proxy, redirected to the primary proxy, and getting executed. So, we attempt to find the admin proxies among the admin addresses and then find the owner of these proxies. The owner's address is the real admin account that can upgrade these systems. Now that we have the admin address, we do the same processes as before to find the EOA and Multi-Signature types.
-The remaining proxy contracts which are not marked as EOA or Multi-Signatures are marked as decentralized governance or unknown. We add unknown tag, because some of the contracts were using undefined new patterns as their multi-signature contracts and our model has false negatives to detect the multi-signatures. 
-For a detailed explanation of the methodology and implementation, check the appendix.
+In some cases, the admin address is itself a proxy contract---a pattern known as an Admin Proxy. This adds another layer of indirection. We reusing our methodology for identifying proxy contracts to exact the real admin account, and the proceed as above. Further details of the methodology and implementation are provided in Appendix~\ref{app:admin}.
 
-By applying the above methodology in our dataset, the results show that out of \textbf{7,470} proxy contracts, \textbf{3,558} are controlled by an EOA address, \textbf{988} are controlled by a multi-signature wallet, and \textbf{2,924} addresses are either decentralized governance based admins, or unknown type.
+\subsection{Results}
 
-The results show that a single EOA account controls 48\% of the proxy contracts and 61\% by an EOA or Multi-Signature wallets control. This is a significant risk to the Ethereum ecosystem because, in these contracts, one or a limited number of persons can decide to change the whole logic of the contract and take control of the funds under the custody of the contract.
-
+Of 7470 proxies, 2534 use an Admin Proxy. Going back to the 7470 proxies, \textbf{3558} are controlled by an EOA address, \textbf{988} are controlled by a known multi-signature wallet, and \textbf{2,924} addresses are left over. These are either decentralized governance or another unknown type. After manual inspection, we note some of the unknown contracts use undefined or new patterns for implementing multi-sig contracts; our model has false negatives in detecting multi-signatures. The results demonstrate significant centralization risk in upgradeability: 48\% of systems could be upgraded with the breach of a single signing key, and an additional 13\% by a small number of signing keys.
 
 %We did not try to find the governance contracts because in the case of rug pulls only EOAs and Multi signature wallets are in a critical risk, so we did not attempt to recognize the governance contract admins. Also we should mention that our methodology failed in some cases due to the problems regarding the decompiler. In some cases the decompiler was not able to decompile the code or some part of the code which our code dropped those addresses as unknown results. 
 
