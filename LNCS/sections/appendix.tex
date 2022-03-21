@@ -151,6 +151,7 @@ The whole process is depicted on figure~\ref{fig:finderModule}.
 \end{figure}
 
 \subsection{Assignment Checker Module}
+\label{app:assignment}
 
 As mentioned in the previous part, we need a module to check whether the admin can change target address on the proxy contract,using a function in the proxy contract, implementation contract or beacon contract. For this purpose the module must get the \textit{Bytecode} of the proxy,implementation or beacon address as input and find the variable name and also its storage slot of the target address. Then checks to find out is there any function inside the contract that gives the admin the ability to change the target address.
 
