@@ -197,7 +197,7 @@ The whole process is depicted in the figure\ref{Admins}.
 \end{figure}
 \end{comment}
 
-\paragraph{EIP-1967.}As mentioned above EIP-1967~\cite{eip1967} suggested specific arbitrary slots for upgradeable proxy contracts to store implementation contract's address and \textit{Admin address}\footnote{Storage slot 0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103 for admin}.
+\paragraph{EIP-1967.}As mentioned above EIP-1967~\footnote{\url{https://eips.ethereum.org/EIPS/eip-1967}} suggested specific arbitrary slots for upgradeable proxy contracts to store implementation contract's address and \textit{Admin address}\footnote{Storage slot 0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103 for admin}.
 
 In first step we use \textit{eth\_getStorageAt} method of an Ethereum full archival node to search the EIP-1967 specified storage slot for admins on our 7,470 proxy contracts. If the result of this method is non-zero it means that the proxy uses EIP-1967 standard because the specified storage slot is an arbitrary slot and one can store variable in this slot just by defining this slot which means that they used EIP-1967.
 
@@ -216,13 +216,13 @@ So there are two ways that the admin address is saved in the proxy contract. It 
 
 In storage variable case, the first question is in which storage slot the admin address is stored. So, the first step is to find the storage slot of the admin address variable. Also for the fixed address we should find the fixed address of the admin directly.
 
-To find the slot of the storage variable in which admin address is saved, we first find the function in which the proxy can be upgraded. For finding the upgrade function we exactly do what we did in \ref{findingProxies} part. We first find the storage variable in which we saved the implementation address and then we find a function in which the implementation address can be changed using the inputs of that specific function. 
+To find the slot of the storage variable in which admin address is saved, we first find the function in which the proxy can be upgraded. For finding the upgrade function we exactly do what we did in \ref{sec:proxyFinding} part. We first find the storage variable in which we saved the implementation address and then we find a function in which the implementation address can be changed using the inputs of that specific function. 
 
 The upgrade function of a proxy contract is a critical function and the only account that can call this function should be the admin of the proxy contract. So, there should be an access control check inside the upgrade function to check whether transaction sender is equal to the admin address or not.
 So, after finding the upgrade function we search for conditionals that checks the caller of the transaction and by doing that we can find the admin address or the storage variable in which the admin address is stored.
 
 
-If the admin address is stored in a storage variable, then we should find the storage slot of that specific storage variable. For finding the storage slot we do what we did in \ref{findingProxies} part by using \textit{def storage} function of the decompiler and check the storage slot of the storage variable we found, and the admin address is saved on it. 
+If the admin address is stored in a storage variable, then we should find the storage slot of that specific storage variable. For finding the storage slot we do what we did in \ref{sec:proxyFinding} part by using \textit{def storage} function of the decompiler and check the storage slot of the storage variable we found, and the admin address is saved on it. 
 Now we have the storage slot of the admin address and we should start doing all the things we did for EIP-1967 in the previous part. 
 In the EIP-1967 the storage slot for admin address was pre-specified and we do not need to find the slot but in this case we use the above methodology to find the slot but the further steps are the same as EIP-1967.
 So, by using the \textit{eth\_getCode} method for admin address inside the storage slot we find above, we can check wether the admin is EOA, Multi-sig, Governance, Proxy admin or not known.

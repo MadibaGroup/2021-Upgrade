@@ -24,15 +24,15 @@ Chen, J., Xia, X., Lo, D., Grundy, J.: Why do smart contracts self-destruct?
 \bibitem{chen2017adaptive}
 Chen, T., Li, X., Wang, Y., Chen, J., Li, Z., Luo, X., Au, M.H., Zhang, X.: An
   adaptive gas cost mechanism for ethereum to defend against under-priced dos
-  attacks. In: International conference on information security practice and
-  experience. pp. 3--24. Springer (2017)
+  attacks. In: International {C}onference on {I}nformation {S}ecurity practice
+  and experience. pp. 3--24. Springer (2017)
 
 \bibitem{certikReport}
 Company, C.: The state of defi security 2021
   \url{https://blog.openzeppelin.com/the-state-of-smart-contract-upgrades/}
 
 \bibitem{dhillon2017dao}
-Dhillon, V., Metcalf, D., Hooper, M.: The dao hacked. In: Blockchain Enabled
+Dhillon, V., Metcalf, D., Hooper, M.: The {DAO} hacked. In: Blockchain Enabled
   Applications, pp. 67--78. Springer (2017)
 
 \bibitem{bentFinanceHack}
@@ -40,13 +40,17 @@ Finance, B.: Bent update
   \url{https://bentfi.medium.com/bent-update-12ae69a41dc6}
 
 \bibitem{frowisnot}
-Fr{\"o}wis, M., B{\"o}hme, R.: Not all code are create2 equal
+Fr{\"o}wis, M., B{\"o}hme, R.: Not all code are {Create2} equal
   \url{https://informationsecurity.uibk.ac.at/pdfs/FB-Ethereum-Create2.pdf}
 
 \bibitem{he2020characterizing}
 He, N., Wu, L., Wang, H., Guo, Y., Jiang, X.: Characterizing code clones in the
   ethereum smart contract ecosystem. In: International Conference on Financial
   Cryptography and Data Security. pp. 654--675. Springer (2020)
+
+\bibitem{mccorry2021sok}
+McCorry, P., Buckland, C., Yee, B., Song, D.: Sok: Validating bridges as a
+  scaling solution for blockchains. Cryptology ePrint Archive  (2021)
 
 \bibitem{minimalProxy}
 Murray, P., Welch, N., Messerman, J.: Minimal proxy contract. EIP-1167 (2018)
@@ -56,7 +60,7 @@ Ortner, M., Eskandari, S.: Smart contract sanctuary
   \url{https://github.com/tintinweb/smart-contract-sanctuary}
 
 \bibitem{securityAdvise}
-Palladino, S.: Security advisory: Initialize uups implementation contracts
+Palladino, S.: Security advisory: Initialize {UUPS} implementation contracts
   \url{https://forum.openzeppelin.com/t/security-advisory-initialize-uups-implementation-contracts/15301}
 
 \bibitem{openzeppelinPost}
@@ -77,7 +81,7 @@ Perez, D., Livshits, B.: Broken metre: Attacking resource metering in evm.
 
 \bibitem{pinna2019massive}
 Pinna, A., Ibba, S., Baralla, G., Tonelli, R., Marchesi, M.: A massive analysis
-  of ethereum smart contracts empirical study and code metrics. IEEE Access
+  of {E}thereum smart contracts empirical study and code metrics. IEEE Access
   \textbf{7},  78194--78213 (2019)
 
 \bibitem{reijsbergen2021transaction}
