@@ -3,13 +3,21 @@
 \providecommand{\urlprefix}{URL }
 \providecommand{\doi}[1]{https://doi.org/#1}
 
-\bibitem{tobBlogPost}
-of~Bits, T.: Contract upgrade anti-patterns
-  \url{https://blog.trailofbits.com/2018/09/05/contract-upgrade-anti-patterns/}
+\bibitem{bentFinanceHack}
+Bent update. Tech. rep., Bent Finance,
+  \url{https://bentfi.medium.com/bent-update-12ae69a41dc6}
 
 \bibitem{aaveBreak}
-of~Bits~Blog, T.: Breaking aave upgradeability
+Breaking aave upgradeability. Tech. rep., Trail of Bits,
   \url{https://blog.trailofbits.com/2020/12/16/breaking-aave-upgradeability/}
+
+\bibitem{tobBlogPost}
+Contract upgrade anti-patterns. Tech. rep., Trail of Bits,
+  \url{https://blog.trailofbits.com/2018/09/05/contract-upgrade-anti-patterns/}
+
+\bibitem{certikReport}
+The state of defi security 2021. Tech. rep., Certik Company,
+  \url{https://blog.openzeppelin.com/the-state-of-smart-contract-upgrades/}
 
 \bibitem{delegatecallForwarders}
 Buterin, V.: Delegatecall forwarders: how to save ~50-98% on making many new
@@ -27,17 +35,9 @@ Chen, T., Li, X., Wang, Y., Chen, J., Li, Z., Luo, X., Au, M.H., Zhang, X.: An
   attacks. In: International {C}onference on {I}nformation {S}ecurity practice
   and experience. pp. 3--24. Springer (2017)
 
-\bibitem{certikReport}
-Company, C.: The state of defi security 2021
-  \url{https://blog.openzeppelin.com/the-state-of-smart-contract-upgrades/}
-
 \bibitem{dhillon2017dao}
 Dhillon, V., Metcalf, D., Hooper, M.: The {DAO} hacked. In: Blockchain Enabled
   Applications, pp. 67--78. Springer (2017)
-
-\bibitem{bentFinanceHack}
-Finance, B.: Bent update
-  \url{https://bentfi.medium.com/bent-update-12ae69a41dc6}
 
 \bibitem{frowisnot}
 Fr{\"o}wis, M., B{\"o}hme, R.: Not all code are {Create2} equal
