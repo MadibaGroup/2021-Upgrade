@@ -7,10 +7,6 @@
 Bent update. Tech. rep., Bent Finance,
   \url{https://bentfi.medium.com/bent-update-12ae69a41dc6}
 
-\bibitem{aaveBreak}
-Breaking aave upgradeability. Tech. rep., Trail of Bits,
-  \url{https://blog.trailofbits.com/2020/12/16/breaking-aave-upgradeability/}
-
 \bibitem{tobBlogPost}
 Contract upgrade anti-patterns. Tech. rep., Trail of Bits,
   \url{https://blog.trailofbits.com/2018/09/05/contract-upgrade-anti-patterns/}
@@ -59,17 +55,9 @@ Murray, P., Welch, N., Messerman, J.: Minimal proxy contract. EIP-1167 (2018)
 Ortner, M., Eskandari, S.: Smart contract sanctuary
   \url{https://github.com/tintinweb/smart-contract-sanctuary}
 
-\bibitem{securityAdvise}
-Palladino, S.: Security advisory: Initialize {UUPS} implementation contracts
-  \url{https://forum.openzeppelin.com/t/security-advisory-initialize-uups-implementation-contracts/15301}
-
 \bibitem{openzeppelinPost}
 PALLADINO, S.: The state of smart contract upgrades
   \url{https://blog.openzeppelin.com/the-state-of-smart-contract-upgrades/}
-
-\bibitem{uupsAttacks}
-Palladino, S.: Uupsupgradeable vulnerability post-mortem
-  \url{https://forum.openzeppelin.com/t/uupsupgradeable-vulnerability-post-mortem/15680}
 
 \bibitem{perez2022dissimilar}
 Perez, D., Gudgeon, L.: Dissimilar redundancy in defi. arXiv preprint
@@ -94,6 +82,10 @@ Reijsbergen, D., Sridhar, S., Monnot, B., Leonardos, S., Skoulakis, S.,
 Rodler, M., Li, W., Karame, G.O., Davi, L.: $\{$EVMPatch$\}$: Timely and
   automated patching of ethereum smart contracts. In: 30th USENIX Security
   Symposium (USENIX Security 21). pp. 1289--1306 (2021)
+
+\bibitem{SCM22full}
+Salehi, M., Clark, J., Mannan, M.: Not so immutable: Upgradeability of smart
+  contracts on ethereum. Tech. Rep. 4336210, arXiv (2022)
 
 \bibitem{victor2019measuring}
 Victor, F., L{\"u}ders, B.K.: Measuring ethereum-based erc20 token networks.
