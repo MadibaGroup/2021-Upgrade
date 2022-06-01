@@ -1,0 +1,143 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\bibstyle{splncs04}
+\providecommand\HyperFirstAtBeginDocument{\AtBeginDocument}
+\HyperFirstAtBeginDocument{\ifx\hyper@anchor\@undefined
+\global\let\oldcontentsline\contentsline
+\gdef\contentsline#1#2#3#4{\oldcontentsline{#1}{#2}{#3}}
+\global\let\oldnewlabel\newlabel
+\gdef\newlabel#1#2{\newlabelxx{#1}#2}
+\gdef\newlabelxx#1#2#3#4#5#6{\oldnewlabel{#1}{{#2}{#3}}}
+\AtEndDocument{\ifx\hyper@anchor\@undefined
+\let\contentsline\oldcontentsline
+\let\newlabel\oldnewlabel
+\fi}
+\fi}
+\global\let\hyper@last\relax 
+\gdef\HyperFirstAtBeginDocument#1{#1}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\providecommand \oddpage@label [2]{}
+\@writefile{toc}{\contentsline {title}{Not so immutable: Upgradeability of Smart Contracts on Ethereum}{1}{chapter.1}\protected@file@percent }
+\@writefile{toc}{\authcount {3}}
+\@writefile{toc}{\contentsline {author}{Mehdi Salehi \and Jeremy Clark \and Mohammad Mannan}{1}{chapter.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introductory Remarks}{1}{section.1.1}\protected@file@percent }
+\citation{openzeppelinPost,tobBlogPost}
+\citation{frowisnot}
+\citation{rodler2021evmpatch,perez2022dissimilar}
+\citation{perez2019broken,chen2017adaptive,reijsbergen2021transaction,victor2019measuring,pinna2019massive,he2020characterizing}
+\citation{chen2021smart}
+\@writefile{toc}{\contentsline {paragraph}{Contributions and Related Work.}{2}{section*.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2}Classification of Upgrade Patterns}{2}{section.1.2}\protected@file@percent }
+\newlabel{sec:classification}{{2}{2}{Classification of Upgrade Patterns}{section.1.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Updating vs. upgrading.}{2}{section*.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Classification of upgradeability patterns.}}{3}{figure.1.1}\protected@file@percent }
+\newlabel{fig:class}{{1}{3}{Classification of upgradeability patterns}{figure.1.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Parameter Configuration}{3}{subsection.1.2.1}\protected@file@percent }
+\newlabel{sec:parameter}{{2.1}{3}{Parameter Configuration}{subsection.1.2.1}{}}
+\citation{openzeppelinPost}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Functional Component Change}{4}{subsection.1.2.2}\protected@file@percent }
+\newlabel{sec:component}{{2.2}{4}{Functional Component Change}{subsection.1.2.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Consensus Override}{4}{subsection.1.2.3}\protected@file@percent }
+\newlabel{sec:hardfork}{{2.3}{4}{Consensus Override}{subsection.1.2.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Contract Migration}{5}{subsection.1.2.4}\protected@file@percent }
+\newlabel{sec:migration}{{2.4}{5}{Contract Migration}{subsection.1.2.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.5}\texttt  {CREATE2}-based Metamorphosis}{5}{subsection.1.2.5}\protected@file@percent }
+\newlabel{sec:metamorphic}{{2.5}{5}{\texttt {CREATE2}-based Metamorphosis}{subsection.1.2.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.6}\texttt  {CALL}-based Data Separation}{6}{subsection.1.2.6}\protected@file@percent }
+\newlabel{sec:callbased}{{2.6}{6}{\texttt {CALL}-based Data Separation}{subsection.1.2.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.7}\texttt  {DELEGATECALL}-based Data Separation}{7}{subsection.1.2.7}\protected@file@percent }
+\newlabel{sec:delegatecall}{{2.7}{7}{\texttt {DELEGATECALL}-based Data Separation}{subsection.1.2.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.8}Evaluation Framework}{8}{subsection.1.2.8}\protected@file@percent }
+\citation{dhillon2017dao}
+\citation{frowisnot}
+\citation{smart_contract_sanctuary}
+\citation{minimalProxy}
+\citation{delegatecallForwarders}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces An evaluation of upgradeability patterns. $\bullet $\nobreakspace  {} indicates the upgrade method is awarded the benefit in the corresponding column. $\circ $\nobreakspace  {}partially awards the benefit. Empty cells shows that the method does not satisfy the property.}}{9}{table.1.1}\protected@file@percent }
+\newlabel{tab:eval}{{1}{9}{An evaluation of upgradeability patterns. \full ~ indicates the upgrade method is awarded the benefit in the corresponding column. \prt ~partially awards the benefit. Empty cells shows that the method does not satisfy the property}{table.1.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Finding Upgradeable Contracts}{9}{section.1.3}\protected@file@percent }
+\newlabel{sec:proxyFinding}{{3}{9}{Finding Upgradeable Contracts}{section.1.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Methodology}{9}{subsection.1.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Finding proxies.}{9}{section*.4}\protected@file@percent }
+\newlabel{flowchart}{{3.1}{10}{Methodology}{subsection.1.3.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Flowchart for distinguishing upgradeable contracts (green) from forwarders, and for determining the upgradeability pattern type.}}{10}{figure.1.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Distinguishing forwarders and upgradeability patterns.}{10}{section*.5}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces  Results of each \texttt  {DELEGATECALL}-based upgrade pattern for the time-period {Sep-05-2020} to {Jul-20-2021} (2,064,595 blocks).}}{11}{table.1.2}\protected@file@percent }
+\newlabel{tab:updata}{{2}{11}{Results of each \texttt {DELEGATECALL}-based upgrade pattern for the time-period {Sep-05-2020} to {Jul-20-2021} (2,064,595 blocks)}{table.1.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Results}{11}{subsection.1.3.2}\protected@file@percent }
+\citation{bentFinanceHack}
+\citation{certikReport}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Finding the Admin}{12}{section.1.4}\protected@file@percent }
+\newlabel{sec:governance}{{4}{12}{Finding the Admin}{section.1.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Methodology}{13}{subsection.1.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Finding the admin account's address.}{13}{section*.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Finding the admin type.}{13}{section*.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Results}{13}{subsection.1.4.2}\protected@file@percent }
+\citation{walch2016path}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces  Results of each admin type in upgradeable contracts for the time-period {Sep-05-2020} to {Jul-20-2021} (2,064,595 blocks).}}{14}{table.1.3}\protected@file@percent }
+\newlabel{tab:admindata}{{3}{14}{Results of each admin type in upgradeable contracts for the time-period {Sep-05-2020} to {Jul-20-2021} (2,064,595 blocks)}{table.1.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Concluding Remarks}{14}{section.1.5}\protected@file@percent }
+\citation{mccorry2021sok}
+\bibdata{bib/pulp.bib,bib/new.bib}
+\bibcite{bentFinanceHack}{1}
+\bibcite{aaveBreak}{2}
+\bibcite{tobBlogPost}{3}
+\bibcite{certikReport}{4}
+\bibcite{delegatecallForwarders}{5}
+\bibcite{chen2021smart}{6}
+\bibcite{chen2017adaptive}{7}
+\bibcite{dhillon2017dao}{8}
+\bibcite{frowisnot}{9}
+\bibcite{he2020characterizing}{10}
+\bibcite{mccorry2021sok}{11}
+\bibcite{minimalProxy}{12}
+\bibcite{smart_contract_sanctuary}{13}
+\bibcite{securityAdvise}{14}
+\bibcite{openzeppelinPost}{15}
+\bibcite{uupsAttacks}{16}
+\bibcite{perez2022dissimilar}{17}
+\bibcite{perez2019broken}{18}
+\bibcite{pinna2019massive}{19}
+\bibcite{reijsbergen2021transaction}{20}
+\bibcite{rodler2021evmpatch}{21}
+\bibcite{victor2019measuring}{22}
+\bibcite{walch2016path}{23}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Evaluation Framework: Details}{17}{section.A.1}\protected@file@percent }
+\newlabel{app:eval}{{A}{17}{Evaluation Framework: Details}{section.A.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.1}Criteria}{17}{subsection.A.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Can replace entire logic}{17}{section*.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{No need to migrate state from old contract}{17}{section*.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{User endpoint address not changed}{17}{section*.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{No need to instrument source}{17}{section*.13}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{No need to deploy a new contract}{17}{section*.14}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{No indirection between contracts}{18}{section*.15}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{No downtime to upgrade}{18}{section*.16}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Function Selector Clashes}{18}{section*.17}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Storage Clashes}{18}{section*.18}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {B}Evaluation Framework: Take-Aways}{19}{section.A.2}\protected@file@percent }
+\newlabel{app:eval2}{{B}{19}{Evaluation Framework: Take-Aways}{section.A.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.1}Speed of an Upgrade}{19}{subsection.A.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.2}Cost of Upgrade}{20}{subsection.A.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.3}Gas overhead for users}{20}{subsection.A.2.3}\protected@file@percent }
+\citation{tobBlogPost}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.4}Useability}{21}{subsection.A.2.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.5}Dealing with two different new versions}{21}{subsection.A.2.5}\protected@file@percent }
+\citation{tobBlogPost}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.6}System Complexity}{22}{subsection.A.2.6}\protected@file@percent }
+\newlabel{sysComplexity}{{B.6}{22}{System Complexity}{subsection.A.2.6}{}}
+\newlabel{fig:finderModule}{{C}{24}{Assignment Checker Module}{section.A.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Upgradeability Proxy Contract Finder}}{24}{figure.A.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {C}Assignment Checker Module}{24}{section.A.3}\protected@file@percent }
+\newlabel{app:assignment}{{C}{24}{Assignment Checker Module}{section.A.3}{}}
+\newlabel{assignmentFinder}{{C}{26}{Assignment Checker Module}{figure.A.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Assignment CheckerModule}}{26}{figure.A.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {D}Detailed Methodology for Finding Admin Types}{27}{section.A.4}\protected@file@percent }
+\newlabel{app:admin}{{D}{27}{Detailed Methodology for Finding Admin Types}{section.A.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{EIP-1967.}{27}{section*.19}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Non EIP-1967.}{28}{section*.20}\protected@file@percent }
+\citation{frowisnot}
+\citation{aaveBreak}
+\citation{securityAdvise,uupsAttacks}
+\@writefile{toc}{\contentsline {section}{\numberline {E}Attacking Universal Upgradeable Proxy Standard (UUPS) contracts}{30}{section.A.5}\protected@file@percent }
+\newlabel{sec:attackUUPS}{{E}{30}{Attacking Universal Upgradeable Proxy Standard (UUPS) contracts}{section.A.5}{}}
